@@ -1,0 +1,49 @@
+# Binary files
+*.class
+
+# Backup files
+*~
+*.bak
+*.sav
+*.bck
+
+# Editor temp files
+.*.swp
+.swp
+
+# Gradle
+.gradle
+/caches
+/native
+gradle/wrapper/dists/
+
+# Build output directories
+build
+
+# Eclipse specific files/directories
+.classpath
+.project
+.settings
+.metadata
+bin
+classes
+.recommenders/
+
+# Jetbrains IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+*.ids
+out/
+
+# Profiler and heap dumps
+*.jps
+*.hprof
+
+# Miscellaneous
+nohup.out
+*.log
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*

@@ -1,0 +1,178 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.5"
+	}
+}
+
+plugins {
+	id 'java'
+	id 'jacoco'
+	id 'eclipse'
+	id 'idea'
+
+	id 'maven'
+	id 'maven-publish'
+	id 'com.jfrog.bintray' version "1.7.3"
+}
+
+apply plugin: 'org.sonarqube'
+
+group = 'de.cronn'
+
+version = "1.0"
+
+if (System.env.BUILD_NUMBER) {
+	version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+	mavenCentral()
+}
+
+jacocoTestReport {
+	reports {
+		html.enabled = false
+		xml.enabled = true
+		csv.enabled = false
+	}
+	dependsOn test
+}
+
+tasks.withType(JavaCompile) {
+	options.incremental = true
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '4.2.1'
+	distributionType = "ALL"
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from javadoc.destinationDir
+}
+
+artifacts {
+	archives sourcesJar, javadocJar
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+		}
+	}
+}
+
+def pomConfig = {
+	licenses {
+		license {
+			name "The Apache Software License, Version 2.0"
+			url "http://www.apache.org/licenses/LICENSE-2.0.txt"
+			distribution "repo"
+		}
+	}
+
+	developers {
+		developer {
+			id "benedikt.waldvogel"
+			name "Benedikt Waldvogel"
+			email "benedikt.waldvogel@cronn.de"
+		}
+		developer {
+			id "lukasz.dziedziul"
+			name "Lukasz Dziedziul"
+			email "lukasz.dziedziul@cronn.de"
+		}
+	}
+
+	scm {
+		url "https://github.com/cronn-de/reflection-util"
+	}
+}
+
+publishing {
+	publications {
+		CronnPublication(MavenPublication) {
+			from components.java
+			artifact sourcesJar
+			artifact javadocJar
+			groupId project.group
+			artifactId project.name
+			version project.version
+			pom.withXml {
+				def root = asNode()
+				root.appendNode('description', 'Java Reflection Utility Classes')
+				root.appendNode('name', project.name)
+				root.appendNode('url', 'https://github.com/cronn-de/reflection-util')
+				root.children().last() + pomConfig
+			}
+		}
+	}
+}
+
+bintray {
+	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+
+	publications = ['CronnPublication']
+	dryRun = false
+	pkg {
+		repo = 'maven'
+		name = rootProject.name
+		userOrg = 'cronn'
+		licenses = ['Apache-2.0']
+		websiteUrl = 'https://github.com/cronn-de/reflection-util'
+		issueTrackerUrl = 'https://github.com/cronn-de/reflection-util/issues'
+		vcsUrl = 'https://github.com/cronn-de/reflection-util.git'
+		version {
+			name = project.version
+			released = new Date()
+		}
+	}
+	override = true
+}
+
+ext {
+	byteBuddyVersion = "1.7.8"
+	jsr305Version = "3.0.2"
+	slf4jVersion = "1.7.21"
+	junitVersion = "4.12"
+	logbackVersion = "1.1.7"
+	mockitoVersion = "2.10.0"
+	hamcrestVersion = "2.0.0.0"
+	validationApiVersion = "1.1.0.Final"
+	cglibVersion = "3.2.5"
+	javassistVersion = "3.22.0-GA"
+}
+
+dependencies {
+	compile "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
+	compile "com.google.code.findbugs:jsr305:${jsr305Version}"
+	compile "org.slf4j:slf4j-api:${slf4jVersion}"
+
+	testCompile "junit:junit:${junitVersion}"
+	testCompile "org.mockito:mockito-core:${mockitoVersion}"
+	testCompile "org.hamcrest:java-hamcrest:${hamcrestVersion}"
+	testCompile "javax.validation:validation-api:${validationApiVersion}"
+	testCompile "cglib:cglib:${cglibVersion}"
+	testCompile "org.javassist:javassist:${javassistVersion}"
+
+	testRuntime "ch.qos.logback:logback-classic:${logbackVersion}"
+	testRuntime "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+}
