@@ -150,6 +150,7 @@ bintray {
 
 ext {
 	byteBuddyVersion = "1.7.8"
+	objenesisVersion = "2.6"
 	jsr305Version = "3.0.2"
 	slf4jVersion = "1.7.21"
 	junitVersion = "4.12"
@@ -163,6 +164,7 @@ ext {
 
 dependencies {
 	compile "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
+	compile "org.objenesis:objenesis:${objenesisVersion}"
 	compile "com.google.code.findbugs:jsr305:${jsr305Version}"
 	compile "org.slf4j:slf4j-api:${slf4jVersion}"
 

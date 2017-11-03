@@ -106,6 +106,7 @@ public class ClassUtilsTest {
 		assertThat(methodName, is("testGetVoidMethod"));
 
 		assertEquals("doOtherWork", ClassUtils.getVoidMethodName(SomeTestInterface.class, SomeTestInterface::doOtherWork));
+		assertEquals("doOtherWork", ClassUtils.getVoidMethodName(new SomeClass() {}, SomeClass::doOtherWork));
 	}
 
 	@Test

@@ -22,6 +22,7 @@ import de.cronn.reflection.util.testclasses.BaseClass;
 import de.cronn.reflection.util.testclasses.BaseInterface;
 import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
+import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
 import de.cronn.reflection.util.testclasses.TestEntity;
 
@@ -294,6 +295,12 @@ public class PropertyUtilsTest {
 		} catch (IllegalArgumentException e) {
 			assertEquals("Method could not be captured. This can happen when no method was invoked or the method is private or final.", e.getMessage());
 		}
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_NoVisibleDefaultConstructor() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityProtectedNoDefaultConstructor.class, EntityProtectedNoDefaultConstructor::getSomeProperty);
+		assertEquals("someProperty", propertyDescriptor.getName());
 	}
 
 	@Test

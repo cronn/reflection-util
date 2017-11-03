@@ -15,7 +15,10 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import org.objenesis.ObjenesisHelper;
+
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.matcher.ElementMatchers;
 
@@ -329,14 +332,14 @@ public final class PropertyUtils {
 
 	private static <T> T createProxy(Class<T> beanClass, InvocationHandler invocationHandler) {
 		Class<? extends T> proxyClass = new ByteBuddy()
-			.subclass(beanClass)
+			.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
 			.method(ElementMatchers.any())
 			.intercept(InvocationHandlerAdapter.of(invocationHandler))
 			.make()
 			.load(PropertyUtils.class.getClassLoader())
 			.getLoaded();
 
-		return ClassUtils.createNewInstance(proxyClass);
+		return ObjenesisHelper.newInstance(proxyClass);
 	}
 
 	public static boolean hasAnnotationOfProperty(Class<?> entityType, PropertyDescriptor descriptor, Class<? extends Annotation> annotationClass) {
