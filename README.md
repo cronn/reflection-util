@@ -6,7 +6,7 @@
 
 Utility classes that simplify common use cases of Java Reflection.
 
-We ship the two utility classes `PropertyUtils` and `ClassUtils` that are described in the following sections.
+We ship two utility classes `PropertyUtils` and `ClassUtils` that are described in the following sections.
 
 ## PropertyUtils ##
 
@@ -18,15 +18,15 @@ Example:
 ```java
 class MyPojo {
 
-	private Long number;
+    private Long number;
 
-	public Long getNumber() {
-		return number;
-	}
+    public Long getNumber() {
+        return number;
+    }
 
-	public void setNumber(Long number) {
-		this.number = number;
-	}
+    public void setNumber(Long number) {
+        this.number = number;
+    }
 
 }
 ```
@@ -44,7 +44,7 @@ assertEquals(12345L, number);
 ```java
 interface MyInterface {
 
-	void doSomething();
+    void doSomething();
 
 }
 ```
