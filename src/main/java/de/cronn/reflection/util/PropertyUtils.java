@@ -1,5 +1,7 @@
 package de.cronn.reflection.util;
 
+import static net.bytebuddy.matcher.ElementMatchers.*;
+
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -20,7 +22,6 @@ import org.objenesis.ObjenesisHelper;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
-import net.bytebuddy.matcher.ElementMatchers;
 
 public final class PropertyUtils {
 
@@ -333,7 +334,9 @@ public final class PropertyUtils {
 	private static <T> T createProxy(Class<T> beanClass, InvocationHandler invocationHandler) {
 		Class<? extends T> proxyClass = new ByteBuddy()
 			.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
-			.method(ElementMatchers.any())
+			.method(isMethod()
+				.and(takesArguments(0))
+				.and(not(isDeclaredBy(Object.class))))
 			.intercept(InvocationHandlerAdapter.of(invocationHandler))
 			.make()
 			.load(PropertyUtils.class.getClassLoader())
