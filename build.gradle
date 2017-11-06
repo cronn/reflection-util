@@ -160,6 +160,7 @@ ext {
 	validationApiVersion = "1.1.0.Final"
 	cglibVersion = "3.2.5"
 	javassistVersion = "3.22.0-GA"
+	equalsVerifierVersion = "2.3.3"
 }
 
 dependencies {
@@ -174,6 +175,7 @@ dependencies {
 	testCompile "javax.validation:validation-api:${validationApiVersion}"
 	testCompile "cglib:cglib:${cglibVersion}"
 	testCompile "org.javassist:javassist:${javassistVersion}"
+	testCompile "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}"
 
 	testRuntime "ch.qos.logback:logback-classic:${logbackVersion}"
 	testRuntime "org.slf4j:jcl-over-slf4j:${slf4jVersion}"

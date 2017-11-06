@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-class MethodSignature implements Comparable<MethodSignature> {
+final class MethodSignature implements Comparable<MethodSignature> {
 
 	private final String name;
 	private final Class<?> returnType;
