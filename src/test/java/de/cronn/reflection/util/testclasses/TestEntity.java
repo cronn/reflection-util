@@ -53,4 +53,9 @@ public class TestEntity {
 	public void setFieldWithoutGetter(Object fieldWithoutGetter) {
 		this.fieldWithoutGetter = fieldWithoutGetter;
 	}
+
+	public Object getPropertyWithExceptionInGetter() {
+		throw new UnsupportedOperationException();
+	}
+
 }

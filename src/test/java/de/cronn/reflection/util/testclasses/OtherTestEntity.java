@@ -8,7 +8,6 @@ public class OtherTestEntity {
 	private String name;
 	private final String immutableValue;
 	private final List<String> children = new ArrayList<>();
-	public String publicField;
 
 	public OtherTestEntity() {
 		this(null);
@@ -34,7 +33,4 @@ public class OtherTestEntity {
 		return children;
 	}
 
-	public void setPublicField(String publicField) {
-		this.publicField = publicField;
-	}
 }

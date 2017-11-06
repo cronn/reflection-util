@@ -35,6 +35,7 @@ public class PropertyUtilsTest {
 			"class",
 			"fieldWithoutGetter",
 			"number",
+			"propertyWithExceptionInGetter",
 			"propertyWithoutField",
 			"someObject",
 			"string"
@@ -591,13 +592,18 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testReadWriteDirectly_PublicFieldWithoutGetter() throws Exception {
-		PropertyDescriptor publicFieldProperty = PropertyUtils.getPropertyDescriptorByNameOrThrow(OtherTestEntity.class, "publicField");
-		assertFalse(PropertyUtils.isReadable(publicFieldProperty));
-		OtherTestEntity entity = new OtherTestEntity();
-		PropertyUtils.writeDirectly(entity, publicFieldProperty, "some new value");
-		assertEquals("some new value", PropertyUtils.readDirectly(entity, publicFieldProperty));
+	public void testRead_ExceptionInGetter() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithExceptionInGetter);
+
+		try {
+			PropertyUtils.read(new TestEntity(), propertyDescriptor);
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertEquals("Failed to read TestEntity.propertyWithExceptionInGetter", e.getMessage());
+			assertThat(e.getCause().getCause(), instanceOf(UnsupportedOperationException.class));
+		}
 	}
+
 
 	private static List<String> collectPropertyNames(Collection<PropertyDescriptor> propertyDescriptors) {
 		return propertyDescriptors.stream()
