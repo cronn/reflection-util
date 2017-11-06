@@ -420,6 +420,27 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testWriteDirectly_FieldWithoutSetter() throws Exception {
+		OtherTestEntity testEntity = new OtherTestEntity();
+		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
+		PropertyUtils.writeDirectly(testEntity, property, "changed value");
+		assertEquals("changed value", testEntity.getImmutableValue());
+	}
+
+	@Test
+	public void testWriteDirectly_WrongType() throws Exception {
+		OtherTestEntity testEntity = new OtherTestEntity();
+		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
+		try {
+			PropertyUtils.writeDirectly(testEntity, property, 12345L);
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
+			assertEquals("Can not set final java.lang.String field " + fieldName + " to java.lang.Long", e.getMessage());
+		}
+	}
+
+	@Test
 	public void testReadIfPropertyExists() throws Exception {
 		// given
 		TestEntity entity = new TestEntity();
