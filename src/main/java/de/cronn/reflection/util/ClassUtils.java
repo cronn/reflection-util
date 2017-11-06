@@ -103,7 +103,7 @@ public final class ClassUtils {
 
 	@Nonnull
 	public static <T> Method getVoidMethod(Class<T> beanClass, VoidMethod<T> voidMethod) {
-		PropertyGetter<T> getter = (bean) -> {
+		PropertyGetter<T> getter = bean -> {
 			try {
 				voidMethod.invoke(bean);
 			} catch (Exception e) {
