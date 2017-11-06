@@ -222,6 +222,32 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testWrite_FieldWithoutSetter() throws Exception {
+		OtherTestEntity testEntity = new OtherTestEntity();
+		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
+
+		try {
+			PropertyUtils.write(testEntity, property, "some value");
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertEquals("Failed to write immutableValue to " + testEntity, e.getMessage());
+			assertEquals("immutableValue is not writable", e.getCause().getMessage());
+		}
+
+		try {
+			PropertyUtils.write(testEntity, property, 12345L, true);
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertEquals("Failed to write immutableValue to " + testEntity, e.getMessage());
+			String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
+			assertEquals("Can not set final java.lang.String field " + fieldName + " to java.lang.Long", e.getCause().getMessage());
+		}
+
+		PropertyUtils.write(testEntity, property, "changed value", true);
+		assertEquals("changed value", testEntity.getImmutableValue());
+	}
+
+	@Test
 	public void testWrite_setFieldWithPackageSetterAccess() {
 		// given
 		Long value = 128L;
