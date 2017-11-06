@@ -590,6 +590,15 @@ public class PropertyUtilsTest {
 		assertFalse(PropertyUtils.hasDifferentValue(one, other, numberProperty));
 	}
 
+	@Test
+	public void testReadWriteDirectly_PublicFieldWithoutGetter() throws Exception {
+		PropertyDescriptor publicFieldProperty = PropertyUtils.getPropertyDescriptorByNameOrThrow(OtherTestEntity.class, "publicField");
+		assertFalse(PropertyUtils.isReadable(publicFieldProperty));
+		OtherTestEntity entity = new OtherTestEntity();
+		PropertyUtils.writeDirectly(entity, publicFieldProperty, "some new value");
+		assertEquals("some new value", PropertyUtils.readDirectly(entity, publicFieldProperty));
+	}
+
 	private static List<String> collectPropertyNames(Collection<PropertyDescriptor> propertyDescriptors) {
 		return propertyDescriptors.stream()
 			.map(PropertyDescriptor::getName)
