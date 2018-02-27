@@ -31,6 +31,7 @@ class PropertyDescriptorCache<T> {
 	private final Map<Method, PropertyDescriptor> propertyDescriptorsByMethod = new LinkedHashMap<>();
 	private final Map<Class<? extends Annotation>, Map<PropertyDescriptor, Annotation>> propertyDescriptorsByAnnotation = new LinkedHashMap<>();
 	private final Map<PropertyGetter<T>, Method> methodByPropertyGetterCache = new ConcurrentHashMap<>();
+	private final Map<VoidMethod<T>, Method> methodByVoidMethodCache = new ConcurrentHashMap<>();
 	private final Map<PropertyDescriptor, Object> defaultValues = new ConcurrentHashMap<>();
 
 	private PropertyDescriptorCache(Class<T> type) {
@@ -139,15 +140,34 @@ class PropertyDescriptorCache<T> {
 	}
 
 	Method getMethod(PropertyGetter<T> propertyGetter) {
-		int propertyGetterCacheSize = methodByPropertyGetterCache.size();
-		int methodsInClass = type.getMethods().length;
-		int maxExpectedOccurrencesPerProperty = 100;
-		if (propertyGetterCacheSize > maxExpectedOccurrencesPerProperty * methodsInClass) {
-			log.warn("Unexpected number of cached property getters: {} for class {} with {} methods." //
-					+ " This indicates a misuse of the PropertyUtils class. Clearing.",
-				propertyGetterCacheSize, type.getSimpleName(), methodsInClass);
-			methodByPropertyGetterCache.clear();
-		}
-		return methodByPropertyGetterCache.computeIfAbsent(propertyGetter, (PropertyGetter<T> getter) -> PropertyUtils.findMethodByGetter(type, getter));
+		assertHasNoDeclaredFields(propertyGetter);
+		return methodByPropertyGetterCache.computeIfAbsent(propertyGetter, getter -> PropertyUtils.findMethodByGetter(type, getter));
 	}
+
+	Method getMethod(VoidMethod<T> voidMethod) {
+		assertHasNoDeclaredFields(voidMethod);
+		return methodByVoidMethodCache.computeIfAbsent(voidMethod, m -> PropertyUtils.findMethodByGetter(type, toPropertyGetter(m)));
+	}
+
+	private static void assertHasNoDeclaredFields(Object lambda) {
+		if (hasDeclaredFields(lambda)) {
+			throw new IllegalArgumentException(lambda + " is call site specific");
+		}
+	}
+
+	private static boolean hasDeclaredFields(Object lambda) {
+		return lambda.getClass().getDeclaredFields().length > 0;
+	}
+
+	private static <T> PropertyGetter<T> toPropertyGetter(VoidMethod<T> voidMethod) {
+		return bean -> {
+			try {
+				voidMethod.invoke(bean);
+			} catch (Exception e) {
+				throw new ReflectionRuntimeException(e);
+			}
+			return null;
+		};
+	}
+
 }

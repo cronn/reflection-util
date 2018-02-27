@@ -10,6 +10,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -284,11 +285,15 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
-	public void testGetPropertyDescriptorByPropertyGetter_ManyLambdas() throws Exception {
-		for (int i = 0; i < 2000; i++) {
-			boolean useNumber = i % 2 == 0;
-			PropertyGetter<TestEntity> callSiteSpecificLambda = e -> useNumber ? e.getNumber() : e.getSomeObject();
+	public void testGetPropertyDescriptorByPropertyGetter_CallSiteSpecificLambda() throws Exception {
+		Function<TestEntity, Integer> someGetter = TestEntity::getNumber;
+		PropertyGetter<TestEntity> callSiteSpecificLambda = someGetter::apply;
+
+		try {
 			PropertyUtils.getPropertyDescriptor(TestEntity.class, callSiteSpecificLambda);
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertEquals(callSiteSpecificLambda + " is call site specific", e.getMessage());
 		}
 	}
 

@@ -77,7 +77,7 @@ public final class PropertyUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T> PropertyDescriptorCache<T> getCache(Class<T> type) {
+	static <T> PropertyDescriptorCache<T> getCache(Class<T> type) {
 		return (PropertyDescriptorCache<T>) cache.computeIfAbsent(type, PropertyDescriptorCache::compute);
 	}
 

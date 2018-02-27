@@ -103,15 +103,8 @@ public final class ClassUtils {
 
 	@Nonnull
 	public static <T> Method getVoidMethod(Class<T> beanClass, VoidMethod<T> voidMethod) {
-		PropertyGetter<T> getter = bean -> {
-			try {
-				voidMethod.invoke(bean);
-			} catch (Exception e) {
-				throw new ReflectionRuntimeException(e);
-			}
-			return null;
-		};
-		return PropertyUtils.getMethod(beanClass, getter);
+		PropertyDescriptorCache<T> cache = PropertyUtils.getCache(beanClass);
+		return cache.getMethod(voidMethod);
 	}
 
 	public static boolean isProxy(Object object) {
