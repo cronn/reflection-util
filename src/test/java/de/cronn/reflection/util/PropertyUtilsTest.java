@@ -10,7 +10,6 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -285,9 +284,23 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testGetPropertyDescriptorByTypedPropertyGetter() throws Exception {
+		TypedPropertyGetter<TestEntity, Integer> getter = TestEntity::getNumber;
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, getter);
+		assertThat(propertyDescriptor.getName(), is("number"));
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter() throws Exception {
+		PropertyGetter<TestEntity> getter = TestEntity::getNumber;
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, getter);
+		assertThat(propertyDescriptor.getName(), is("number"));
+	}
+
+	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_CallSiteSpecificLambda() throws Exception {
-		Function<TestEntity, Integer> someGetter = TestEntity::getNumber;
-		PropertyGetter<TestEntity> callSiteSpecificLambda = someGetter::apply;
+		TypedPropertyGetter<TestEntity, Integer> someGetter = TestEntity::getNumber;
+		PropertyGetter<TestEntity> callSiteSpecificLambda = someGetter::get;
 
 		try {
 			PropertyUtils.getPropertyDescriptor(TestEntity.class, callSiteSpecificLambda);

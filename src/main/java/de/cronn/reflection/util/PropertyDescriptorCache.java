@@ -25,7 +25,7 @@ class PropertyDescriptorCache<T> {
 	private final Map<Field, PropertyDescriptor> propertyDescriptorsByField = new LinkedHashMap<>();
 	private final Map<Method, PropertyDescriptor> propertyDescriptorsByMethod = new LinkedHashMap<>();
 	private final Map<Class<? extends Annotation>, Map<PropertyDescriptor, Annotation>> propertyDescriptorsByAnnotation = new LinkedHashMap<>();
-	private final Map<PropertyGetter<T>, Method> methodByPropertyGetterCache = new ConcurrentHashMap<>();
+	private final Map<TypedPropertyGetter<T, ?>, Method> methodByPropertyGetterCache = new ConcurrentHashMap<>();
 	private final Map<VoidMethod<T>, Method> methodByVoidMethodCache = new ConcurrentHashMap<>();
 	private final Map<PropertyDescriptor, Object> defaultValues = new ConcurrentHashMap<>();
 
@@ -134,7 +134,7 @@ class PropertyDescriptorCache<T> {
 		}
 	}
 
-	Method getMethod(PropertyGetter<T> propertyGetter) {
+	Method getMethod(TypedPropertyGetter<T, ?> propertyGetter) {
 		assertHasNoDeclaredFields(propertyGetter);
 		return methodByPropertyGetterCache.computeIfAbsent(propertyGetter, getter -> PropertyUtils.findMethodByGetter(type, getter));
 	}

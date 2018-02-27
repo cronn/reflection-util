@@ -111,7 +111,7 @@ public final class PropertyUtils {
 		return !hasSameValue(a, b, propertyDescriptor);
 	}
 
-	public static <T> boolean isDefaultValue(Class<T> objectClass, PropertyGetter<T> propertyGetter, Object value) {
+	public static <T> boolean isDefaultValue(Class<T> objectClass, TypedPropertyGetter<T, ?> propertyGetter, Object value) {
 		return isDefaultValue(objectClass, getPropertyDescriptor(objectClass, propertyGetter), value);
 	}
 
@@ -253,13 +253,13 @@ public final class PropertyUtils {
 	}
 
 	@Nonnull
-	public static <T> PropertyDescriptor getPropertyDescriptor(T bean, PropertyGetter<T> propertyGetter) {
+	public static <T> PropertyDescriptor getPropertyDescriptor(T bean, TypedPropertyGetter<T, ?> propertyGetter) {
 		Class<T> beanClass = ClassUtils.getRealClass(bean);
 		return getPropertyDescriptor(beanClass, propertyGetter);
 	}
 
 	@Nonnull
-	public static <T> PropertyDescriptor getPropertyDescriptor(Class<T> beanClass, PropertyGetter<T> propertyGetter) {
+	public static <T> PropertyDescriptor getPropertyDescriptor(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		Method method = getMethod(beanClass, propertyGetter);
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptorByMethod(beanClass, method);
 		if (propertyDescriptor == null) {
@@ -269,13 +269,13 @@ public final class PropertyUtils {
 	}
 
 	@Nonnull
-	public static <T> String getPropertyName(Class<T> beanClass, PropertyGetter<T> propertyGetter) {
+	public static <T> String getPropertyName(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptor(beanClass, propertyGetter);
 		return propertyDescriptor.getName();
 	}
 
 	@Nonnull
-	public static <T> String getPropertyName(T bean, PropertyGetter<T> propertyGetter) {
+	public static <T> String getPropertyName(T bean, TypedPropertyGetter<T, ?> propertyGetter) {
 		Class<T> beanClass = ClassUtils.getRealClass(bean);
 		return getPropertyName(beanClass, propertyGetter);
 	}
@@ -293,7 +293,7 @@ public final class PropertyUtils {
 	}
 
 	@Nonnull
-	public static <T> Method getMethod(Class<T> beanClass, PropertyGetter<T> propertyGetter) {
+	public static <T> Method getMethod(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		PropertyDescriptorCache<T> cache = getCache(beanClass);
 		return cache.getMethod(propertyGetter);
 	}
@@ -322,7 +322,7 @@ public final class PropertyUtils {
 
 	}
 
-	static <T> Method findMethodByGetter(Class<T> beanClass, PropertyGetter<T> propertyGetter) {
+	static <T> Method findMethodByGetter(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		MethodCaptor methodCaptor = new MethodCaptor();
 		T proxy = createProxy(beanClass, methodCaptor);
 
@@ -349,7 +349,7 @@ public final class PropertyUtils {
 		return getAnnotationOfProperty(entityType, descriptor, annotationClass) != null;
 	}
 
-	public static <T, A extends Annotation> A getAnnotationOfProperty(Class<T> entityType, PropertyGetter<T> propertyGetter, Class<A> annotationClass) {
+	public static <T, A extends Annotation> A getAnnotationOfProperty(Class<T> entityType, TypedPropertyGetter<T, ?> propertyGetter, Class<A> annotationClass) {
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptor(entityType, propertyGetter);
 		return getAnnotationOfProperty(entityType, propertyDescriptor, annotationClass);
 	}
@@ -408,12 +408,12 @@ public final class PropertyUtils {
 		return null;
 	}
 
-	public static <T> String getQualifiedPropertyName(T bean, PropertyGetter<T> propertyGetter) {
+	public static <T> String getQualifiedPropertyName(T bean, TypedPropertyGetter<T, ?> propertyGetter) {
 		Class<T> beanClass = ClassUtils.getRealClass(bean);
 		return getQualifiedPropertyName(beanClass, propertyGetter);
 	}
 
-	public static <T> String getQualifiedPropertyName(Class<T> type, PropertyGetter<T> propertyGetter) {
+	public static <T> String getQualifiedPropertyName(Class<T> type, TypedPropertyGetter<T, ?> propertyGetter) {
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptor(type, propertyGetter);
 		return getQualifiedPropertyName(type, propertyDescriptor);
 	}
