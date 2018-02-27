@@ -18,12 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 class PropertyDescriptorCache<T> {
-
-	private static final Logger log = LoggerFactory.getLogger(PropertyDescriptorCache.class);
 
 	private final Class<T> type;
 	private final Map<String, PropertyDescriptor> propertyDescriptorsByName = new LinkedHashMap<>();
