@@ -154,13 +154,13 @@ ext {
 	jsr305Version = "3.0.2"
 	slf4jVersion = "1.7.21"
 	junitVersion = "4.12"
-	logbackVersion = "1.1.7"
-	mockitoVersion = "2.10.0"
+	logbackVersion = "1.2.3"
+	mockitoVersion = "2.13.0"
 	hamcrestVersion = "2.0.0.0"
 	validationApiVersion = "1.1.0.Final"
-	cglibVersion = "3.2.5"
+	cglibVersion = "3.2.6"
 	javassistVersion = "3.22.0-GA"
-	equalsVerifierVersion = "2.3.3"
+	equalsVerifierVersion = "2.4.3"
 }
 
 dependencies {
