@@ -24,6 +24,7 @@ import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
+import de.cronn.reflection.util.testclasses.TestAnnotation;
 import de.cronn.reflection.util.testclasses.TestEntity;
 
 public class PropertyUtilsTest {
@@ -622,6 +623,13 @@ public class PropertyUtilsTest {
 		}
 	}
 
+	@Test
+	public void testFindMethodByGetter_Annotation() throws Exception {
+		TypedPropertyGetter<TestAnnotation, ?> propertyGetter = TestAnnotation::someProperty;
+		Method method = PropertyUtils.findMethodByGetter(TestAnnotation.class, propertyGetter);
+		assertNotNull(method);
+		assertEquals("someProperty", method.getName());
+	}
 
 	private static List<String> collectPropertyNames(Collection<PropertyDescriptor> propertyDescriptors) {
 		return propertyDescriptors.stream()

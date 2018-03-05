@@ -322,7 +322,7 @@ public final class PropertyUtils {
 
 	}
 
-	static <T> Method findMethodByGetter(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
+	public static <T> Method findMethodByGetter(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		MethodCaptor methodCaptor = new MethodCaptor();
 		T proxy = createProxy(beanClass, methodCaptor);
 
