@@ -152,7 +152,7 @@ ext {
 	byteBuddyVersion = "1.7.10"
 	objenesisVersion = "2.6"
 	jsr305Version = "3.0.2"
-	slf4jVersion = "1.7.21"
+	slf4jVersion = "1.7.25"
 	junitVersion = "4.12"
 	logbackVersion = "1.2.3"
 	mockitoVersion = "2.13.0"
