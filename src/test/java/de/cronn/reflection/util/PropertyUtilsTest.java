@@ -237,7 +237,7 @@ public class PropertyUtilsTest {
 			PropertyUtils.write(testEntity, property, "some value");
 			fail("ReflectionRuntimeException expected");
 		} catch (ReflectionRuntimeException e) {
-			assertEquals("Failed to write immutableValue to " + testEntity, e.getMessage());
+			assertEquals("Failed to write OtherTestEntity.immutableValue", e.getMessage());
 			assertEquals("immutableValue is not writable", e.getCause().getMessage());
 		}
 
@@ -245,7 +245,7 @@ public class PropertyUtilsTest {
 			PropertyUtils.write(testEntity, property, 12345L, true);
 			fail("ReflectionRuntimeException expected");
 		} catch (ReflectionRuntimeException e) {
-			assertEquals("Failed to write immutableValue to " + testEntity, e.getMessage());
+			assertEquals("Failed to write OtherTestEntity.immutableValue", e.getMessage());
 			String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
 			assertEquals("Can not set final java.lang.String field " + fieldName + " to java.lang.Long", e.getCause().getMessage());
 		}
@@ -380,7 +380,7 @@ public class PropertyUtilsTest {
 			PropertyUtils.write(instance, propertyDescriptor, "new value");
 			fail("ReflectionRuntimeException expected");
 		} catch (ReflectionRuntimeException e) {
-			assertEquals("Failed to write baseClassProperty to " + instance, e.getMessage());
+			assertEquals("Failed to write ClassExtendingNonPublicBaseClass.baseClassProperty", e.getMessage());
 			assertThat(e.getCause(), instanceOf(IllegalAccessException.class));
 		}
 

@@ -165,7 +165,7 @@ public final class PropertyUtils {
 				}
 			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
-			throw new ReflectionRuntimeException("Failed to write " + propertyDescriptor.getName() + " to " + destination, e);
+			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyDescriptor), e);
 		}
 	}
 
