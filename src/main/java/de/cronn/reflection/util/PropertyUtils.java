@@ -152,7 +152,17 @@ public final class PropertyUtils {
 			} else {
 				Object[] args = new Object[] { value };
 				Method writeMethod = propertyDescriptor.getWriteMethod();
-				writeMethod.invoke(destination, args);
+				boolean accessible = writeMethod.isAccessible();
+				try {
+					if (force && !accessible) {
+						writeMethod.setAccessible(true);
+					}
+					writeMethod.invoke(destination, args);
+				} finally {
+					if (force && !accessible) {
+						writeMethod.setAccessible(false);
+					}
+				}
 			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			throw new ReflectionRuntimeException("Failed to write " + propertyDescriptor.getName() + " to " + destination, e);
@@ -217,13 +227,32 @@ public final class PropertyUtils {
 	}
 
 	public static <T> T read(Object source, PropertyDescriptor propertyDescriptor) {
-		if (!isReadable(propertyDescriptor)) {
-			throw new IllegalArgumentException(String.format("%s must be readable", propertyDescriptor.getName()));
-		}
+		return read(source, propertyDescriptor, false);
+	}
+
+	public static <T> T read(Object source, PropertyDescriptor propertyDescriptor, boolean force) {
 		final Object result;
 		try {
-			Method readMethod = propertyDescriptor.getReadMethod();
-			result = readMethod.invoke(source);
+			if (!isReadable(propertyDescriptor)) {
+				if (force) {
+					return readDirectly(source, propertyDescriptor);
+				} else {
+					throw new IllegalArgumentException(String.format("%s must be readable", propertyDescriptor.getName()));
+				}
+			} else {
+				Method readMethod = propertyDescriptor.getReadMethod();
+				boolean accessible = readMethod.isAccessible();
+				try {
+					if (force && !accessible) {
+						readMethod.setAccessible(true);
+					}
+					result = readMethod.invoke(source);
+				} finally {
+					if (!accessible) {
+						readMethod.setAccessible(false);
+					}
+				}
+			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(source, propertyDescriptor), e);
 		}

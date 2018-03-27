@@ -57,11 +57,14 @@ public class PropertyUtilsTest {
 
 	@Test
 	public void testRead_FieldWithoutGetter() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter");
 		try {
-			PropertyUtils.read(new TestEntity(), PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter"));
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertEquals("fieldWithoutGetter must be readable", e.getMessage());
+			PropertyUtils.read(new TestEntity(), propertyDescriptor);
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertEquals("Failed to read TestEntity.fieldWithoutGetter", e.getMessage());
+			assertThat(e.getCause(), instanceOf(IllegalArgumentException.class));
+			assertEquals("fieldWithoutGetter must be readable", e.getCause().getMessage());
 		}
 	}
 
@@ -358,6 +361,36 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testReadWrite_ClassExtendingNonPublicBaseClass() throws Exception {
+		PropertyDescriptor propertyDescriptor = ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
+		ClassExtendingNonPublicBaseClass instance = new ClassExtendingNonPublicBaseClass("some value");
+
+		try {
+			PropertyUtils.read(instance, propertyDescriptor);
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertEquals("Failed to read ClassExtendingNonPublicBaseClass.baseClassProperty", e.getMessage());
+			assertThat(e.getCause(), instanceOf(IllegalAccessException.class));
+		}
+
+		Object value = PropertyUtils.read(instance, propertyDescriptor, true);
+		assertEquals("some value", value);
+
+		try {
+			PropertyUtils.write(instance, propertyDescriptor, "new value");
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertEquals("Failed to write baseClassProperty to " + instance, e.getMessage());
+			assertThat(e.getCause(), instanceOf(IllegalAccessException.class));
+		}
+
+		PropertyUtils.write(instance, propertyDescriptor, "new value", true);
+
+		Object newValue = PropertyUtils.read(instance, propertyDescriptor, true);
+		assertEquals("new value", newValue);
+	}
+
+	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() throws Exception {
 		PropertyDescriptor propertyDescriptor = ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
 		assertEquals("baseClassProperty", propertyDescriptor.getName());
@@ -635,6 +668,15 @@ public class PropertyUtilsTest {
 			assertEquals("Failed to read TestEntity.propertyWithExceptionInGetter", e.getMessage());
 			assertThat(e.getCause().getCause(), instanceOf(UnsupportedOperationException.class));
 		}
+	}
+
+	@Test
+	public void testReadForced_FieldWithoutGetter() throws Exception {
+		TestEntity testEntity = new TestEntity();
+		testEntity.setFieldWithoutGetter("some value");
+		PropertyDescriptor property = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter");
+		Object value = PropertyUtils.read(testEntity, property, true);
+		assertEquals("some value", value);
 	}
 
 	@Test
