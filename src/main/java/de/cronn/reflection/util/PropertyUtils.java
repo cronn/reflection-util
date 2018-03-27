@@ -248,7 +248,7 @@ public final class PropertyUtils {
 					}
 					result = readMethod.invoke(source);
 				} finally {
-					if (!accessible) {
+					if (force && !accessible) {
 						readMethod.setAccessible(false);
 					}
 				}
