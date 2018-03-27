@@ -11,12 +11,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 class PropertyDescriptorCache<T> {
 
@@ -82,16 +84,30 @@ class PropertyDescriptorCache<T> {
 		}
 	}
 
-	private PropertyDescriptor[] getAllPropertyDescriptors() {
+	private static void collectAllPropertyDescriptors(Class<?> type, Collection<PropertyDescriptor> propertyDescriptors) {
 		try {
 			PropertyDescriptor[] descriptors = Introspector.getBeanInfo(type).getPropertyDescriptors();
-			// defensive copy to prevent modification of beanutils' internals
-			descriptors = Arrays.copyOf(descriptors, descriptors.length);
-			Arrays.sort(descriptors, Comparator.comparing(PropertyDescriptor::getName));
-			return descriptors;
+			propertyDescriptors.addAll(Arrays.asList(descriptors));
+
+			Class<?> superclass = type.getSuperclass();
+			if (superclass != null && !superclass.equals(Object.class)) {
+				collectAllPropertyDescriptors(superclass, propertyDescriptors);
+			}
 		} catch (IntrospectionException e) {
 			throw new ReflectionRuntimeException(e);
 		}
+	}
+
+	private static Collection<PropertyDescriptor> collectAllPropertyDescriptors(Class<?> type) {
+		Set<PropertyDescriptor> propertyDescriptors = new HashSet<>();
+		collectAllPropertyDescriptors(type, propertyDescriptors);
+		return propertyDescriptors;
+	}
+
+	private Collection<PropertyDescriptor> getAllPropertyDescriptors() {
+		return collectAllPropertyDescriptors(type).stream()
+			.sorted(Comparator.comparing(PropertyDescriptor::getName))
+			.collect(Collectors.toList());
 	}
 
 	Collection<PropertyDescriptor> getDescriptors() {

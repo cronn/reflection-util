@@ -20,6 +20,8 @@ import org.mockito.Mockito;
 
 import de.cronn.reflection.util.testclasses.BaseClass;
 import de.cronn.reflection.util.testclasses.BaseInterface;
+import de.cronn.reflection.util.testclasses.ClassExtendingClassThatExtendsNonPublicBaseClass;
+import de.cronn.reflection.util.testclasses.ClassExtendingNonPublicBaseClass;
 import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
@@ -347,6 +349,18 @@ public class PropertyUtilsTest {
 	public void testGetPropertyDescriptorByPropertyGetter_NoVisibleDefaultConstructor() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityProtectedNoDefaultConstructor.class, EntityProtectedNoDefaultConstructor::getSomeProperty);
 		assertEquals("someProperty", propertyDescriptor.getName());
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() throws Exception {
+		PropertyDescriptor propertyDescriptor = ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
+		assertEquals("baseClassProperty", propertyDescriptor.getName());
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() throws Exception {
+		PropertyDescriptor propertyDescriptor = ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
+		assertEquals("baseClassProperty", propertyDescriptor.getName());
 	}
 
 	@Test
