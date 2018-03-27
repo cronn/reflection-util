@@ -328,7 +328,7 @@ public class PropertyUtilsTest {
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
 			Object className = TestEntity.class.getName();
-			assertEquals("Found no property for public java.lang.Object " + className + ".doNothing() on class class " + className, e.getMessage());
+			assertEquals("Found no property for public java.lang.Object " + className + ".doNothing() on class " + className, e.getMessage());
 		}
 	}
 

@@ -263,7 +263,7 @@ public final class PropertyUtils {
 		Method method = getMethod(beanClass, propertyGetter);
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptorByMethod(beanClass, method);
 		if (propertyDescriptor == null) {
-			throw new IllegalArgumentException(String.format("Found no property for %s on class %s", method, beanClass));
+			throw new IllegalArgumentException(String.format("Found no property for %s on %s", method, beanClass));
 		}
 		return propertyDescriptor;
 	}
