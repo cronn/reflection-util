@@ -26,4 +26,18 @@ public class AssertTest {
 		}
 	}
 
+	@Test
+	public void testNotNull() throws Exception {
+		Assert.notNull("", null);
+		Assert.notNull(new Object(), () -> "some message");
+		Assert.notNull(123, () -> "some message");
+
+		try {
+			Assert.notNull(null, () -> "some message");
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertEquals("some message", e.getMessage());
+		}
+	}
+
 }

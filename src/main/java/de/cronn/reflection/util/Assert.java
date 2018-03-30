@@ -10,4 +10,10 @@ class Assert {
 		}
 	}
 
+	static void notNull(Object value, Supplier<String> message) {
+		if (value == null) {
+			throw new IllegalArgumentException(message.get());
+		}
+	}
+
 }

@@ -50,9 +50,7 @@ public final class PropertyUtils {
 	@Nonnull
 	public static PropertyDescriptor getPropertyDescriptorByNameOrThrow(Class<?> beanClass, String propertyName) {
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptorByName(beanClass, propertyName);
-		if (propertyDescriptor == null) {
-			throw new IllegalArgumentException(String.format("Property '%s' not found for '%s'", propertyName, beanClass.getSimpleName()));
-		}
+		Assert.notNull(propertyDescriptor, () -> String.format("Property '%s' not found for '%s'", propertyName, beanClass.getSimpleName()));
 		return propertyDescriptor;
 	}
 
@@ -291,9 +289,7 @@ public final class PropertyUtils {
 	public static <T> PropertyDescriptor getPropertyDescriptor(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		Method method = getMethod(beanClass, propertyGetter);
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptorByMethod(beanClass, method);
-		if (propertyDescriptor == null) {
-			throw new IllegalArgumentException(String.format("Found no property for %s on %s", method, beanClass));
-		}
+		Assert.notNull(propertyDescriptor, () -> String.format("Found no property for %s on %s", method, beanClass));
 		return propertyDescriptor;
 	}
 
@@ -334,18 +330,13 @@ public final class PropertyUtils {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 			Method existing = capturedMethod.getAndSet(method);
-			if (existing != null) {
-				throw new IllegalArgumentException(String.format("Method already captured: %s called twice?", existing));
-			}
-
+			Assert.isNull(existing, () -> String.format("Method already captured: %s called twice?", existing));
 			return getDefaultValueObject(method.getReturnType());
 		}
 
 		Method getCapturedMethod() {
 			Method method = capturedMethod.get();
-			if (method == null) {
-				throw new IllegalArgumentException("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
-			}
+			Assert.notNull(method, () -> "Method could not be captured. This can happen when no method was invoked or the method is private or final.");
 			return method;
 		}
 
