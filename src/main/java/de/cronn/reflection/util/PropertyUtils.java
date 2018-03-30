@@ -275,8 +275,7 @@ public final class PropertyUtils {
 		if (!expectedType.isAssignableFrom(propertyType)) {
 			throw new IllegalArgumentException(String.format("%s.%s is of type %s but %s is expected", clazz, propertyName, propertyType, expectedType));
 		}
-		T value = PropertyUtils.read(entity, propertyDescriptor);
-		return value;
+		return PropertyUtils.read(entity, propertyDescriptor);
 	}
 
 	@Nonnull

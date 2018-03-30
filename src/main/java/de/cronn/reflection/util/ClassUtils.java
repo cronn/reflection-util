@@ -56,8 +56,7 @@ public final class ClassUtils {
 		}
 
 		Class<T> sourceClass = getRealClass(source);
-		T result = createNewInstance(sourceClass);
-		return result;
+		return createNewInstance(sourceClass);
 	}
 
 	public static boolean isFromPackage(Class<?> clazz, String packageName) {
@@ -134,25 +133,24 @@ public final class ClassUtils {
 			.collect(Collectors.toList());
 	}
 
-	public static boolean hasMethodWithSameSignature(Class<?> aClass, Method method) {
-		Set<MethodSignature> aClassMethods = methodsSignaturesCache.computeIfAbsent(aClass, ClassUtils::getAllDeclaredMethodSignatures);
-		return aClassMethods.contains(new MethodSignature(method));
+	public static boolean hasMethodWithSameSignature(Class<?> clazz, Method method) {
+		Set<MethodSignature> methods = methodsSignaturesCache.computeIfAbsent(clazz, ClassUtils::getAllDeclaredMethodSignatures);
+		return methods.contains(new MethodSignature(method));
 	}
 
-	public static Set<Method> getAllDeclaredMethods(Class<?> aClass) {
-		Set<Method> methods = new LinkedHashSet<>();
-		methods.addAll(Arrays.asList(aClass.getDeclaredMethods()));
-		if (aClass.getSuperclass() != null && !aClass.getSuperclass().equals(Object.class)) {
-			methods.addAll(getAllDeclaredMethods(aClass.getSuperclass()));
+	public static Set<Method> getAllDeclaredMethods(Class<?> clazz) {
+		Set<Method> methods = new LinkedHashSet<>(Arrays.asList(clazz.getDeclaredMethods()));
+		if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)) {
+			methods.addAll(getAllDeclaredMethods(clazz.getSuperclass()));
 		}
-		for (Class<?> interfaceClass : aClass.getInterfaces()) {
+		for (Class<?> interfaceClass : clazz.getInterfaces()) {
 			methods.addAll(getAllDeclaredMethods(interfaceClass));
 		}
 		return Collections.unmodifiableSet(methods);
 	}
 
-	public static Set<MethodSignature> getAllDeclaredMethodSignatures(Class<?> aClass) {
-		return getAllDeclaredMethods(aClass).stream()
+	public static Set<MethodSignature> getAllDeclaredMethodSignatures(Class<?> clazz) {
+		return getAllDeclaredMethods(clazz).stream()
 			.map(MethodSignature::new)
 			.collect(Collectors.toCollection(TreeSet::new));
 	}
