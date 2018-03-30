@@ -32,9 +32,9 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class PropertyUtilsTest {
 
 	@Test
-	public void testGetPropertyDescriptors() throws Exception {
-		List<String> testEntityPropertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(TestEntity.class));
-		assertThat(testEntityPropertyNames, contains(
+	public void testGetPropertyDescriptorsOfTestEntityClass() throws Exception {
+		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(TestEntity.class));
+		assertThat(propertyNames, contains(
 			"class",
 			"fieldWithoutGetter",
 			"number",
@@ -43,15 +43,27 @@ public class PropertyUtilsTest {
 			"someObject",
 			"string"
 		));
+	}
 
-		List<String> derivedClassPropertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(new DerivedClass()));
-		assertThat(derivedClassPropertyNames, contains(
+	@Test
+	public void testGetPropertyDescriptorsOfDerivedClassInstance() throws Exception {
+		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(new DerivedClass()));
+		assertThat(propertyNames, contains(
 			"baseClassStringProperty",
 			"class",
 			"longPropertyWithPackageAccessSetter",
 			"otherStringProperty",
 			"sizeFromInterface",
 			"stringProperty"
+		));
+	}
+
+	@Test
+	public void testGetPropertyDescriptorsOfClassExtendingNonPublicBaseClass() throws Exception {
+		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(ClassExtendingNonPublicBaseClass.class));
+		assertThat(propertyNames, contains(
+			"baseClassProperty",
+			"class"
 		));
 	}
 
@@ -356,44 +368,22 @@ public class PropertyUtilsTest {
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() throws Exception {
-		PropertyDescriptor propertyDescriptor = ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
-		assertEquals("baseClassProperty", propertyDescriptor.getName());
-	}
-
-	@Test
-	public void testReadWrite_ClassExtendingNonPublicBaseClass() throws Exception {
-		PropertyDescriptor propertyDescriptor = ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
-		ClassExtendingNonPublicBaseClass instance = new ClassExtendingNonPublicBaseClass("some value");
-
 		try {
-			PropertyUtils.read(instance, propertyDescriptor);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertEquals("Failed to read ClassExtendingNonPublicBaseClass.baseClassProperty", e.getMessage());
-			assertThat(e.getCause(), instanceOf(IllegalAccessException.class));
+			ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertThat(e.getMessage(), containsString("Found no property for"));
 		}
-
-		Object value = PropertyUtils.read(instance, propertyDescriptor, true);
-		assertEquals("some value", value);
-
-		try {
-			PropertyUtils.write(instance, propertyDescriptor, "new value");
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertEquals("Failed to write ClassExtendingNonPublicBaseClass.baseClassProperty", e.getMessage());
-			assertThat(e.getCause(), instanceOf(IllegalAccessException.class));
-		}
-
-		PropertyUtils.write(instance, propertyDescriptor, "new value", true);
-
-		Object newValue = PropertyUtils.read(instance, propertyDescriptor, true);
-		assertEquals("new value", newValue);
 	}
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() throws Exception {
-		PropertyDescriptor propertyDescriptor = ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
-		assertEquals("baseClassProperty", propertyDescriptor.getName());
+		try {
+			ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertThat(e.getMessage(), containsString("Found no property for"));
+		}
 	}
 
 	@Test

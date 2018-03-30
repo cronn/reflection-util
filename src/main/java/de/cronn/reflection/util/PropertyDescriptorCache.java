@@ -1,5 +1,6 @@
 package de.cronn.reflection.util;
 
+import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
@@ -11,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +35,8 @@ class PropertyDescriptorCache<T> {
 		this.type = type;
 
 		for (PropertyDescriptor propertyDescriptor : getAllPropertyDescriptors()) {
-			propertyDescriptorsByName.put(propertyDescriptor.getName(), propertyDescriptor);
+			PropertyDescriptor existing = propertyDescriptorsByName.putIfAbsent(propertyDescriptor.getName(), propertyDescriptor);
+			Assert.isNull(existing, () -> "PropertyDescriptor for name " + propertyDescriptor.getName() + " already exists: " + existing);
 
 			Method readMethod = propertyDescriptor.getReadMethod();
 			if (readMethod != null) {
@@ -53,7 +54,8 @@ class PropertyDescriptorCache<T> {
 		for (Field field : getFields()) {
 			PropertyDescriptor propertyDescriptor = propertyDescriptorsByName.get(field.getName());
 			if (propertyDescriptor != null) {
-				propertyDescriptorsByField.put(field, propertyDescriptor);
+				PropertyDescriptor existing = propertyDescriptorsByField.putIfAbsent(field, propertyDescriptor);
+				Assert.isNull(existing, () -> "Property descriptor for " + field + " already exists: " + existing);
 				putAnnotations(propertyDescriptor, field.getAnnotations());
 			}
 		}
@@ -79,29 +81,19 @@ class PropertyDescriptorCache<T> {
 
 	private void putAnnotations(PropertyDescriptor propertyDescriptor, Annotation[] annotations) {
 		for (Annotation annotation : annotations) {
-			propertyDescriptorsByAnnotation.computeIfAbsent(annotation.annotationType(), k -> new LinkedHashMap<>()) //
+			propertyDescriptorsByAnnotation.computeIfAbsent(annotation.annotationType(),k -> new LinkedHashMap<>()) //
 				.put(propertyDescriptor, annotation);
 		}
 	}
 
-	private static void collectAllPropertyDescriptors(Class<?> type, Collection<PropertyDescriptor> propertyDescriptors) {
+	private static Collection<PropertyDescriptor> collectAllPropertyDescriptors(Class<?> type) {
 		try {
-			PropertyDescriptor[] descriptors = Introspector.getBeanInfo(type).getPropertyDescriptors();
-			propertyDescriptors.addAll(Arrays.asList(descriptors));
-
-			Class<?> superclass = type.getSuperclass();
-			if (superclass != null && !superclass.equals(Object.class)) {
-				collectAllPropertyDescriptors(superclass, propertyDescriptors);
-			}
+			BeanInfo beanInfo = Introspector.getBeanInfo(type);
+			PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
+			return Arrays.asList(descriptors);
 		} catch (IntrospectionException e) {
 			throw new ReflectionRuntimeException(e);
 		}
-	}
-
-	private static Collection<PropertyDescriptor> collectAllPropertyDescriptors(Class<?> type) {
-		Set<PropertyDescriptor> propertyDescriptors = new HashSet<>();
-		collectAllPropertyDescriptors(type, propertyDescriptors);
-		return propertyDescriptors;
 	}
 
 	private Collection<PropertyDescriptor> getAllPropertyDescriptors() {
@@ -111,7 +103,7 @@ class PropertyDescriptorCache<T> {
 	}
 
 	Collection<PropertyDescriptor> getDescriptors() {
-		return propertyDescriptorsByName.values();
+		return Collections.unmodifiableCollection(propertyDescriptorsByName.values());
 	}
 
 	PropertyDescriptor getDescriptorByMethod(Method method) {
