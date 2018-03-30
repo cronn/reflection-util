@@ -15,7 +15,8 @@ plugins {
 
 	id 'maven'
 	id 'maven-publish'
-	id 'com.jfrog.bintray' version "1.7.3"
+	id 'com.jfrog.bintray' version '1.7.3'
+	id 'com.github.kt3k.coveralls' version '2.6.3'
 }
 
 apply plugin: 'org.sonarqube'
