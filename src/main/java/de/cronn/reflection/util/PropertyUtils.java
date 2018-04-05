@@ -4,6 +4,7 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -150,17 +151,7 @@ public final class PropertyUtils {
 			} else {
 				Object[] args = new Object[] { value };
 				Method writeMethod = propertyDescriptor.getWriteMethod();
-				boolean accessible = writeMethod.isAccessible();
-				try {
-					if (force && !accessible) {
-						writeMethod.setAccessible(true);
-					}
-					writeMethod.invoke(destination, args);
-				} finally {
-					if (force && !accessible) {
-						writeMethod.setAccessible(false);
-					}
-				}
+				withAccessibleObject(writeMethod, method -> method.invoke(destination, args), force);
 			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyDescriptor), e);
@@ -170,18 +161,11 @@ public final class PropertyUtils {
 	public static void writeDirectly(Object destination, PropertyDescriptor propertyDescriptor, Object value) {
 		try {
 			Field field = findField(destination, propertyDescriptor);
-			boolean accessible = field.isAccessible();
-			try {
-				if (!accessible) {
-					field.setAccessible(true);
-				}
-				field.set(destination, value);
-			} finally {
-				if (!accessible) {
-					field.setAccessible(false);
-				}
-			}
-		} catch (NoSuchFieldException | IllegalAccessException e) {
+			withAccessibleObject(field, f -> {
+				f.set(destination, value);
+				return null;
+			}, true);
+		} catch (ReflectiveOperationException e) {
 			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyDescriptor), e);
 		}
 	}
@@ -239,17 +223,7 @@ public final class PropertyUtils {
 				}
 			} else {
 				Method readMethod = propertyDescriptor.getReadMethod();
-				boolean accessible = readMethod.isAccessible();
-				try {
-					if (force && !accessible) {
-						readMethod.setAccessible(true);
-					}
-					result = readMethod.invoke(source);
-				} finally {
-					if (force && !accessible) {
-						readMethod.setAccessible(false);
-					}
-				}
+				result = withAccessibleObject(readMethod, method -> readMethod.invoke(source), force);
 			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(source, propertyDescriptor), e);
@@ -452,4 +426,23 @@ public final class PropertyUtils {
 	public static boolean isNotCollectionType(PropertyDescriptor propertyDescriptor) {
 		return !isCollectionType(propertyDescriptor);
 	}
+
+	private interface AccessibleObjectFunction<T extends AccessibleObject, R> {
+		R access(T object) throws ReflectiveOperationException;
+	}
+
+	private static <T extends AccessibleObject, R> R withAccessibleObject(T accessibleObject, AccessibleObjectFunction<T, R> function, boolean force) throws ReflectiveOperationException {
+		boolean accessible = accessibleObject.isAccessible();
+		try {
+			if (force && !accessible) {
+				accessibleObject.setAccessible(true);
+			}
+			return function.access(accessibleObject);
+		} finally {
+			if (force && !accessible) {
+				accessibleObject.setAccessible(false);
+			}
+		}
+	}
+
 }
