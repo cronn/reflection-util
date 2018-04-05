@@ -2,7 +2,10 @@ package de.cronn.reflection.util;
 
 import java.util.function.Supplier;
 
-class Assert {
+final class Assert {
+
+	private Assert() {
+	}
 
 	static void isNull(Object value, Supplier<String> message) {
 		if (value != null) {
