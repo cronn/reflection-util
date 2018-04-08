@@ -83,4 +83,4 @@ Add the following Maven dependency to your project:
 
 [apache-commons-beanutils]: http://commons.apache.org/proper/commons-beanutils/
 [property-descriptor]: https://docs.oracle.com/javase/8/docs/api/java/beans/PropertyDescriptor.html
-[jodd-methref]: https://jodd.org/util/methref.html
+[jodd-methref]: https://jodd.org/ref/methref.html
