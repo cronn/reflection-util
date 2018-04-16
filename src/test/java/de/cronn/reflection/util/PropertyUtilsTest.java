@@ -370,9 +370,9 @@ public class PropertyUtilsTest {
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() throws Exception {
 		try {
 			ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), containsString("Found no property for"));
+			fail("IllegalAccessError expected");
+		} catch (IllegalAccessError e) {
+			assertThat(e.getMessage(), matchesPattern("tried to access class .+? from class .+?"));
 		}
 	}
 
@@ -380,9 +380,9 @@ public class PropertyUtilsTest {
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() throws Exception {
 		try {
 			ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e.getMessage(), containsString("Found no property for"));
+			fail("IllegalAccessError expected");
+		} catch (IllegalAccessError e) {
+			assertThat(e.getMessage(), matchesPattern("tried to access class .+? from class .+?"));
 		}
 	}
 

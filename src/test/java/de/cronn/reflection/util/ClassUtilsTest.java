@@ -106,7 +106,17 @@ public class ClassUtilsTest {
 		assertThat(methodName, is("testGetVoidMethod"));
 
 		assertEquals("doOtherWork", ClassUtils.getVoidMethodName(SomeTestInterface.class, SomeTestInterface::doOtherWork));
-		assertEquals("doOtherWork", ClassUtils.getVoidMethodName(new SomeClass() {}, SomeClass::doOtherWork));
+	}
+
+	@Test
+	public void testGetVoidMethodName_AnonymousClass() throws Exception {
+		SomeClass bean = new SomeClass() {};
+		try {
+			ClassUtils.getVoidMethodName(bean, SomeClass::doOtherWork);
+			fail("IllegalAccessError expected");
+		} catch (IllegalAccessError e) {
+			assertThat(e.getMessage(), containsString("cannot access its superclass"));
+		}
 	}
 
 	@Test
