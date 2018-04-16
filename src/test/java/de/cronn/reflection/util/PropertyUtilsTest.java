@@ -372,7 +372,7 @@ public class PropertyUtilsTest {
 			ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
 			fail("IllegalAccessError expected");
 		} catch (IllegalAccessError e) {
-			assertThat(e.getMessage(), matchesPattern("tried to access class .+? from class .+?"));
+			assertThat(e.getMessage(), matchesPattern("(tried|failed) to access class .+? from class .+?"));
 		}
 	}
 
@@ -382,7 +382,7 @@ public class PropertyUtilsTest {
 			ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
 			fail("IllegalAccessError expected");
 		} catch (IllegalAccessError e) {
-			assertThat(e.getMessage(), matchesPattern("tried to access class .+? from class .+?"));
+			assertThat(e.getMessage(), matchesPattern("(tried|failed) to access class .+? from class .+?"));
 		}
 	}
 
