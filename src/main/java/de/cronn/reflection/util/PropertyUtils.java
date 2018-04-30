@@ -325,17 +325,21 @@ public final class PropertyUtils {
 	}
 
 	private static <T> T createProxy(Class<T> beanClass, InvocationHandler invocationHandler) {
-		Class<? extends T> proxyClass = new ByteBuddy()
-			.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
-			.method(isMethod()
-				.and(takesArguments(0))
-				.and(not(isDeclaredBy(Object.class))))
-			.intercept(InvocationHandlerAdapter.of(invocationHandler))
-			.make()
-			.load(PropertyUtils.class.getClassLoader())
-			.getLoaded();
+		try {
+			Class<? extends T> proxyClass = new ByteBuddy()
+				.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
+				.method(isMethod()
+					.and(takesArguments(0))
+					.and(not(isDeclaredBy(Object.class))))
+				.intercept(InvocationHandlerAdapter.of(invocationHandler))
+				.make()
+				.load(PropertyUtils.class.getClassLoader())
+				.getLoaded();
 
-		return ObjenesisHelper.newInstance(proxyClass);
+			return ObjenesisHelper.newInstance(proxyClass);
+		} catch (IllegalAccessError e) {
+			throw new ReflectionRuntimeException("Failed to create proxy on " + beanClass, e);
+		}
 	}
 
 	public static boolean hasAnnotationOfProperty(Class<?> entityType, PropertyDescriptor descriptor, Class<? extends Annotation> annotationClass) {

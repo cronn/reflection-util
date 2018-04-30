@@ -113,9 +113,11 @@ public class ClassUtilsTest {
 		SomeClass bean = new SomeClass() {};
 		try {
 			ClassUtils.getVoidMethodName(bean, SomeClass::doOtherWork);
-			fail("IllegalAccessError expected");
-		} catch (IllegalAccessError e) {
-			assertThat(e.getMessage(), containsString("cannot access its superclass"));
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertThat(e.getMessage(), matchesPattern("Failed to create proxy on class .+?"));
+			assertThat(e.getCause(), instanceOf(IllegalAccessError.class));
+			assertThat(e.getCause().getMessage(), containsString("cannot access its superclass"));
 		}
 	}
 

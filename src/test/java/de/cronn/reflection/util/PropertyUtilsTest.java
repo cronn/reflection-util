@@ -370,9 +370,11 @@ public class PropertyUtilsTest {
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() throws Exception {
 		try {
 			ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
-			fail("IllegalAccessError expected");
-		} catch (IllegalAccessError e) {
-			assertThat(e.getMessage(), matchesPattern("(tried|failed) to access class .+? from class .+?"));
+			fail("ReflectionRuntimeException expected");
+		} catch (ReflectionRuntimeException e) {
+			assertThat(e.getMessage(), matchesPattern("Failed to create proxy on class .+?"));
+			assertThat(e.getCause(), instanceOf(IllegalAccessError.class));
+			assertThat(e.getCause().getMessage(), matchesPattern("(tried|failed) to access class .+? from class .+?"));
 		}
 	}
 
@@ -381,8 +383,10 @@ public class PropertyUtilsTest {
 		try {
 			ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
 			fail("IllegalAccessError expected");
-		} catch (IllegalAccessError e) {
-			assertThat(e.getMessage(), matchesPattern("(tried|failed) to access class .+? from class .+?"));
+		} catch (ReflectionRuntimeException e) {
+			assertThat(e.getMessage(), matchesPattern("Failed to create proxy on class .+?"));
+			assertThat(e.getCause(), instanceOf(IllegalAccessError.class));
+			assertThat(e.getCause().getMessage(), matchesPattern("(tried|failed) to access class .+? from class .+?"));
 		}
 	}
 
