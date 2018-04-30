@@ -23,7 +23,7 @@ apply plugin: 'org.sonarqube'
 
 group = 'de.cronn'
 
-version = "1.7.0"
+version = "1.7.1"
 
 if (System.env.BUILD_NUMBER) {
 	version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
