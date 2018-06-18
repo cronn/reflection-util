@@ -1,7 +1,6 @@
 package de.cronn.reflection.util;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -11,9 +10,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 
 import de.cronn.reflection.util.testclasses.BaseInterface;
@@ -37,22 +33,22 @@ public class ClassUtilsTest {
 
 	@Test
 	public void testGetRealClass() throws Exception {
-		assertSame(TestEntity.class, ClassUtils.getRealClass(new TestEntity()));
-		assertSame(SomeTestInterface.class, ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class)));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createByteBuddyProxy(new TestEntity())));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createJavassistProxy(new TestEntity())));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createCglibProxy(new TestEntity())));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createByteBuddyProxy(createCglibProxy(new TestEntity()))));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(new TestEntity()))));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(createCglibProxy(new TestEntity())))));
-		assertSame(TestEntity.class, ClassUtils.getRealClass(createCglibProxy(createByteBuddyProxy(new TestEntity()))));
-		assertSame(Long.class, ClassUtils.getRealClass(Long.valueOf(16)));
+		assertThat(ClassUtils.getRealClass(new TestEntity())).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class))).isSameAs(SomeTestInterface.class);
+		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(new TestEntity()))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createJavassistProxy(new TestEntity()))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createCglibProxy(new TestEntity()))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createCglibProxy(new TestEntity())))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(new TestEntity())))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(createCglibProxy(new TestEntity()))))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(createCglibProxy(createByteBuddyProxy(new TestEntity())))).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(Long.valueOf(16))).isSameAs(Long.class);
 
 		try {
 			ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class, BaseInterface.class));
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			assertEquals("Unexpected number of interfaces: 2", e.getMessage());
+			assertThat(e).hasMessage("Unexpected number of interfaces: 2");
 		}
 	}
 
@@ -62,19 +58,20 @@ public class ClassUtilsTest {
 		Object proxy = createCglibProxy(sourceEntity);
 
 		Object newInstance = ClassUtils.createNewInstanceLike(proxy);
-		assertSame(TestEntity.class, newInstance.getClass());
+		assertThat(newInstance.getClass()).isSameAs(TestEntity.class);
 	}
 
 	@Test
 	public void testCreateNewInstanceLike_Null() throws Exception {
-		Assert.assertNull(ClassUtils.createNewInstanceLike(null));
+		Object instance = ClassUtils.createNewInstanceLike(null);
+		assertThat(instance).isNull();
 	}
 
 	@Test
 	public void testCreateNewInstanceLikeProtectedNoArgConstructor() throws Exception {
 		Object sourceEntity = EntityProtectedConstructor.newEntity();
 		Object actual = ClassUtils.createNewInstanceLike(sourceEntity);
-		assertThat(actual, Matchers.instanceOf(EntityProtectedConstructor.class));
+		assertThat(actual).isInstanceOf(EntityProtectedConstructor.class);
 	}
 
 	@Test
@@ -85,27 +82,27 @@ public class ClassUtilsTest {
 			ClassUtils.createNewInstanceLike(sourceEntity);
 			fail("ReflectionRuntimeException exception expected");
 		} catch (ReflectionRuntimeException e) {
-			assertThat(e.getCause(), CoreMatchers.instanceOf(NoSuchMethodException.class));
+			assertThat(e).hasCauseExactlyInstanceOf(NoSuchMethodException.class);
 			Object className = EntityProtectedNoDefaultConstructor.class;
-			assertEquals("Failed to construct an instance of " + className, e.getMessage());
+			assertThat(e).hasMessage("Failed to construct an instance of " + className);
 		}
 	}
 
 	@Test
 	public void testGetVoidMethod() throws Exception {
 		Method voidMethod = ClassUtils.getVoidMethod(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
-		assertThat(voidMethod.getName(), is("testGetVoidMethod"));
+		assertThat(voidMethod.getName()).isEqualTo("testGetVoidMethod");
 	}
 
 	@Test
 	public void testGetVoidMethodName() throws Exception {
 		String voidMethodName = ClassUtils.getVoidMethodName(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
-		assertThat(voidMethodName, is("testGetVoidMethod"));
+		assertThat(voidMethodName).isEqualTo("testGetVoidMethod");
 
 		String methodName = ClassUtils.getVoidMethodName(new ClassUtilsTest(), ClassUtilsTest::testGetVoidMethod);
-		assertThat(methodName, is("testGetVoidMethod"));
+		assertThat(methodName).isEqualTo("testGetVoidMethod");
 
-		assertEquals("doOtherWork", ClassUtils.getVoidMethodName(SomeTestInterface.class, SomeTestInterface::doOtherWork));
+		assertThat(ClassUtils.getVoidMethodName(SomeTestInterface.class, SomeTestInterface::doOtherWork)).isEqualTo("doOtherWork");
 	}
 
 	@Test
@@ -115,75 +112,75 @@ public class ClassUtilsTest {
 			ClassUtils.getVoidMethodName(bean, SomeClass::doOtherWork);
 			fail("ReflectionRuntimeException expected");
 		} catch (ReflectionRuntimeException e) {
-			assertThat(e.getMessage(), matchesPattern("Failed to create proxy on class .+?"));
-			assertThat(e.getCause(), instanceOf(IllegalAccessError.class));
-			assertThat(e.getCause().getMessage(), containsString("cannot access its superclass"));
+			assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
+			assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
+			assertThat(e.getCause()).hasMessageContaining("cannot access its superclass");
 		}
 	}
 
 	@Test
 	public void testIsProxy() throws Exception {
 		Object testObject = new TestEntity();
-		assertTrue(ClassUtils.isProxy(createJdkProxy(BaseInterface.class)));
-		assertTrue(ClassUtils.isProxy(createByteBuddyProxy(testObject)));
-		assertTrue(ClassUtils.isProxy(createCglibProxy(testObject)));
-		assertFalse(ClassUtils.isProxy(testObject));
-		assertFalse(ClassUtils.isProxy("some string"));
-		assertFalse(ClassUtils.isProxy(null));
+		assertThat(ClassUtils.isProxy(createJdkProxy(BaseInterface.class))).isTrue();
+		assertThat(ClassUtils.isProxy(createByteBuddyProxy(testObject))).isTrue();
+		assertThat(ClassUtils.isProxy(createCglibProxy(testObject))).isTrue();
+		assertThat(ClassUtils.isProxy(testObject)).isFalse();
+		assertThat(ClassUtils.isProxy("some string")).isFalse();
+		assertThat(ClassUtils.isProxy(null)).isFalse();
 	}
 
 	@Test
 	public void testIsProxyClass() throws Exception {
 		Object testObject = new TestEntity();
-		assertTrue(ClassUtils.isProxyClass(createJdkProxy(BaseInterface.class).getClass()));
-		assertTrue(ClassUtils.isProxyClass(createByteBuddyProxy(testObject).getClass()));
-		assertTrue(ClassUtils.isProxyClass(createCglibProxy(testObject).getClass()));
-		assertFalse(ClassUtils.isProxyClass(testObject.getClass()));
-		assertFalse(ClassUtils.isProxyClass(String.class));
-		assertFalse(ClassUtils.isProxyClass(null));
+		assertThat(ClassUtils.isProxyClass(createJdkProxy(BaseInterface.class).getClass())).isTrue();
+		assertThat(ClassUtils.isProxyClass(createByteBuddyProxy(testObject).getClass())).isTrue();
+		assertThat(ClassUtils.isProxyClass(createCglibProxy(testObject).getClass())).isTrue();
+		assertThat(ClassUtils.isProxyClass(testObject.getClass())).isFalse();
+		assertThat(ClassUtils.isProxyClass(String.class)).isFalse();
+		assertThat(ClassUtils.isProxyClass(null)).isFalse();
 	}
 
 	@Test
 	public void testHasMethodWithSameSignature_happyPath_shouldMatchMethodSignature_whenReturnTypeAndNameAndParametersAreEqual() throws Exception {
 		Method targetMethod = findMethod(SomeClass.class, "doWork", int.class);
 
-		assertTrue(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod));
+		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isTrue();
 	}
 
 	@Test
 	public void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenReturnTypeIsDifferentThanHappyPath() throws Exception {
 		Method targetMethod = findMethod(OtherClass.class, "doWork", int.class);
 
-		assertFalse(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod));
+		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isFalse();
 	}
 
 	@Test
 	public void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenNameIsDifferentThanHappyPath() throws Exception {
 		Method targetMethod = findMethod(SomeClass.class, "doWorkLater", int.class);
 
-		assertFalse(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod));
+		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isFalse();
 	}
 
 	@Test
 	public void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenParametersAreDifferentThanHappyPath() throws Exception {
 		Method targetMethod = findMethod(SomeClass.class, "doWork", int.class, int.class);
 
-		assertFalse(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod));
+		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isFalse();
 	}
 
 	@Test
 	public void testIsFromPackage() throws Exception {
-		assertTrue(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection.util"));
-		assertFalse(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection"));
-		assertFalse(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn"));
-		assertFalse(ClassUtils.isFromPackage(ClassUtilsTest.class, "non.existing.package"));
-		assertTrue(ClassUtils.isFromPackage(SomeClass.class, "de.cronn.reflection.util.testclasses"));
+		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection.util")).isTrue();
+		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection")).isFalse();
+		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn")).isFalse();
+		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "non.existing.package")).isFalse();
+		assertThat(ClassUtils.isFromPackage(SomeClass.class, "de.cronn.reflection.util.testclasses")).isTrue();
 	}
 
 	@Test
 	public void testFindDeclaredMethodsByArgumentTypes() throws Exception {
-		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseClass.class, String.class, Integer.class), hasSize(2));
-		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseSubclass.class, String.class, Integer.class), hasSize(3));
+		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseClass.class, String.class, Integer.class)).hasSize(2);
+		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseSubclass.class, String.class, Integer.class)).hasSize(3);
 	}
 
 	@Test
@@ -191,38 +188,38 @@ public class ClassUtilsTest {
 		Method oneMethod = SomeClass.class.getMethod("doOtherWork");
 		Method otherMethod = SomeTestInterface.class.getMethod("doOtherWork");
 		Method hashCodeMethod = Object.class.getMethod("hashCode");
-		assertTrue(ClassUtils.haveSameSignature(otherMethod, otherMethod));
-		assertTrue(ClassUtils.haveSameSignature(oneMethod, oneMethod));
-		assertTrue(ClassUtils.haveSameSignature(oneMethod, otherMethod));
-		assertFalse(ClassUtils.haveSameSignature(oneMethod, hashCodeMethod));
-		assertFalse(ClassUtils.haveSameSignature(otherMethod, hashCodeMethod));
+		assertThat(ClassUtils.haveSameSignature(otherMethod, otherMethod)).isTrue();
+		assertThat(ClassUtils.haveSameSignature(oneMethod, oneMethod)).isTrue();
+		assertThat(ClassUtils.haveSameSignature(oneMethod, otherMethod)).isTrue();
+		assertThat(ClassUtils.haveSameSignature(oneMethod, hashCodeMethod)).isFalse();
+		assertThat(ClassUtils.haveSameSignature(otherMethod, hashCodeMethod)).isFalse();
 
 		Method doWorkWithOneParameter = SomeClass.class.getMethod("doWork", int.class);
 		Method doWorkWithOneParameterFromInterface = SomeTestInterface.class.getMethod("doWork", int.class);
 		Method doWorkWithTwoParameters = SomeClass.class.getMethod("doWork", int.class, int.class);
-		assertFalse(ClassUtils.haveSameSignature(doWorkWithOneParameter, doWorkWithTwoParameters));
-		assertTrue(ClassUtils.haveSameSignature(doWorkWithOneParameter, doWorkWithOneParameterFromInterface));
+		assertThat(ClassUtils.haveSameSignature(doWorkWithOneParameter, doWorkWithTwoParameters)).isFalse();
+		assertThat(ClassUtils.haveSameSignature(doWorkWithOneParameter, doWorkWithOneParameterFromInterface)).isTrue();
 	}
 
 	@Test
 	public void testGetAllDeclaredMethods() throws Exception {
-		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(BaseInterface.class)), hasSize(1));
-		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(SomeClass.class)), hasSize(6));
+		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(BaseInterface.class))).hasSize(1);
+		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(SomeClass.class))).hasSize(6);
 	}
 
 	@Test
 	public void testGetAllDeclaredMethodSignatures() throws Exception {
 		Set<MethodSignature> methodsOfSomeClass = withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(SomeClass.class));
 		withoutJacocoMethodSignatures(methodsOfSomeClass);
-		assertThat(mapToString(methodsOfSomeClass), contains(
+		assertThat(mapToString(methodsOfSomeClass)).containsExactly(
 			"void doOtherWork()",
 			"void doWork(int)",
 			"void doWork(int, int)",
 			"void doWorkLater(int)"
-		));
+		);
 
 		Set<MethodSignature> methodsOfDerivedClass = withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(DerivedClass.class));
-		assertThat(mapToString(methodsOfDerivedClass), contains(
+		assertThat(mapToString(methodsOfDerivedClass)).containsExactly(
 			"java.lang.String getBaseClassStringProperty()",
 			"java.lang.Long getLongPropertyWithPackageAccessSetter()",
 			"java.lang.String getOtherStringProperty()",
@@ -231,9 +228,9 @@ public class ClassUtilsTest {
 			"void setBaseClassStringProperty(java.lang.String)",
 			"void setLongPropertyWithPackageAccessSetter(java.lang.Long)",
 			"void setStringProperty(java.lang.String)"
-		));
+		);
 
-		assertThat(withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(SomeClass.class)), hasSize(4));
+		assertThat(withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(SomeClass.class))).hasSize(4);
 	}
 
 	private static Set<MethodSignature> withoutJacocoMethodSignatures(Set<MethodSignature> methodSignatures) {

@@ -1,6 +1,6 @@
 package de.cronn.reflection.util;
 
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
 
@@ -15,14 +15,14 @@ public class AssertTest {
 			Assert.isNull("", () -> "some message");
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			assertEquals("some message", e.getMessage());
+			assertThat(e).hasMessage("some message");
 		}
 
 		try {
 			Assert.isNull(new Object(), () -> "some message: " + 12);
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			assertEquals("some message: 12", e.getMessage());
+			assertThat(e).hasMessage("some message: 12");
 		}
 	}
 
@@ -36,7 +36,7 @@ public class AssertTest {
 			Assert.notNull(null, () -> "some message");
 			fail("IllegalArgumentException expected");
 		} catch (IllegalArgumentException e) {
-			assertEquals("some message", e.getMessage());
+			assertThat(e).hasMessage("some message");
 		}
 	}
 
