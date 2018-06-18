@@ -51,9 +51,9 @@ tasks.withType(JavaCompile) {
 	options.incremental = true
 }
 
-task wrapper(type: Wrapper) {
-	gradleVersion = '4.6'
-	distributionType = "ALL"
+wrapper {
+	gradleVersion = "4.8"
+	distributionType = Wrapper.DistributionType.ALL
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
