@@ -144,15 +144,21 @@ public class PropertyUtilsTest {
 
 		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getLargeNumber, 0L)).isTrue();
 		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getLargeNumber, 1L)).isFalse();
+
 		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::isActive, false)).isTrue();
 		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::isActive, true)).isFalse();
 
-		try {
-			PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getFloatingNumber, null);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Unhandled primitive type: float");
-		}
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getFloatingNumber, 0.0f)).isTrue();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getFloatingNumber, -0.0f)).isTrue();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getFloatingNumber, 0)).isFalse();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getFloatingNumber, Float.NaN)).isFalse();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getFloatingNumber, 123f)).isFalse();
+
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getDoubleNumber, 0.0)).isTrue();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getDoubleNumber, -0.0)).isTrue();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getDoubleNumber, 123.0)).isFalse();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getDoubleNumber, Double.NaN)).isFalse();
+		assertThat(PropertyUtils.isDefaultValue(ClassWithPrimitives.class, ClassWithPrimitives::getDoubleNumber, 0)).isFalse();
 	}
 
 	@Test
@@ -678,6 +684,26 @@ public class PropertyUtilsTest {
 		Method method = PropertyUtils.findMethodByGetter(TestAnnotation.class, propertyGetter);
 		assertThat(method).isNotNull();
 		assertThat(method.getName()).isEqualTo("someProperty");
+	}
+
+	@Test
+	public void testGetDefaultValueObject() throws Exception {
+		assertThat(PropertyUtils.getDefaultValueObject(Object.class)).isNull();
+		assertThat(PropertyUtils.getDefaultValueObject(String.class)).isNull();
+		assertThat(PropertyUtils.getDefaultValueObject(Boolean.class)).isNull();
+		assertThat(PropertyUtils.getDefaultValueObject(Long.class)).isNull();
+		assertThat(PropertyUtils.getDefaultValueObject(Integer.class)).isNull();
+		assertThat(PropertyUtils.getDefaultValueObject(Number.class)).isNull();
+
+		assertThat(PropertyUtils.getDefaultValueObject(byte.class)).isEqualTo((byte) 0);
+		assertThat(PropertyUtils.getDefaultValueObject(char.class)).isEqualTo('\0');
+		assertThat(PropertyUtils.getDefaultValueObject(short.class)).isEqualTo((short) 0);
+		assertThat(PropertyUtils.getDefaultValueObject(int.class)).isEqualTo(0);
+		assertThat(PropertyUtils.getDefaultValueObject(long.class)).isEqualTo(0L);
+		assertThat(PropertyUtils.getDefaultValueObject(float.class)).isEqualTo(0.0f);
+		assertThat(PropertyUtils.getDefaultValueObject(double.class)).isEqualTo(0.0);
+		assertThat(PropertyUtils.getDefaultValueObject(boolean.class)).isEqualTo(false);
+		assertThat(PropertyUtils.getDefaultValueObject(void.class)).isNull();
 	}
 
 	private static List<String> collectPropertyNames(Collection<PropertyDescriptor> propertyDescriptors) {

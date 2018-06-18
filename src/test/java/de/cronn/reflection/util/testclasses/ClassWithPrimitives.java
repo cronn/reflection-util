@@ -5,6 +5,7 @@ public class ClassWithPrimitives {
 	private boolean active;
 	private long largeNumber;
 	private float floatingNumber;
+	private double doubleNumber;
 
 	public void setActive(boolean active) {
 		this.active = active;
@@ -26,4 +27,7 @@ public class ClassWithPrimitives {
 		return floatingNumber;
 	}
 
+	public double getDoubleNumber() {
+		return doubleNumber;
+	}
 }

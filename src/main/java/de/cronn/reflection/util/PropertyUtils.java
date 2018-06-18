@@ -116,7 +116,13 @@ public final class PropertyUtils {
 
 	public static <T> boolean isDefaultValue(Class<T> objectClass, PropertyDescriptor propertyDescriptor, Object value) {
 		Object defaultValue = getDefaultValue(objectClass, propertyDescriptor);
-		return Objects.equals(value, defaultValue);
+		if (defaultValue instanceof Float && value instanceof Float) {
+			return (float) defaultValue == (float) value;
+		} else if (defaultValue instanceof Double && value instanceof Double) {
+			return (double) defaultValue == (double) value;
+		} else {
+			return Objects.equals(value, defaultValue);
+		}
 	}
 
 	public static <T> Object getDefaultValue(Class<T> objectClass, PropertyDescriptor propertyDescriptor) {
@@ -389,10 +395,20 @@ public final class PropertyUtils {
 
 	public static Object getDefaultValueObject(Class<?> type) {
 		if (type.isPrimitive()) {
-			if (type.equals(long.class)) {
-				return Long.valueOf(0);
+			if (type.equals(byte.class)) {
+				return Byte.valueOf((byte) 0);
+			} else if (type.equals(char.class)) {
+				return Character.valueOf('\0');
+			} else if (type.equals(short.class)) {
+				return Short.valueOf((short) 0);
 			} else if (type.equals(int.class)) {
 				return Integer.valueOf(0);
+			} else if (type.equals(long.class)) {
+				return Long.valueOf(0L);
+			} else if (type.equals(float.class)) {
+				return Float.valueOf(0.0f);
+			} else if (type.equals(double.class)) {
+				return Double.valueOf(0.0);
 			} else if (type.equals(boolean.class)) {
 				return Boolean.valueOf(false);
 			} else if (type.equals(void.class)) {
