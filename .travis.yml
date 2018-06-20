@@ -4,6 +4,8 @@ jdk:
     - oraclejdk8
     - openjdk8
     - oraclejdk9
+    - openjdk10
+    - oraclejdk10
 
 after_success:
     - ./gradlew jacocoTestReport coveralls
