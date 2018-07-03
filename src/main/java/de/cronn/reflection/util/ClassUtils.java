@@ -20,6 +20,7 @@ public final class ClassUtils {
 
 	private static final String CGLIB_JAVASSIST_CLASS_SEPARATOR = "$$";
 	private static final String BYTE_BUDDY_CLASS_SEPARATOR = "$ByteBuddy$";
+	private static final String HIBERNATE_PROXY_CLASS_SEPARATOR = "$HibernateProxy$";
 
 	private static final Map<Class<?>, Set<MethodSignature>> methodsSignaturesCache = new ConcurrentHashMap<>();
 
@@ -119,8 +120,13 @@ public final class ClassUtils {
 			return true;
 		}
 
-		return clazz.getName().contains(BYTE_BUDDY_CLASS_SEPARATOR)
-			|| clazz.getName().contains(CGLIB_JAVASSIST_CLASS_SEPARATOR);
+		return matchesWellKnownProxyClassNamePattern(clazz.getName());
+	}
+
+	static boolean matchesWellKnownProxyClassNamePattern(String className) {
+		return className.contains(BYTE_BUDDY_CLASS_SEPARATOR)
+			|| className.contains(CGLIB_JAVASSIST_CLASS_SEPARATOR)
+			|| className.contains(HIBERNATE_PROXY_CLASS_SEPARATOR);
 	}
 
 	public static boolean haveSameSignature(Method oneMethod, Method otherMethod) {

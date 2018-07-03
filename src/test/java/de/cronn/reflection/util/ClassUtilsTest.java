@@ -53,6 +53,17 @@ public class ClassUtilsTest {
 	}
 
 	@Test
+	public void testMatchesWellKnownProxyClassPattern() throws Exception {
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(Object.class.getName())).isFalse();
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(String.class.getName())).isFalse();
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass")).isFalse();
+
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass$$proxy")).isTrue();
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass$ByteBuddy$abcdef")).isTrue();
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass$HibernateProxy$abcdef")).isTrue();
+	}
+
+	@Test
 	public void testCreateNewInstanceLikeOfProxy() throws Exception {
 		Object sourceEntity = new TestEntity();
 		Object proxy = createCglibProxy(sourceEntity);
