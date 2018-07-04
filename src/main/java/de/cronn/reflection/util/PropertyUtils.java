@@ -1,28 +1,20 @@
 package de.cronn.reflection.util;
 
-import static net.bytebuddy.matcher.ElementMatchers.*;
-
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.objenesis.ObjenesisHelper;
-
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
-import net.bytebuddy.implementation.InvocationHandlerAdapter;
 
 public final class PropertyUtils {
 
@@ -77,7 +69,11 @@ public final class PropertyUtils {
 
 	@SuppressWarnings("unchecked")
 	static <T> PropertyDescriptorCache<T> getCache(Class<T> type) {
-		return (PropertyDescriptorCache<T>) cache.computeIfAbsent(type, PropertyDescriptorCache::compute);
+		return (PropertyDescriptorCache<T>) cache.computeIfAbsent(type, key -> {
+			Class<T> originalClass = (Class<T>) key;
+			Class<? extends T> proxyClass = MethodCaptor.createProxyClass(originalClass);
+			return PropertyDescriptorCache.compute(originalClass, proxyClass);
+		});
 	}
 
 	public static <T> T copyNonDefaultValues(T source, T destination) {
@@ -318,25 +314,6 @@ public final class PropertyUtils {
 		return cache.getMethod(propertyGetter);
 	}
 
-	private static class MethodCaptor implements InvocationHandler {
-
-		private final AtomicReference<Method> capturedMethod = new AtomicReference<>();
-
-		@Override
-		public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-			Method existing = capturedMethod.getAndSet(method);
-			Assert.isNull(existing, () -> String.format("Method already captured: %s called twice?", existing));
-			return getDefaultValueObject(method.getReturnType());
-		}
-
-		Method getCapturedMethod() {
-			Method method = capturedMethod.get();
-			Assert.notNull(method, () -> "Method could not be captured. This can happen when no method was invoked or the method is private or final.");
-			return method;
-		}
-
-	}
-
 	public static <T> Method findMethodByGetter(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		MethodCaptor methodCaptor = new MethodCaptor();
 		T proxy = createProxy(beanClass, methodCaptor);
@@ -346,20 +323,13 @@ public final class PropertyUtils {
 		return methodCaptor.getCapturedMethod();
 	}
 
-	private static <T> T createProxy(Class<T> beanClass, InvocationHandler invocationHandler) {
+	private static <T> T createProxy(Class<T> beanClass, MethodCaptor methodCaptor) {
+		Class<? extends T> proxyClass = getCache(beanClass).getMethodCapturingProxy();
 		try {
-			Class<? extends T> proxyClass = new ByteBuddy()
-				.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
-				.method(isMethod()
-					.and(takesArguments(0))
-					.and(not(isDeclaredBy(Object.class))))
-				.intercept(InvocationHandlerAdapter.of(invocationHandler))
-				.make()
-				.load(PropertyUtils.class.getClassLoader())
-				.getLoaded();
-
-			return ObjenesisHelper.newInstance(proxyClass);
-		} catch (IllegalAccessError e) {
+			T proxyInstance = ObjenesisHelper.newInstance(proxyClass);
+			writeDirectly(proxyInstance, proxyClass.getDeclaredField(MethodCaptor.FIELD_NAME), methodCaptor);
+			return proxyInstance;
+		} catch (NoSuchFieldException | IllegalAccessError e) {
 			throw new ReflectionRuntimeException("Failed to create proxy on " + beanClass, e);
 		}
 	}
@@ -491,6 +461,10 @@ public final class PropertyUtils {
 				accessibleObject.setAccessible(false);
 			}
 		}
+	}
+
+	static void clearCache() {
+		cache.clear();
 	}
 
 }

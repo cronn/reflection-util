@@ -9,6 +9,10 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -22,6 +26,7 @@ import de.cronn.reflection.util.testclasses.BaseClass;
 import de.cronn.reflection.util.testclasses.BaseInterface;
 import de.cronn.reflection.util.testclasses.ClassExtendingClassThatExtendsNonPublicBaseClass;
 import de.cronn.reflection.util.testclasses.ClassExtendingNonPublicBaseClass;
+import de.cronn.reflection.util.testclasses.ClassWithMethodCaptorField;
 import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
@@ -205,6 +210,13 @@ public class PropertyUtilsTest {
 	public void testPropertyDescriptor_WithoutField() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
 		assertThat(propertyDescriptor.getName()).isEqualTo("propertyWithoutField");
+	}
+
+	@Test
+	public void testPropertyDescriptor_ClassWithMethodCaptorField() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(ClassWithMethodCaptorField.class, ClassWithMethodCaptorField::get$methodCaptor);
+		assertThat(propertyDescriptor.getName()).isEqualTo("$methodCaptor");
+		assertThat(propertyDescriptor.getName()).isEqualTo(MethodCaptor.FIELD_NAME);
 	}
 
 	@Test
@@ -687,6 +699,28 @@ public class PropertyUtilsTest {
 		Method method = PropertyUtils.findMethodByGetter(TestAnnotation.class, propertyGetter);
 		assertThat(method).isNotNull();
 		assertThat(method.getName()).isEqualTo("someProperty");
+	}
+
+	@Test(timeout = 30_000L)
+	public void testConcurrentlyCreateProxyClasses() throws Exception {
+		ExecutorService executorService = Executors.newFixedThreadPool(4);
+		try {
+			CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
+			for (int i = 0; i < 4; i++) {
+				completionService.submit(() -> {
+					for (int r = 0; r < 100; r++) {
+						PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
+						PropertyUtils.clearCache();
+					}
+					return null;
+				});
+			}
+			for (int i = 0; i < 4; i++) {
+				completionService.take().get();
+			}
+		} finally {
+			executorService.shutdown();
+		}
 	}
 
 	@Test

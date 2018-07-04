@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
 
 class PropertyDescriptorCache<T> {
 
-	private final Class<T> type;
+	private final Class<T> originalClass;
+	private final Class<? extends T> methodCapturingProxy;
 	private final Map<String, PropertyDescriptor> propertyDescriptorsByName = new LinkedHashMap<>();
 	private final Map<Field, PropertyDescriptor> propertyDescriptorsByField = new LinkedHashMap<>();
 	private final Map<Method, PropertyDescriptor> propertyDescriptorsByMethod = new LinkedHashMap<>();
@@ -31,8 +32,9 @@ class PropertyDescriptorCache<T> {
 	private final Map<VoidMethod<T>, Method> methodByVoidMethodCache = new ConcurrentHashMap<>();
 	private final Map<PropertyDescriptor, Object> defaultValues = new ConcurrentHashMap<>();
 
-	private PropertyDescriptorCache(Class<T> type) {
-		this.type = type;
+	private PropertyDescriptorCache(Class<T> originalClass, Class<? extends T> methodCapturingProxy) {
+		this.originalClass = originalClass;
+		this.methodCapturingProxy = methodCapturingProxy;
 
 		for (PropertyDescriptor propertyDescriptor : getAllPropertyDescriptors()) {
 			PropertyDescriptor existing = propertyDescriptorsByName.putIfAbsent(propertyDescriptor.getName(), propertyDescriptor);
@@ -61,9 +63,13 @@ class PropertyDescriptorCache<T> {
 		}
 	}
 
+	Class<? extends T> getMethodCapturingProxy() {
+		return methodCapturingProxy;
+	}
+
 	private Set<Field> getFields() {
 		List<Field> allFields = new ArrayList<>();
-		collectFields(type, allFields);
+		collectFields(originalClass, allFields);
 		allFields.sort(Comparator.comparing(Field::getName));
 		return new LinkedHashSet<>(allFields);
 	}
@@ -97,7 +103,7 @@ class PropertyDescriptorCache<T> {
 	}
 
 	private Collection<PropertyDescriptor> getAllPropertyDescriptors() {
-		return collectAllPropertyDescriptors(type).stream()
+		return collectAllPropertyDescriptors(originalClass).stream()
 			.sorted(Comparator.comparing(PropertyDescriptor::getName))
 			.collect(Collectors.toList());
 	}
@@ -121,8 +127,8 @@ class PropertyDescriptorCache<T> {
 		return Collections.unmodifiableMap(descriptors);
 	}
 
-	static <T> PropertyDescriptorCache<T> compute(Class<T> type) {
-		return new PropertyDescriptorCache<>(type);
+	static <T> PropertyDescriptorCache<T> compute(Class<T> originalClass, Class<? extends T> methodCapturingProxy) {
+		return new PropertyDescriptorCache<>(originalClass, methodCapturingProxy);
 	}
 
 	PropertyDescriptor getDescriptorByName(String propertyName) {
@@ -135,21 +141,21 @@ class PropertyDescriptorCache<T> {
 
 	private Object determineDefaultValue(PropertyDescriptor propertyDescriptor) {
 		try {
-			Object defaultObject = ClassUtils.createNewInstance(type);
+			Object defaultObject = ClassUtils.createNewInstance(originalClass);
 			return PropertyUtils.read(defaultObject, propertyDescriptor);
 		} catch (RuntimeException e) {
-			throw new ReflectionRuntimeException("Failed to determine default value for " + PropertyUtils.getQualifiedPropertyName(type, propertyDescriptor), e);
+			throw new ReflectionRuntimeException("Failed to determine default value for " + PropertyUtils.getQualifiedPropertyName(originalClass, propertyDescriptor), e);
 		}
 	}
 
 	Method getMethod(TypedPropertyGetter<T, ?> propertyGetter) {
 		assertHasNoDeclaredFields(propertyGetter);
-		return methodByPropertyGetterCache.computeIfAbsent(propertyGetter, getter -> PropertyUtils.findMethodByGetter(type, getter));
+		return methodByPropertyGetterCache.computeIfAbsent(propertyGetter, getter -> PropertyUtils.findMethodByGetter(originalClass, getter));
 	}
 
 	Method getMethod(VoidMethod<T> voidMethod) {
 		assertHasNoDeclaredFields(voidMethod);
-		return methodByVoidMethodCache.computeIfAbsent(voidMethod, m -> PropertyUtils.findMethodByGetter(type, toPropertyGetter(m)));
+		return methodByVoidMethodCache.computeIfAbsent(voidMethod, m -> PropertyUtils.findMethodByGetter(originalClass, toPropertyGetter(m)));
 	}
 
 	private static void assertHasNoDeclaredFields(Object lambda) {
