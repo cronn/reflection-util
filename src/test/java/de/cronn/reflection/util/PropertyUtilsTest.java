@@ -517,6 +517,9 @@ public class PropertyUtilsTest {
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
 		PropertyUtils.writeDirectly(testEntity, property, "changed value");
 		assertThat(testEntity.getImmutableValue()).isEqualTo("changed value");
+
+		PropertyUtils.writeDirectly(testEntity, property.getName(), "changed again");
+		assertThat(testEntity.getImmutableValue()).isEqualTo("changed again");
 	}
 
 	@Test

@@ -165,20 +165,36 @@ public final class PropertyUtils {
 	}
 
 	public static void writeDirectly(Object destination, PropertyDescriptor propertyDescriptor, Object value) {
+		writeDirectly(destination, propertyDescriptor.getName(), value);
+	}
+
+	public static void writeDirectly(Object destination, String propertyName, Object value) {
 		try {
-			Field field = findField(destination, propertyDescriptor);
+			Field field = findField(destination, propertyName);
+			writeDirectly(destination, field, value);
+		} catch (NoSuchFieldException e) {
+			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyName), e);
+		}
+	}
+
+	public static void writeDirectly(Object destination, Field field, Object value) {
+		try {
 			withAccessibleObject(field, f -> {
 				f.set(destination, value);
 				return null;
 			}, true);
 		} catch (ReflectiveOperationException e) {
-			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyDescriptor), e);
+			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, field), e);
 		}
 	}
 
 	private static Field findField(Object object, PropertyDescriptor propertyDescriptor) throws NoSuchFieldException {
+		return findField(object, propertyDescriptor.getName());
+	}
+
+	private static Field findField(Object object, String propertyName) throws NoSuchFieldException {
 		Class<Object> objectClass = ClassUtils.getRealClass(object);
-		return findField(objectClass, propertyDescriptor.getName());
+		return findField(objectClass, propertyName);
 	}
 
 	private static Field findField(Class<Object> objectClass, String propertyName) throws NoSuchFieldException {
@@ -436,7 +452,19 @@ public final class PropertyUtils {
 	}
 
 	public static String getQualifiedPropertyName(Class<?> type, PropertyDescriptor propertyDescriptor) {
-		return type.getSimpleName() + "." + propertyDescriptor.getName();
+		return getQualifiedPropertyName(type, propertyDescriptor.getName());
+	}
+
+	public static String getQualifiedPropertyName(Class<?> type, String name) {
+		return type.getSimpleName() + "." + name;
+	}
+
+	private static String getQualifiedPropertyName(Object bean, Field field) {
+		return getQualifiedPropertyName(bean, field.getName());
+	}
+
+	private static String getQualifiedPropertyName(Object bean, String name) {
+		return getQualifiedPropertyName(ClassUtils.getRealClass(bean), name);
 	}
 
 	public static boolean isCollectionType(PropertyDescriptor propertyDescriptor) {
