@@ -180,10 +180,6 @@ public final class PropertyUtils {
 		}
 	}
 
-	private static Field findField(Object object, PropertyDescriptor propertyDescriptor) throws NoSuchFieldException {
-		return findField(object, propertyDescriptor.getName());
-	}
-
 	private static Field findField(Object object, String propertyName) throws NoSuchFieldException {
 		Class<Object> objectClass = ClassUtils.getRealClass(object);
 		return findField(objectClass, propertyName);
@@ -202,8 +198,20 @@ public final class PropertyUtils {
 	}
 
 	public static <T> T readDirectly(Object object, PropertyDescriptor propertyDescriptor) {
+		return readDirectly(object, propertyDescriptor.getName());
+	}
+
+	public static <T> T readDirectly(Object object, String propertyName) {
 		try {
-			Field field = findField(object, propertyDescriptor);
+			Field field = findField(object, propertyName);
+			return readDirectly(object, field);
+		} catch (NoSuchFieldException e) {
+			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(object, propertyName), e);
+		}
+	}
+
+	public static <T> T readDirectly(Object object, Field field) {
+		try {
 			boolean accessible = field.isAccessible();
 			try {
 				if (!accessible) {
@@ -217,8 +225,8 @@ public final class PropertyUtils {
 					field.setAccessible(false);
 				}
 			}
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(object, propertyDescriptor), e);
+		} catch (IllegalAccessException e) {
+			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(object, field), e);
 		}
 	}
 

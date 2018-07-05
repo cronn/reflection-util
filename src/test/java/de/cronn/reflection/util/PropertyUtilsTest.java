@@ -526,6 +526,15 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testReadDirectly_Name() throws Exception {
+		TestEntity testEntity = new TestEntity();
+
+		PropertyUtils.writeDirectly(testEntity, "fieldWithoutGetter", "new value");
+		Object value = PropertyUtils.readDirectly(testEntity, "fieldWithoutGetter");
+		assertThat(value).isEqualTo("new value");
+	}
+
+	@Test
 	public void testReadDirectly_PropertyWithoutField() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
