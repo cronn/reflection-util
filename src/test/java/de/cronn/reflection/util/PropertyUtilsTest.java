@@ -583,6 +583,17 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testWriteDirectly_Null() throws Exception {
+		Field field = TestEntity.class.getDeclaredField("number");
+		try {
+			PropertyUtils.writeDirectly(null, field, "some value");
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertThat(e).hasMessage("Destination must not be null");
+		}
+	}
+
+	@Test
 	public void testReadIfPropertyExists() throws Exception {
 		// given
 		TestEntity entity = new TestEntity();

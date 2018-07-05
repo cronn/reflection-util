@@ -170,6 +170,7 @@ public final class PropertyUtils {
 	}
 
 	public static void writeDirectly(Object destination, Field field, Object value) {
+		Assert.notNull(destination, () -> "Destination must not be null");
 		try {
 			withAccessibleObject(field, f -> {
 				f.set(destination, value);
