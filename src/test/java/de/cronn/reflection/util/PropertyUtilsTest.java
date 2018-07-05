@@ -789,6 +789,18 @@ public class PropertyUtilsTest {
 		assertThat(PropertyUtils.getDefaultValueObject(void.class)).isNull();
 	}
 
+	@Test
+	public void testProxyIsCached() throws Exception {
+		Class<? extends TestEntity> proxy1 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
+		Class<? extends TestEntity> proxy2 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
+		assertThat(proxy1).isSameAs(proxy2);
+
+		PropertyUtils.clearCache();
+
+		Class<? extends TestEntity> proxy3 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
+		assertThat(proxy1).isNotSameAs(proxy3);
+	}
+
 	private static List<String> collectPropertyNames(Collection<PropertyDescriptor> propertyDescriptors) {
 		return propertyDescriptors.stream()
 			.map(PropertyDescriptor::getName)
