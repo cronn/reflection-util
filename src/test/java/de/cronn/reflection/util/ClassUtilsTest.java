@@ -146,6 +146,7 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.isProxyClass(createJdkProxy(BaseInterface.class).getClass())).isTrue();
 		assertThat(ClassUtils.isProxyClass(createByteBuddyProxy(testObject).getClass())).isTrue();
 		assertThat(ClassUtils.isProxyClass(createCglibProxy(testObject).getClass())).isTrue();
+		assertThat(ClassUtils.isProxyClass(PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy())).isTrue();
 		assertThat(ClassUtils.isProxyClass(testObject.getClass())).isFalse();
 		assertThat(ClassUtils.isProxyClass(String.class)).isFalse();
 		assertThat(ClassUtils.isProxyClass(null)).isFalse();
