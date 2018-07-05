@@ -162,7 +162,7 @@ public final class PropertyUtils {
 
 	public static void writeDirectly(Object destination, String propertyName, Object value) {
 		try {
-			Field field = findField(destination, propertyName);
+			Field field = findField(destination.getClass(), propertyName);
 			writeDirectly(destination, field, value);
 		} catch (NoSuchFieldException e) {
 			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyName), e);
@@ -181,16 +181,11 @@ public final class PropertyUtils {
 		}
 	}
 
-	private static Field findField(Object object, String propertyName) throws NoSuchFieldException {
-		Class<Object> objectClass = ClassUtils.getRealClass(object);
-		return findField(objectClass, propertyName);
-	}
-
-	private static Field findField(Class<Object> objectClass, String propertyName) throws NoSuchFieldException {
+	private static Field findField(Class<?> objectClass, String propertyName) throws NoSuchFieldException {
 		try {
 			return objectClass.getDeclaredField(propertyName);
 		} catch (NoSuchFieldException e) {
-			Class<? super Object> superclass = objectClass.getSuperclass();
+			Class<?> superclass = objectClass.getSuperclass();
 			if (!superclass.equals(Object.class)) {
 				return findField(superclass, propertyName);
 			}
@@ -204,7 +199,7 @@ public final class PropertyUtils {
 
 	public static <T> T readDirectly(Object object, String propertyName) {
 		try {
-			Field field = findField(object, propertyName);
+			Field field = findField(object.getClass(), propertyName);
 			return readDirectly(object, field);
 		} catch (NoSuchFieldException e) {
 			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(object, propertyName), e);
@@ -332,9 +327,9 @@ public final class PropertyUtils {
 		Class<? extends T> proxyClass = getCache(beanClass).getMethodCapturingProxy();
 		try {
 			T proxyInstance = ObjenesisHelper.newInstance(proxyClass);
-			writeDirectly(proxyInstance, proxyClass.getDeclaredField(MethodCaptor.FIELD_NAME), methodCaptor);
+			writeDirectly(proxyInstance, MethodCaptor.FIELD_NAME, methodCaptor);
 			return proxyInstance;
-		} catch (NoSuchFieldException | IllegalAccessError e) {
+		} catch (IllegalAccessError e) {
 			throw new ReflectionRuntimeException("Failed to create proxy on " + beanClass, e);
 		}
 	}

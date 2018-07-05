@@ -34,6 +34,7 @@ import de.cronn.reflection.util.testclasses.FinalClass;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
 import de.cronn.reflection.util.testclasses.TestAnnotation;
 import de.cronn.reflection.util.testclasses.TestEntity;
+import net.bytebuddy.ByteBuddy;
 
 public class PropertyUtilsTest {
 
@@ -580,6 +581,20 @@ public class PropertyUtilsTest {
 			String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
 			assertThat(e).hasMessage("Can not set final java.lang.String field " + fieldName + " to java.lang.Long");
 		}
+	}
+
+	@Test
+	public void testWriteDirectly_ProxyClass() throws Exception {
+		TestEntity testEntity = new TestEntity();
+		Class<?> proxyClass = new ByteBuddy()
+			.subclass(testEntity.getClass())
+			.defineField("$delegate", TestEntity.class)
+			.make()
+			.load(getClass().getClassLoader())
+			.getLoaded();
+		Object proxy = ClassUtils.createNewInstance(proxyClass);
+
+		PropertyUtils.writeDirectly(proxy, "$delegate", testEntity);
 	}
 
 	@Test
