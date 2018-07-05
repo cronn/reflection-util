@@ -69,11 +69,7 @@ public final class PropertyUtils {
 
 	@SuppressWarnings("unchecked")
 	static <T> PropertyDescriptorCache<T> getCache(Class<T> type) {
-		return (PropertyDescriptorCache<T>) cache.computeIfAbsent(type, key -> {
-			Class<T> originalClass = (Class<T>) key;
-			Class<? extends T> proxyClass = MethodCaptor.createProxyClass(originalClass);
-			return PropertyDescriptorCache.compute(originalClass, proxyClass);
-		});
+		return (PropertyDescriptorCache<T>) cache.computeIfAbsent(type, PropertyDescriptorCache::compute);
 	}
 
 	public static <T> T copyNonDefaultValues(T source, T destination) {

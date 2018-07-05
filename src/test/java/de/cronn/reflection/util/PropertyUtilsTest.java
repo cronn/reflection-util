@@ -30,6 +30,7 @@ import de.cronn.reflection.util.testclasses.ClassWithMethodCaptorField;
 import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
+import de.cronn.reflection.util.testclasses.FinalClass;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
 import de.cronn.reflection.util.testclasses.TestAnnotation;
 import de.cronn.reflection.util.testclasses.TestEntity;
@@ -47,6 +48,15 @@ public class PropertyUtilsTest {
 			"propertyWithoutField",
 			"someObject",
 			"string"
+		);
+	}
+
+	@Test
+	public void testGetPropertyDescriptorsOfFinalClass() throws Exception {
+		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(FinalClass.class));
+		assertThat(propertyNames).containsExactly(
+			"class",
+			"someProperty"
 		);
 	}
 
@@ -380,6 +390,22 @@ public class PropertyUtilsTest {
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_NoVisibleDefaultConstructor() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityProtectedNoDefaultConstructor.class, EntityProtectedNoDefaultConstructor::getSomeProperty);
+		assertThat(propertyDescriptor.getName()).isEqualTo("someProperty");
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_FinalClass() throws Exception {
+		try {
+			PropertyUtils.getPropertyDescriptor(FinalClass.class, FinalClass::getSomeProperty);
+			fail("IllegalArgumentException expected");
+		} catch (IllegalArgumentException e) {
+			assertThat(e).hasMessage("Cannot subclass primitive, array or final types: " + FinalClass.class);
+		}
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByName_FinalClass() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(FinalClass.class, "someProperty");
 		assertThat(propertyDescriptor.getName()).isEqualTo("someProperty");
 	}
 

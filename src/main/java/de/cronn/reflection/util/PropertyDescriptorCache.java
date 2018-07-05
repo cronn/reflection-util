@@ -18,12 +18,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 class PropertyDescriptorCache<T> {
 
 	private final Class<T> originalClass;
-	private final Class<? extends T> methodCapturingProxy;
+	private final AtomicReference<Class<? extends T>> methodCapturingProxy = new AtomicReference<>();
 	private final Map<String, PropertyDescriptor> propertyDescriptorsByName = new LinkedHashMap<>();
 	private final Map<Field, PropertyDescriptor> propertyDescriptorsByField = new LinkedHashMap<>();
 	private final Map<Method, PropertyDescriptor> propertyDescriptorsByMethod = new LinkedHashMap<>();
@@ -32,9 +33,8 @@ class PropertyDescriptorCache<T> {
 	private final Map<VoidMethod<T>, Method> methodByVoidMethodCache = new ConcurrentHashMap<>();
 	private final Map<PropertyDescriptor, Object> defaultValues = new ConcurrentHashMap<>();
 
-	private PropertyDescriptorCache(Class<T> originalClass, Class<? extends T> methodCapturingProxy) {
+	private PropertyDescriptorCache(Class<T> originalClass) {
 		this.originalClass = originalClass;
-		this.methodCapturingProxy = methodCapturingProxy;
 
 		for (PropertyDescriptor propertyDescriptor : getAllPropertyDescriptors()) {
 			PropertyDescriptor existing = propertyDescriptorsByName.putIfAbsent(propertyDescriptor.getName(), propertyDescriptor);
@@ -64,7 +64,13 @@ class PropertyDescriptorCache<T> {
 	}
 
 	Class<? extends T> getMethodCapturingProxy() {
-		return methodCapturingProxy;
+		return methodCapturingProxy.updateAndGet(proxyClass -> {
+			if (proxyClass == null) {
+				return MethodCaptor.createProxyClass(originalClass);
+			} else {
+				return proxyClass;
+			}
+		});
 	}
 
 	private Set<Field> getFields() {
@@ -127,8 +133,8 @@ class PropertyDescriptorCache<T> {
 		return Collections.unmodifiableMap(descriptors);
 	}
 
-	static <T> PropertyDescriptorCache<T> compute(Class<T> originalClass, Class<? extends T> methodCapturingProxy) {
-		return new PropertyDescriptorCache<>(originalClass, methodCapturingProxy);
+	static <T> PropertyDescriptorCache<T> compute(Class<T> originalClass) {
+		return new PropertyDescriptorCache<>(originalClass);
 	}
 
 	PropertyDescriptor getDescriptorByName(String propertyName) {
