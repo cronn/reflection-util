@@ -19,7 +19,7 @@ public class MethodCaptor {
 
 	private final AtomicReference<Method> capturedMethod = new AtomicReference<>();
 
-	private void capture(Method method) {
+	void capture(Method method) {
 		Method existing = capturedMethod.getAndSet(method);
 		Assert.isNull(existing, () -> String.format("Method already captured: %s called twice?", existing));
 	}
