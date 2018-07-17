@@ -172,10 +172,7 @@ public final class PropertyUtils {
 	public static void writeDirectly(Object destination, Field field, Object value) {
 		Assert.notNull(destination, () -> "Destination must not be null");
 		try {
-			withAccessibleObject(field, f -> {
-				f.set(destination, value);
-				return null;
-			}, true);
+			withAccessibleObject(field, f -> f.set(destination, value));
 		} catch (ReflectiveOperationException e) {
 			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, field), e);
 		}
@@ -208,20 +205,12 @@ public final class PropertyUtils {
 
 	public static <T> T readDirectly(Object object, Field field) {
 		try {
-			boolean accessible = field.isAccessible();
-			try {
-				if (!accessible) {
-					field.setAccessible(true);
-				}
+			return withAccessibleObject(field, f -> {
 				@SuppressWarnings("unchecked")
 				T value = (T) field.get(object);
 				return value;
-			} finally {
-				if (!accessible) {
-					field.setAccessible(false);
-				}
-			}
-		} catch (IllegalAccessException e) {
+			}, true);
+		} catch (ReflectiveOperationException e) {
 			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(object, field), e);
 		}
 	}
@@ -447,6 +436,17 @@ public final class PropertyUtils {
 
 	private interface AccessibleObjectFunction<T extends AccessibleObject, R> {
 		R access(T object) throws ReflectiveOperationException;
+	}
+
+	private interface AccessibleObjectConsumer<T extends AccessibleObject> {
+		void access(T object) throws ReflectiveOperationException;
+	}
+
+	private static <T extends AccessibleObject> void withAccessibleObject(T accessibleObject, AccessibleObjectConsumer<T> accessibleObjectConsumer) throws ReflectiveOperationException {
+		withAccessibleObject(accessibleObject, obj -> {
+			accessibleObjectConsumer.access(obj);
+			return null;
+		}, true);
 	}
 
 	private static <T extends AccessibleObject, R> R withAccessibleObject(T accessibleObject, AccessibleObjectFunction<T, R> function, boolean force) throws ReflectiveOperationException {

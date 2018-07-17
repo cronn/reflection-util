@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -416,9 +415,9 @@ public class PropertyUtilsTest {
 			ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
 			fail("ReflectionRuntimeException expected");
 		} catch (ReflectionRuntimeException e) {
-			Assertions.assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
-			Assertions.assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
-			Assertions.assertThat(e.getCause()).hasMessageMatching("(tried|failed) to access class .+? from class .+?");
+			assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
+			assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
+			assertThat(e.getCause()).hasMessageMatching("(tried|failed) to access class .+? from class .+?");
 		}
 	}
 
@@ -428,9 +427,9 @@ public class PropertyUtilsTest {
 			ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
 			fail("IllegalAccessError expected");
 		} catch (ReflectionRuntimeException e) {
-			Assertions.assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
-			Assertions.assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
-			Assertions.assertThat(e.getCause()).hasMessageMatching("(tried|failed) to access class .+? from class .+?");
+			assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
+			assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
+			assertThat(e.getCause()).hasMessageMatching("(tried|failed) to access class .+? from class .+?");
 		}
 	}
 
@@ -438,7 +437,7 @@ public class PropertyUtilsTest {
 	public void testGetPropertyDescriptorByField() throws Exception {
 		Field field = TestEntity.class.getDeclaredField("someObject");
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByField(TestEntity.class, field);
-		Assertions.assertThat(PropertyUtils.getQualifiedPropertyName(TestEntity.class, propertyDescriptor)).isEqualTo("TestEntity.someObject");
+		assertThat(PropertyUtils.getQualifiedPropertyName(TestEntity.class, propertyDescriptor)).isEqualTo("TestEntity.someObject");
 	}
 
 	@Test
@@ -545,6 +544,25 @@ public class PropertyUtilsTest {
 		} catch (ReflectionRuntimeException e) {
 			assertThat(e).hasMessage("Failed to read TestEntity.propertyWithoutField");
 		}
+	}
+
+	@Test
+	public void testReadDirectly_AccessibilityAfterDirectReadIsRestored() throws Exception {
+		TestEntity testEntity = new TestEntity();
+		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
+
+		Field declaredField = getDeclaredField(testEntity, property);
+		assertThat(declaredField.isAccessible()).isFalse();
+
+		PropertyUtils.readDirectly(testEntity, declaredField);
+
+		assertThat(declaredField.isAccessible()).isFalse();
+
+		declaredField.setAccessible(true);
+		assertThat(declaredField.isAccessible()).isTrue();
+
+		PropertyUtils.readDirectly(testEntity, declaredField);
+		assertThat(declaredField.isAccessible()).isTrue();
 	}
 
 	@Test
@@ -820,6 +838,10 @@ public class PropertyUtilsTest {
 		return propertyDescriptors.stream()
 			.map(PropertyDescriptor::getName)
 			.collect(Collectors.toList());
+	}
+
+	private static Field getDeclaredField(TestEntity testEntity, PropertyDescriptor property) throws Exception {
+		return testEntity.getClass().getDeclaredField(property.getName());
 	}
 
 }
