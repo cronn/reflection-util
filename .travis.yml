@@ -8,4 +8,4 @@ jdk:
     - oraclejdk10
 
 after_success:
-    - ./gradlew jacocoTestReport coveralls
+    - ./gradlew pitest jacocoTestReport coveralls
