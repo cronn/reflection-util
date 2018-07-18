@@ -472,6 +472,9 @@ public class PropertyUtilsTest {
 		PropertyDescriptor numberProperty = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
 		assertThat(PropertyUtils.getQualifiedPropertyName(TestEntity.class, numberProperty)).isEqualTo("TestEntity.number");
 		assertThat(PropertyUtils.getQualifiedPropertyName(new TestEntity(), numberProperty)).isEqualTo("TestEntity.number");
+
+		Field numberField = getTestEntityField(numberProperty);
+		assertThat(PropertyUtils.getQualifiedPropertyName(new TestEntity(), numberField)).isEqualTo("TestEntity.number");
 	}
 
 	@Test
@@ -520,7 +523,7 @@ public class PropertyUtilsTest {
 		TestEntity testEntity = new TestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
 
-		Field declaredField = getDeclaredField(testEntity, property);
+		Field declaredField = getTestEntityField(property);
 		assertThat(declaredField.isAccessible()).isFalse();
 
 		PropertyUtils.readDirectly(testEntity, declaredField);
@@ -664,7 +667,9 @@ public class PropertyUtilsTest {
 		TestEntity destination = Mockito.mock(TestEntity.class);
 
 		PropertyDescriptor numberProperty = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
-		PropertyUtils.copyValue(source, destination, numberProperty);
+		Object copiedValue = PropertyUtils.copyValue(source, destination, numberProperty);
+
+		assertThat(copiedValue).isEqualTo(25);
 
 		Mockito.verify(destination).setNumber(25);
 		Mockito.verifyNoMoreInteractions(destination);
@@ -797,8 +802,8 @@ public class PropertyUtilsTest {
 			.collect(Collectors.toList());
 	}
 
-	private static Field getDeclaredField(TestEntity testEntity, PropertyDescriptor property) throws Exception {
-		return testEntity.getClass().getDeclaredField(property.getName());
+	private static Field getTestEntityField(PropertyDescriptor property) throws Exception {
+		return TestEntity.class.getDeclaredField(property.getName());
 	}
 
 }

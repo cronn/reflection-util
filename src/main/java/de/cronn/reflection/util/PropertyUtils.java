@@ -418,7 +418,7 @@ public final class PropertyUtils {
 		return type.getSimpleName() + "." + name;
 	}
 
-	private static String getQualifiedPropertyName(Object bean, Field field) {
+	static String getQualifiedPropertyName(Object bean, Field field) {
 		return getQualifiedPropertyName(bean, field.getName());
 	}
 
