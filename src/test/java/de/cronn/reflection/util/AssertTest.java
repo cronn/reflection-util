@@ -11,19 +11,13 @@ public class AssertTest {
 		Assert.isNull(null, null);
 		Assert.isNull(null, () -> "some message");
 
-		try {
-			Assert.isNull("", () -> "some message");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("some message");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.isNull("", () -> "some message"))
+			.withMessage("some message");
 
-		try {
-			Assert.isNull(new Object(), () -> "some message: " + 12);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("some message: 12");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.isNull("", () -> "some message: " + 12))
+			.withMessage("some message: 12");
 	}
 
 	@Test
@@ -32,12 +26,9 @@ public class AssertTest {
 		Assert.notNull(new Object(), () -> "some message");
 		Assert.notNull(123, () -> "some message");
 
-		try {
-			Assert.notNull(null, () -> "some message");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("some message");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.notNull(null, () -> "some message"))
+			.withMessage("some message");
 	}
 
 }

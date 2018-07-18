@@ -44,12 +44,9 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.getRealClass(createCglibProxy(createByteBuddyProxy(new TestEntity())))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(Long.valueOf(16))).isSameAs(Long.class);
 
-		try {
-			ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class, BaseInterface.class));
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Unexpected number of interfaces: 2");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class, BaseInterface.class)))
+			.withMessage("Unexpected number of interfaces: 2");
 	}
 
 	@Test
@@ -89,14 +86,10 @@ public class ClassUtilsTest {
 	public void testCreateNewInstanceLikeProtectedConstructor() throws Exception {
 		Object sourceEntity = EntityProtectedNoDefaultConstructor.newEntity();
 
-		try {
-			ClassUtils.createNewInstanceLike(sourceEntity);
-			fail("ReflectionRuntimeException exception expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasCauseExactlyInstanceOf(NoSuchMethodException.class);
-			Object className = EntityProtectedNoDefaultConstructor.class;
-			assertThat(e).hasMessage("Failed to construct an instance of " + className);
-		}
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> ClassUtils.createNewInstanceLike(sourceEntity))
+			.withCauseExactlyInstanceOf(NoSuchMethodException.class)
+			.withMessage("Failed to construct an instance of " + EntityProtectedNoDefaultConstructor.class);
 	}
 
 	@Test
@@ -119,14 +112,12 @@ public class ClassUtilsTest {
 	@Test
 	public void testGetVoidMethodName_AnonymousClass() throws Exception {
 		SomeClass bean = new SomeClass() {};
-		try {
-			ClassUtils.getVoidMethodName(bean, SomeClass::doOtherWork);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
-			assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
-			assertThat(e.getCause()).hasMessageContaining("cannot access its superclass");
-		}
+
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> ClassUtils.getVoidMethodName(bean, SomeClass::doOtherWork))
+			.withMessageMatching("Failed to create proxy on class .+?")
+			.withCauseExactlyInstanceOf(IllegalAccessError.class)
+			.withStackTraceContaining("cannot access its superclass");
 	}
 
 	@Test

@@ -85,14 +85,12 @@ public class PropertyUtilsTest {
 	@Test
 	public void testRead_FieldWithoutGetter() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter");
-		try {
-			PropertyUtils.read(new TestEntity(), propertyDescriptor);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to read TestEntity.fieldWithoutGetter");
-			assertThat(e).hasCauseExactlyInstanceOf(IllegalArgumentException.class);
-			assertThat(e.getCause()).hasMessage("fieldWithoutGetter must be readable");
-		}
+
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.read(new TestEntity(), propertyDescriptor))
+			.withMessage("Failed to read TestEntity.fieldWithoutGetter")
+			.withCauseExactlyInstanceOf(IllegalArgumentException.class)
+			.withStackTraceContaining("fieldWithoutGetter must be readable");
 	}
 
 	@Test
@@ -147,12 +145,10 @@ public class PropertyUtilsTest {
 	@Test
 	public void testIsDefaultValue() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(BaseClass.class, BaseClass::getBaseClassStringProperty);
-		try {
-			PropertyUtils.isDefaultValue(BaseClass.class, propertyDescriptor, null);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to determine default value for BaseClass.baseClassStringProperty");
-		}
+
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.isDefaultValue(BaseClass.class, propertyDescriptor, null))
+			.withMessage("Failed to determine default value for BaseClass.baseClassStringProperty");
 
 		assertThat(PropertyUtils.isDefaultValue(DerivedClass.class, propertyDescriptor, null)).isTrue();
 		assertThat(PropertyUtils.isDefaultValue(DerivedClass.class, propertyDescriptor, "")).isFalse();
@@ -196,12 +192,9 @@ public class PropertyUtilsTest {
 		propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(new TestEntity(), "number");
 		assertThat(propertyDescriptor).isEqualTo(PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber));
 
-		try {
-			PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "propertyThatDoesNotExist");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Property 'propertyThatDoesNotExist' not found for 'TestEntity'");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "propertyThatDoesNotExist"))
+			.withMessage("Property 'propertyThatDoesNotExist' not found for 'TestEntity'");
 	}
 
 	@Test
@@ -273,22 +266,17 @@ public class PropertyUtilsTest {
 		OtherTestEntity testEntity = new OtherTestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
 
-		try {
-			PropertyUtils.write(testEntity, property, "some value");
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to write OtherTestEntity.immutableValue");
-			assertThat(e.getCause().getMessage()).isEqualTo("immutableValue is not writable");
-		}
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.write(testEntity, property, "some value"))
+			.withMessage("Failed to write OtherTestEntity.immutableValue")
+			.withStackTraceContaining("immutableValue is not writable");
 
-		try {
-			PropertyUtils.write(testEntity, property, 12345L, true);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to write OtherTestEntity.immutableValue");
-			String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
-			assertThat(e.getCause().getMessage()).isEqualTo("Can not set final java.lang.String field " + fieldName + " to java.lang.Long");
-		}
+		String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
+
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.write(testEntity, property, 12345L, true))
+			.withMessage("Failed to write OtherTestEntity.immutableValue")
+			.withStackTraceContaining("Can not set final java.lang.String field " + fieldName + " to java.lang.Long");
 
 		PropertyUtils.write(testEntity, property, "changed value", true);
 		assertThat(testEntity.getImmutableValue()).isEqualTo("changed value");
@@ -347,44 +335,34 @@ public class PropertyUtilsTest {
 		TypedPropertyGetter<TestEntity, Integer> someGetter = TestEntity::getNumber;
 		PropertyGetter<TestEntity> callSiteSpecificLambda = someGetter::get;
 
-		try {
-			PropertyUtils.getPropertyDescriptor(TestEntity.class, callSiteSpecificLambda);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage(callSiteSpecificLambda + " is call site specific");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, callSiteSpecificLambda))
+			.withMessage(callSiteSpecificLambda + " is call site specific");
 	}
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_FinalMethodCannotBeCaptured() throws Exception {
-		try {
-			PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getClass);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getClass))
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
 	}
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_NonGetterMethod() throws Exception {
-		try {
-			PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::doNothing);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			Object className = TestEntity.class.getName();
-			assertThat(e).hasMessage("Found no property for public java.lang.Object " + className + ".doNothing() on class " + className);
-		}
+		Object className = TestEntity.class.getName();
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::doNothing))
+			.withMessage("Found no property for public java.lang.Object " + className + ".doNothing() on class " + className);
 	}
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_NoMethodInvocation() throws Exception {
 		PropertyGetter<TestEntity> propertyGetter = e -> null;
-		try {
-			PropertyUtils.getPropertyDescriptor(TestEntity.class, propertyGetter);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
-		}
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, propertyGetter))
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
 	}
 
 	@Test
@@ -395,12 +373,9 @@ public class PropertyUtilsTest {
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_FinalClass() throws Exception {
-		try {
-			PropertyUtils.getPropertyDescriptor(FinalClass.class, FinalClass::getSomeProperty);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Cannot subclass primitive, array or final types: " + FinalClass.class);
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(FinalClass.class, FinalClass::getSomeProperty))
+			.withMessage("Cannot subclass primitive, array or final types: " + FinalClass.class);
 	}
 
 	@Test
@@ -411,26 +386,22 @@ public class PropertyUtilsTest {
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() throws Exception {
-		try {
-			ClassExtendingNonPublicBaseClass.getPropertyDescriptor();
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
-			assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
-			assertThat(e.getCause()).hasMessageMatching("(tried|failed) to access class .+? from class .+?");
-		}
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(ClassExtendingNonPublicBaseClass::getPropertyDescriptor)
+			.withMessageMatching("Failed to create proxy on class .+?")
+			.withCauseExactlyInstanceOf(IllegalAccessError.class)
+			.withStackTraceContaining("tried to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
+				" from " + ClassExtendingNonPublicBaseClass.class);
 	}
 
 	@Test
 	public void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() throws Exception {
-		try {
-			ClassExtendingClassThatExtendsNonPublicBaseClass.getPropertyDescriptor();
-			fail("IllegalAccessError expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessageMatching("Failed to create proxy on class .+?");
-			assertThat(e).hasCauseExactlyInstanceOf(IllegalAccessError.class);
-			assertThat(e.getCause()).hasMessageMatching("(tried|failed) to access class .+? from class .+?");
-		}
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(ClassExtendingClassThatExtendsNonPublicBaseClass::getPropertyDescriptor)
+			.withMessageMatching("Failed to create proxy on class .+?")
+			.withCauseExactlyInstanceOf(IllegalAccessError.class)
+			.withStackTraceContaining("tried to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
+				" from " + ClassExtendingClassThatExtendsNonPublicBaseClass.class);
 	}
 
 	@Test
@@ -538,12 +509,10 @@ public class PropertyUtilsTest {
 	public void testReadDirectly_PropertyWithoutField() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
-		try {
-			PropertyUtils.readDirectly(testEntity, property);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to read TestEntity.propertyWithoutField");
-		}
+
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.readDirectly(testEntity, property))
+			.withMessage("Failed to read TestEntity.propertyWithoutField");
 	}
 
 	@Test
@@ -569,12 +538,10 @@ public class PropertyUtilsTest {
 	public void testWriteDirectly_PropertyWithoutField() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
-		try {
-			PropertyUtils.writeDirectly(testEntity, property, "some value");
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to write TestEntity.propertyWithoutField");
-		}
+
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.writeDirectly(testEntity, property, "some value"))
+			.withMessage("Failed to write TestEntity.propertyWithoutField");
 	}
 
 	@Test
@@ -592,13 +559,11 @@ public class PropertyUtilsTest {
 	public void testWriteDirectly_WrongType() throws Exception {
 		OtherTestEntity testEntity = new OtherTestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
-		try {
-			PropertyUtils.writeDirectly(testEntity, property, 12345L);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
-			assertThat(e).hasMessage("Can not set final java.lang.String field " + fieldName + " to java.lang.Long");
-		}
+		String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.writeDirectly(testEntity, property, 12345L))
+			.withMessage("Can not set final java.lang.String field " + fieldName + " to java.lang.Long");
 	}
 
 	@Test
@@ -618,12 +583,10 @@ public class PropertyUtilsTest {
 	@Test
 	public void testWriteDirectly_Null() throws Exception {
 		Field field = TestEntity.class.getDeclaredField("number");
-		try {
-			PropertyUtils.writeDirectly(null, field, "some value");
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage("Destination must not be null");
-		}
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.writeDirectly(null, field, "some value"))
+			.withMessage("Destination must not be null");
 	}
 
 	@Test
@@ -650,12 +613,9 @@ public class PropertyUtilsTest {
 		assertThat(PropertyUtils.readProperty(entity, propertyDescriptor, String.class)).isEqualTo("some-value");
 		assertThat(PropertyUtils.readProperty(entity, propertyDescriptor, Object.class)).isEqualTo("some-value");
 
-		try {
-			PropertyUtils.readProperty(entity, propertyDescriptor, Number.class);
-			fail("IllegalArgumentException expected");
-		} catch (IllegalArgumentException e) {
-			assertThat(e).hasMessage(TestEntity.class + ".string is of type " + String.class + " but " + Number.class + " is expected");
-		}
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.readProperty(entity, propertyDescriptor, Number.class))
+			.withMessage(TestEntity.class + ".string is of type " + String.class + " but " + Number.class + " is expected");
 	}
 
 	@Test
@@ -754,13 +714,10 @@ public class PropertyUtilsTest {
 	public void testRead_ExceptionInGetter() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithExceptionInGetter);
 
-		try {
-			PropertyUtils.read(new TestEntity(), propertyDescriptor);
-			fail("ReflectionRuntimeException expected");
-		} catch (ReflectionRuntimeException e) {
-			assertThat(e).hasMessage("Failed to read TestEntity.propertyWithExceptionInGetter");
-			assertThat(e.getCause()).hasCauseExactlyInstanceOf(UnsupportedOperationException.class);
-		}
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> PropertyUtils.read(new TestEntity(), propertyDescriptor))
+			.withMessage("Failed to read TestEntity.propertyWithExceptionInGetter")
+			.withRootCauseExactlyInstanceOf(UnsupportedOperationException.class);
 	}
 
 	@Test
