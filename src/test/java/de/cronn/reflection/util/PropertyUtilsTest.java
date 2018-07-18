@@ -390,7 +390,7 @@ public class PropertyUtilsTest {
 			.isThrownBy(ClassExtendingNonPublicBaseClass::getPropertyDescriptor)
 			.withMessageMatching("Failed to create proxy on class .+?")
 			.withCauseExactlyInstanceOf(IllegalAccessError.class)
-			.withStackTraceContaining("tried to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
+			.withStackTraceContaining("to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
 				" from " + ClassExtendingNonPublicBaseClass.class);
 	}
 
@@ -400,7 +400,7 @@ public class PropertyUtilsTest {
 			.isThrownBy(ClassExtendingClassThatExtendsNonPublicBaseClass::getPropertyDescriptor)
 			.withMessageMatching("Failed to create proxy on class .+?")
 			.withCauseExactlyInstanceOf(IllegalAccessError.class)
-			.withStackTraceContaining("tried to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
+			.withStackTraceContaining("to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
 				" from " + ClassExtendingClassThatExtendsNonPublicBaseClass.class);
 	}
 
