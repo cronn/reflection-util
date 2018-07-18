@@ -75,7 +75,7 @@ public final class ClassUtils {
 		}
 	}
 
-	private static <T> T createInstance(Constructor<T> constructor) throws ReflectiveOperationException {
+	static <T> T createInstance(Constructor<T> constructor) throws ReflectiveOperationException {
 		boolean accessible = constructor.isAccessible();
 		try {
 			if (!accessible) {

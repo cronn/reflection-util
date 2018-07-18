@@ -2,6 +2,7 @@ package de.cronn.reflection.util;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
@@ -234,6 +235,22 @@ public class ClassUtilsTest {
 		);
 
 		assertThat(withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(SomeClass.class))).hasSize(4);
+	}
+
+	@Test
+	public void testCreateInstance_AccessibleFlagIsRestored() throws Exception {
+		Constructor<TestEntity> constructor = TestEntity.class.getDeclaredConstructor();
+		assertThat(constructor.isAccessible()).isFalse();
+
+		assertThat(ClassUtils.createInstance(constructor)).isNotNull();
+
+		assertThat(constructor.isAccessible()).isFalse();
+
+		constructor.setAccessible(true);
+
+		assertThat(ClassUtils.createInstance(constructor)).isNotNull();
+
+		assertThat(constructor.isAccessible()).isTrue();
 	}
 
 	private static Set<MethodSignature> withoutJacocoMethodSignatures(Set<MethodSignature> methodSignatures) {
