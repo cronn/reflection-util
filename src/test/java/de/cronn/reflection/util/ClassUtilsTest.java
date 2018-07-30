@@ -106,6 +106,16 @@ public class ClassUtilsTest {
 	}
 
 	@Test
+	public void testGetVoidMethod_CallSiteSpecificLambda() throws Exception {
+		VoidMethod<ClassUtilsTest> lambda = ClassUtilsTest::testGetVoidMethod;
+		VoidMethod<ClassUtilsTest> callSiteSpecificLambda = lambda::invoke;
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> ClassUtils.getVoidMethod(ClassUtilsTest.class, callSiteSpecificLambda))
+			.withMessage(callSiteSpecificLambda + " is call site specific");
+	}
+
+	@Test
 	public void testGetVoidMethodName() throws Exception {
 		String voidMethodName = ClassUtils.getVoidMethodName(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
 		assertThat(voidMethodName).isEqualTo("testGetVoidMethod");
