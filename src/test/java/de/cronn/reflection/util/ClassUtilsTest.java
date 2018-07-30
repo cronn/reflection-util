@@ -116,6 +116,16 @@ public class ClassUtilsTest {
 	}
 
 	@Test
+	public void testGetVoidMethod_lambdaWithException() throws Exception {
+		assertThatExceptionOfType(ReflectionRuntimeException.class)
+			.isThrownBy(() -> ClassUtils.getVoidMethod(ClassUtilsTest.class, bean -> {
+				throw new IllegalStateException("some exception");
+			}))
+			.withRootCauseExactlyInstanceOf(IllegalStateException.class)
+			.withMessage("java.lang.IllegalStateException: some exception");
+	}
+
+	@Test
 	public void testGetVoidMethodName() throws Exception {
 		String voidMethodName = ClassUtils.getVoidMethodName(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
 		assertThat(voidMethodName).isEqualTo("testGetVoidMethod");
