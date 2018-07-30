@@ -18,6 +18,8 @@ public class TestEntity {
 
 	private Object fieldWithoutGetter;
 
+	private String fieldWithAnnotationOnSetter;
+
 	public void setNumber(int number) {
 		this.number = number;
 	}
@@ -58,4 +60,12 @@ public class TestEntity {
 		throw new UnsupportedOperationException();
 	}
 
+	public String getFieldWithAnnotationOnSetter() {
+		return fieldWithAnnotationOnSetter;
+	}
+
+	@Size(min = 10, max = 20)
+	public void setFieldWithAnnotationOnSetter(String fieldWithAnnotationOnSetter) {
+		this.fieldWithAnnotationOnSetter = fieldWithAnnotationOnSetter;
+	}
 }

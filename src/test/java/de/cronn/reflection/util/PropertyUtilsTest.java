@@ -48,6 +48,7 @@ public class PropertyUtilsTest {
 		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(TestEntity.class));
 		assertThat(propertyNames).containsExactly(
 			"class",
+			"fieldWithAnnotationOnSetter",
 			"fieldWithoutGetter",
 			"number",
 			"propertyWithExceptionInGetter",
@@ -450,6 +451,12 @@ public class PropertyUtilsTest {
 		assertThat(interfaceStringSize.max()).isEqualTo(40);
 
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getString);
+		assertThat(PropertyUtils.getAnnotationOfProperty(new TestEntity(), propertyDescriptor, Size.class)).isNotNull();
+	}
+
+	@Test
+	public void testGetAnnotationOfProperty_AnnotationOnSetter() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getFieldWithAnnotationOnSetter);
 		assertThat(PropertyUtils.getAnnotationOfProperty(new TestEntity(), propertyDescriptor, Size.class)).isNotNull();
 	}
 
