@@ -1,5 +1,6 @@
 package de.cronn.reflection.util;
 
+import static de.cronn.reflection.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Constructor;
@@ -31,6 +32,11 @@ import net.sf.cglib.proxy.FixedValue;
 public class ClassUtilsTest {
 
 	private static final Class<?> SOME_TEST_INTERFACE_CLASS = SomeTestInterface.class;
+
+	@Test
+	public void testConstructor() throws Exception {
+		assertThatConstructorIsPrivate(ClassUtils.class);
+	}
 
 	@Test
 	public void testGetRealClass() throws Exception {

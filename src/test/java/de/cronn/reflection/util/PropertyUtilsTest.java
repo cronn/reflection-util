@@ -1,5 +1,6 @@
 package de.cronn.reflection.util;
 
+import static de.cronn.reflection.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.beans.PropertyDescriptor;
@@ -36,6 +37,11 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 import net.bytebuddy.ByteBuddy;
 
 public class PropertyUtilsTest {
+
+	@Test
+	public void testConstructor() throws Exception {
+		assertThatConstructorIsPrivate(PropertyUtils.class);
+	}
 
 	@Test
 	public void testGetPropertyDescriptorsOfTestEntityClass() throws Exception {

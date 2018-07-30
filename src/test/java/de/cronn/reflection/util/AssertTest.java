@@ -1,10 +1,16 @@
 package de.cronn.reflection.util;
 
+import static de.cronn.reflection.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
 import org.junit.Test;
 
 public class AssertTest {
+
+	@Test
+	public void testConstructor() throws Exception {
+		assertThatConstructorIsPrivate(Assert.class);
+	}
 
 	@Test
 	public void testIsNull() throws Exception {
