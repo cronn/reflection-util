@@ -101,11 +101,6 @@ def pomConfig = {
 			name "Benedikt Waldvogel"
 			email "benedikt.waldvogel@cronn.de"
 		}
-		developer {
-			id "lukasz.dziedziul"
-			name "Lukasz Dziedziul"
-			email "lukasz.dziedziul@cronn.de"
-		}
 	}
 
 	scm {
