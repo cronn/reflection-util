@@ -151,7 +151,7 @@ bintray {
 }
 
 ext {
-	byteBuddyVersion = "1.8.12"
+	byteBuddyVersion = "1.8.16"
 	objenesisVersion = "2.6"
 	jsr305Version = "3.0.2"
 	slf4jVersion = "1.7.25"
