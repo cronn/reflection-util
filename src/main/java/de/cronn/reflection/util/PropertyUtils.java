@@ -6,10 +6,13 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +76,16 @@ public final class PropertyUtils {
 	}
 
 	public static <T> T copyNonDefaultValues(T source, T destination) {
+		return copyNonDefaultValues(source, destination, Collections.emptySet());
+	}
+
+	public static <T> T copyNonDefaultValues(T source, T destination, PropertyDescriptor... excludedProperties) {
+		return copyNonDefaultValues(source, destination, Stream.of(excludedProperties).collect(Collectors.toSet()));
+	}
+
+	public static <T> T copyNonDefaultValues(T source, T destination, Collection<PropertyDescriptor> excludedProperties) {
 		getPropertyDescriptors(source).stream()
+			.filter(property -> !excludedProperties.contains(property))
 			.filter(PropertyUtils::isFullyAccessible)
 			.filter(propertyDescriptor -> !hasDefaultValue(source, propertyDescriptor))
 			.forEach(propertyDescriptor -> copyValue(source, destination, propertyDescriptor));

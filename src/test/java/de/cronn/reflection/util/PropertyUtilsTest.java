@@ -664,6 +664,23 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testCopyNonDefaultValuesWithExclusion() throws Exception {
+		TestEntity source = new TestEntity();
+		source.setNumber(12);
+		source.setString("some string");
+		source.setSomeObject(new Object());
+		source.setFieldWithAnnotationOnSetter("value");
+
+		TestEntity mock = PropertyUtils.copyNonDefaultValues(source, Mockito.mock(TestEntity.class),
+			PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getString),
+			PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject));
+
+		Mockito.verify(mock).setNumber(12);
+		Mockito.verify(mock).setFieldWithAnnotationOnSetter("value");
+		Mockito.verifyNoMoreInteractions(mock);
+	}
+
+	@Test
 	public void testCopyNonDefaultValues_NoNonDefaults() throws Exception {
 		TestEntity mock = Mockito.mock(TestEntity.class);
 
