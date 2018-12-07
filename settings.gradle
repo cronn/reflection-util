@@ -1,3 +1,1 @@
 rootProject.name = "reflection-util"
-
-enableFeaturePreview('STABLE_PUBLISHING')

@@ -39,10 +39,6 @@ repositories {
 	mavenCentral()
 }
 
-jacoco {
-	toolVersion = "0.8.2"
-}
-
 jacocoTestReport {
 	reports {
 		html.enabled = false
@@ -62,7 +58,7 @@ tasks.withType(JavaCompile) {
 }
 
 wrapper {
-	gradleVersion = "4.10.2"
+	gradleVersion = "5.0"
 	distributionType = Wrapper.DistributionType.ALL
 }
 
