@@ -156,18 +156,18 @@ bintray {
 }
 
 ext {
-	byteBuddyVersion = "1.9.1"
-	objenesisVersion = "2.6"
+	byteBuddyVersion = "1.9.5"
+	objenesisVersion = "3.0.1"
 	jsr305Version = "3.0.2"
 	slf4jVersion = "1.7.25"
 	junitVersion = "4.12"
 	logbackVersion = "1.2.3"
-	mockitoVersion = "2.23.0"
+	mockitoVersion = "2.23.4"
 	assertJVersion = "3.11.1"
-	validationApiVersion = "1.1.0.Final"
-	cglibVersion = "3.2.8"
-	javassistVersion = "3.23.1-GA"
-	equalsVerifierVersion = "3.0"
+	validationApiVersion = "2.0.1.Final"
+	cglibVersion = "3.2.9"
+	javassistVersion = "3.24.0-GA"
+	equalsVerifierVersion = "3.0.3"
 }
 
 dependencies {
