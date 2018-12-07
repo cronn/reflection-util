@@ -512,6 +512,12 @@ public class PropertyUtilsTest {
 	}
 
 	@Test
+	public void testGetAnnotationOfProperty_AnnotationOnDefaultMethod() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(ClassWithDefaultMethods.class, ClassWithDefaultMethods::getName);
+		assertThat(PropertyUtils.getAnnotationOfProperty(ClassWithDefaultMethods.class, propertyDescriptor, Size.class)).isNotNull();
+	}
+
+	@Test
 	public void testHasAnnotationOfProperty() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject);
 		assertThat(PropertyUtils.hasAnnotationOfProperty(TestEntity.class, propertyDescriptor, Nullable.class)).isTrue();
