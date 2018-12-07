@@ -17,9 +17,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 
 class PropertyDescriptorCache<T> {
 
@@ -101,17 +101,36 @@ class PropertyDescriptorCache<T> {
 	private static Collection<PropertyDescriptor> collectAllPropertyDescriptors(Class<?> type) {
 		try {
 			BeanInfo beanInfo = Introspector.getBeanInfo(type);
-			PropertyDescriptor[] descriptors = beanInfo.getPropertyDescriptors();
-			return Arrays.asList(descriptors);
+			Map<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
+			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+				propertyDescriptors.put(propertyDescriptor.getName(), propertyDescriptor);
+			}
+
+			collectPropertyDescriptorsOfInterfaces(type, propertyDescriptors);
+			return propertyDescriptors.values();
 		} catch (IntrospectionException e) {
 			throw new ReflectionRuntimeException(e);
 		}
 	}
 
+	// workaround for https://bugs.openjdk.java.net/browse/JDK-8071693
+	private static void collectPropertyDescriptorsOfInterfaces(Class<?> type, Map<String, PropertyDescriptor> propertyDescriptors)
+			throws IntrospectionException {
+		if (type == null || type.equals(Object.class)) {
+			return;
+		}
+		for (Class<?> typeInterface : type.getInterfaces()) {
+			BeanInfo beanInfo = Introspector.getBeanInfo(typeInterface);
+			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+				propertyDescriptors.putIfAbsent(propertyDescriptor.getName(), propertyDescriptor);
+			}
+			collectPropertyDescriptorsOfInterfaces(typeInterface, propertyDescriptors);
+		}
+		collectPropertyDescriptorsOfInterfaces(type.getSuperclass(), propertyDescriptors);
+	}
+
 	private Collection<PropertyDescriptor> getAllPropertyDescriptors() {
-		return collectAllPropertyDescriptors(originalClass).stream()
-			.sorted(Comparator.comparing(PropertyDescriptor::getName))
-			.collect(Collectors.toList());
+		return collectAllPropertyDescriptors(originalClass);
 	}
 
 	Collection<PropertyDescriptor> getDescriptors() {

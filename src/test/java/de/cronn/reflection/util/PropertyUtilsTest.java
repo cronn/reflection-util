@@ -26,12 +26,17 @@ import de.cronn.reflection.util.testclasses.BaseClass;
 import de.cronn.reflection.util.testclasses.BaseInterface;
 import de.cronn.reflection.util.testclasses.ClassExtendingClassThatExtendsNonPublicBaseClass;
 import de.cronn.reflection.util.testclasses.ClassExtendingNonPublicBaseClass;
+import de.cronn.reflection.util.testclasses.ClassWithDefaultMethods;
+import de.cronn.reflection.util.testclasses.ClassWithInheritedDefaultMethods;
 import de.cronn.reflection.util.testclasses.ClassWithMethodCaptorField;
 import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
 import de.cronn.reflection.util.testclasses.FinalClass;
+import de.cronn.reflection.util.testclasses.InterfaceWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
+import de.cronn.reflection.util.testclasses.SubClassOfInterfaceWithDefaultMethods;
+import de.cronn.reflection.util.testclasses.SubclassOfClassWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.TestAnnotation;
 import de.cronn.reflection.util.testclasses.TestEntity;
 import net.bytebuddy.ByteBuddy;
@@ -86,6 +91,16 @@ public class PropertyUtilsTest {
 		assertThat(propertyNames).containsExactly(
 			"baseClassProperty",
 			"class"
+		);
+	}
+
+	@Test
+	public void testGetPropertyDescriptorsOfClassWithDefaultMethods() throws Exception {
+		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(ClassWithDefaultMethods.class));
+		assertThat(propertyNames).containsExactly(
+			"class",
+			"id",
+			"name"
 		);
 	}
 
@@ -376,6 +391,42 @@ public class PropertyUtilsTest {
 	public void testGetPropertyDescriptorByPropertyGetter_NoVisibleDefaultConstructor() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityProtectedNoDefaultConstructor.class, EntityProtectedNoDefaultConstructor::getSomeProperty);
 		assertThat(propertyDescriptor.getName()).isEqualTo("someProperty");
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_DefaultMethod() throws Exception {
+		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(ClassWithDefaultMethods.class, ClassWithDefaultMethods::getId);
+		assertThat(idProperty.getName()).isEqualTo("id");
+
+		PropertyDescriptor nameProperty = PropertyUtils.getPropertyDescriptor(ClassWithDefaultMethods.class, ClassWithDefaultMethods::getName);
+		assertThat(nameProperty.getName()).isEqualTo("name");
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_Subclass() throws Exception {
+		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(SubclassOfClassWithDefaultMethods.class, InterfaceWithDefaultMethods::getId);
+		assertThat(idProperty.getName()).isEqualTo("id");
+
+		PropertyDescriptor nameProperty = PropertyUtils.getPropertyDescriptor(SubclassOfClassWithDefaultMethods.class, InterfaceWithDefaultMethods::getName);
+		assertThat(nameProperty.getName()).isEqualTo("name");
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_SubInterface() throws Exception {
+		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(SubClassOfInterfaceWithDefaultMethods.class, InterfaceWithDefaultMethods::getId);
+		assertThat(idProperty.getName()).isEqualTo("id");
+
+		PropertyDescriptor nameProperty = PropertyUtils.getPropertyDescriptor(SubClassOfInterfaceWithDefaultMethods.class, InterfaceWithDefaultMethods::getName);
+		assertThat(nameProperty.getName()).isEqualTo("name");
+	}
+
+	@Test
+	public void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_ClassWithInheritedDefaultMethods() throws Exception {
+		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(ClassWithInheritedDefaultMethods.class, ClassWithInheritedDefaultMethods::getId);
+		assertThat(idProperty.getName()).isEqualTo("id");
+
+		PropertyDescriptor nameProperty = PropertyUtils.getPropertyDescriptor(ClassWithInheritedDefaultMethods.class, ClassWithInheritedDefaultMethods::getName);
+		assertThat(nameProperty.getName()).isEqualTo("name");
 	}
 
 	@Test
