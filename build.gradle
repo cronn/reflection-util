@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-	id 'java'
+	id 'java-library'
 	id 'jacoco'
 	id 'eclipse'
 	id 'idea'
@@ -171,19 +171,19 @@ ext {
 }
 
 dependencies {
-	compile "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
-	compile "org.objenesis:objenesis:${objenesisVersion}"
-	compile "com.google.code.findbugs:jsr305:${jsr305Version}"
-	compile "org.slf4j:slf4j-api:${slf4jVersion}"
+	api "com.google.code.findbugs:jsr305:${jsr305Version}"
+	implementation "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
+	implementation "org.objenesis:objenesis:${objenesisVersion}"
+	implementation "org.slf4j:slf4j-api:${slf4jVersion}"
 
-	testCompile "junit:junit:${junitVersion}"
-	testCompile "org.mockito:mockito-core:${mockitoVersion}"
-	testCompile "org.assertj:assertj-core:${assertJVersion}"
-	testCompile "javax.validation:validation-api:${validationApiVersion}"
-	testCompile "cglib:cglib:${cglibVersion}"
-	testCompile "org.javassist:javassist:${javassistVersion}"
-	testCompile "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}"
+	testImplementation "junit:junit:${junitVersion}"
+	testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+	testImplementation "org.assertj:assertj-core:${assertJVersion}"
+	testImplementation "javax.validation:validation-api:${validationApiVersion}"
+	testImplementation "cglib:cglib:${cglibVersion}"
+	testImplementation "org.javassist:javassist:${javassistVersion}"
+	testImplementation "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}"
 
-	testRuntime "ch.qos.logback:logback-classic:${logbackVersion}"
-	testRuntime "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+	testRuntimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
+	testRuntimeOnly "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
 }
