@@ -2,6 +2,10 @@ buildscript {
 	repositories {
 		mavenCentral()
 	}
+
+	dependencyLocking {
+		lockAllConfigurations()
+	}
 }
 
 plugins {
@@ -151,35 +155,30 @@ bintray {
 	override = true
 }
 
-ext {
-	byteBuddyVersion = "1.9.5"
-	objenesisVersion = "3.0.1"
-	jsr305Version = "3.0.2"
-	slf4jVersion = "1.7.25"
-	junitVersion = "4.12"
-	logbackVersion = "1.2.3"
-	mockitoVersion = "2.23.4"
-	assertJVersion = "3.11.1"
-	validationApiVersion = "2.0.1.Final"
-	cglibVersion = "3.2.9"
-	javassistVersion = "3.24.0-GA"
-	equalsVerifierVersion = "3.0.3"
-}
-
 dependencies {
-	api "com.google.code.findbugs:jsr305:${jsr305Version}"
-	implementation "net.bytebuddy:byte-buddy:${byteBuddyVersion}"
-	implementation "org.objenesis:objenesis:${objenesisVersion}"
-	implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+	api "com.google.code.findbugs:jsr305:latest.release"
+	implementation "net.bytebuddy:byte-buddy:latest.release"
+	implementation "org.objenesis:objenesis:latest.release"
+	implementation "org.slf4j:slf4j-api:latest.release"
 
-	testImplementation "junit:junit:${junitVersion}"
-	testImplementation "org.mockito:mockito-core:${mockitoVersion}"
-	testImplementation "org.assertj:assertj-core:${assertJVersion}"
-	testImplementation "javax.validation:validation-api:${validationApiVersion}"
-	testImplementation "cglib:cglib:${cglibVersion}"
-	testImplementation "org.javassist:javassist:${javassistVersion}"
-	testImplementation "nl.jqno.equalsverifier:equalsverifier:${equalsVerifierVersion}"
+	testImplementation "junit:junit:latest.release"
+	testImplementation "org.mockito:mockito-core:latest.release"
+	testImplementation "org.assertj:assertj-core:latest.release"
+	testImplementation "javax.validation:validation-api:latest.release"
+	testImplementation "cglib:cglib:latest.release"
+	testImplementation "org.javassist:javassist:latest.release"
+	testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
 
-	testRuntimeOnly "ch.qos.logback:logback-classic:${logbackVersion}"
-	testRuntimeOnly "org.slf4j:jcl-over-slf4j:${slf4jVersion}"
+	testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
+	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
+
+	components.all { ComponentMetadataDetails details ->
+		details.statusScheme = ['candidate', 'release']
+		if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA).*/) {
+			details.status = 'candidate'
+		} else {
+			details.status = 'release'
+		}
+	}
+
 }
