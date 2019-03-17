@@ -9,8 +9,8 @@ public class DeepImmutableSet<E> extends DeepImmutableCollection<E> implements S
 
 	private static final long serialVersionUID = 1L;
 
-	public DeepImmutableSet(Set<E> list) {
-		super(list, "This set is immutable");
+	public DeepImmutableSet(Set<E> set) {
+		super(set, "This set is immutable");
 	}
 
 	public static <T> DeepImmutableSet<T> of(T element) {
