@@ -6,15 +6,21 @@ import static org.assertj.core.api.Assertions.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 import org.junit.Test;
 
+import de.cronn.reflection.util.immutable.ReadOnly;
 import de.cronn.reflection.util.testclasses.BaseInterface;
+import de.cronn.reflection.util.testclasses.ClassWithInheritedDefaultMethods;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedConstructor;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
@@ -23,6 +29,7 @@ import de.cronn.reflection.util.testclasses.FindMethodByArgumentTypesTestCaseSub
 import de.cronn.reflection.util.testclasses.OtherClass;
 import de.cronn.reflection.util.testclasses.SomeClass;
 import de.cronn.reflection.util.testclasses.SomeTestInterface;
+import de.cronn.reflection.util.testclasses.SubclassOfClassWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.TestEntity;
 import javassist.util.proxy.ProxyFactory;
 import net.bytebuddy.ByteBuddy;
@@ -138,7 +145,8 @@ public class ClassUtilsTest {
 
 	@Test
 	public void testGetVoidMethodName_AnonymousClass() throws Exception {
-		SomeClass bean = new SomeClass() {};
+		SomeClass bean = new SomeClass() {
+		};
 
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
 			.isThrownBy(() -> ClassUtils.getVoidMethodName(bean, SomeClass::doOtherWork))
@@ -277,6 +285,29 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.createInstance(constructor)).isNotNull();
 
 		assertThat(constructor.isAccessible()).isTrue();
+	}
+
+	@Test
+	public void testFindAnnotation() throws Exception {
+		Method getNumberMethod = ClassUtils.getVoidMethod(TestEntity.class, TestEntity::getNumber);
+		assertThat(ClassUtils.findAnnotation(getNumberMethod, ReadOnly.class)).isNull();
+
+		Method setFieldWithAnnotationOnSetter = TestEntity.class.getMethod("setFieldWithAnnotationOnSetter", String.class);
+		assertThat(ClassUtils.findAnnotation(setFieldWithAnnotationOnSetter, Size.class)).isNotNull();
+
+		Method asMyself = TestEntity.class.getMethod("asMyself");
+		assertThat(ClassUtils.findAnnotation(asMyself, ReadOnly.class)).isNotNull();
+
+		Method countNothing = TestEntity.class.getMethod("countNothing");
+		assertThat(ClassUtils.findAnnotation(countNothing, ReadOnly.class)).isNotNull();
+
+		for (Class<?> clazz : Arrays.asList(ClassWithInheritedDefaultMethods.class, SubclassOfClassWithDefaultMethods.class)) {
+			Method getName = clazz.getMethod("getName");
+			assertThat(ClassUtils.findAnnotation(getName, Size.class)).isNotNull();
+
+			Method getId = clazz.getMethod("getId");
+			assertThat(ClassUtils.findAnnotation(getId, NotNull.class)).isNotNull();
+		}
 	}
 
 	private static Set<MethodSignature> withoutJacocoMethodSignatures(Set<MethodSignature> methodSignatures) {

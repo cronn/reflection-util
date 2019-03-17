@@ -1,5 +1,6 @@
 package de.cronn.reflection.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -161,4 +162,48 @@ public final class ClassUtils {
 			.collect(Collectors.toCollection(TreeSet::new));
 	}
 
+	public static <A extends Annotation> A findAnnotation(Method method, Class<A> annotationType) {
+		A annotation = method.getAnnotation(annotationType);
+		if (annotation != null) {
+			return annotation;
+		}
+		return findAnnotation(method.getDeclaringClass(), method, annotationType);
+	}
+
+	private static <A extends Annotation> A findAnnotation(Class<?> declaringClass, Method method, Class<A> annotationType) {
+		if (declaringClass == null || declaringClass.equals(Object.class)) {
+			return null;
+		}
+		if (declaringClass.getSuperclass() != null) {
+			for (Method methodCandidate : declaringClass.getSuperclass().getMethods()) {
+				if (isOverride(method, methodCandidate)) {
+					A annotation = findAnnotation(methodCandidate, annotationType);
+					if (annotation != null) {
+						return annotation;
+					}
+				}
+			}
+		}
+		for (Class<?> interfaceClass : declaringClass.getInterfaces()) {
+			for (Method methodCandidate : interfaceClass.getDeclaredMethods()) {
+				if (isOverride(method, methodCandidate)) {
+					A annotation = findAnnotation(methodCandidate, annotationType);
+					if (annotation != null) {
+						return annotation;
+					}
+				}
+			}
+			A annotation = findAnnotation(interfaceClass, method, annotationType);
+			if (annotation != null) {
+				return annotation;
+			}
+		}
+		return findAnnotation(declaringClass.getSuperclass(), method, annotationType);
+	}
+
+	private static boolean isOverride(Method method, Method candidate) {
+		return method.getName().equals(candidate.getName())
+			&& candidate.getParameterCount() == method.getParameterCount()
+			&& Arrays.equals(candidate.getParameterTypes(), method.getParameterTypes());
+	}
 }

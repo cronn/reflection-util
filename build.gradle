@@ -161,9 +161,13 @@ dependencies {
 	testImplementation "org.mockito:mockito-core:latest.release"
 	testImplementation "org.assertj:assertj-core:latest.release"
 	testImplementation "javax.validation:validation-api:latest.release"
+	testImplementation "org.apache.commons:commons-lang3:latest.release"
 	testImplementation "cglib:cglib:latest.release"
 	testImplementation "org.javassist:javassist:latest.release"
 	testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
+
+	testImplementation "org.openjdk.jmh:jmh-core:latest.release"
+	testRuntimeOnly "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
 
 	testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
 	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"

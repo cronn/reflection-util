@@ -56,9 +56,16 @@ public class PropertyUtilsTest {
 			"fieldWithAnnotationOnSetter",
 			"fieldWithoutGetter",
 			"number",
+			"otherTestEntity",
 			"propertyWithExceptionInGetter",
 			"propertyWithoutField",
+			"someArrayList",
+			"someCollection",
+			"someInstant",
+			"someIterable",
+			"someList",
 			"someObject",
+			"someSet",
 			"string"
 		);
 	}

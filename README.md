@@ -7,7 +7,7 @@
 
 Utility classes that simplify common use cases of Java Reflection.
 
-We ship two utility classes `PropertyUtils` and `ClassUtils` that are described in the following sections.
+We ship the utility classes `PropertyUtils`, `ClassUtils` and `ImmutableProxy` that are described in the following sections.
 
 ## PropertyUtils ##
 
@@ -17,18 +17,10 @@ and support to retrieve [PropertyDescriptors][property-descriptor] via Java 8 me
 Example:
 
 ```java
-class MyPojo {
-
+class MyPojo
+{
     private Long number;
-
-    public Long getNumber() {
-        return number;
-    }
-
-    public void setNumber(Long number) {
-        this.number = number;
-    }
-
+    // getters and setters
 }
 ```
 
@@ -43,10 +35,9 @@ assertEquals(12345L, number);
 ## ClassUtils ##
 
 ```java
-interface MyInterface {
-
+interface MyInterface
+{
     void doSomething();
-
 }
 ```
 
@@ -61,6 +52,69 @@ Object proxy = Proxy.newProxyInstance(getClass().getClassLoader(), interfaces, (
 assertEquals(MyInterface.class, ClassUtils.getRealClass(proxy));
 ```
 
+## ImmutableProxy ##
+
+It’s sometimes desirable to make objects immutable to prevent programming mistakes,
+such as the accidental modification of an object that is passed to another method.
+
+In some cases the class itself cannot be made immutable. For example, because mutability is required by the JPA provider,
+the JSON serialization library, or the class is not owned by you.
+
+Creating deep clones might come to the rescue, however, the negative performance impact might not be acceptable.
+
+In such cases, `ImmutableProxy` can be used to create a deep but lightweight read-only view of a [POJO](pojo)
+that follows the [JavaBean conventions](java-bean-conventions).
+Invocation of getters and read-only methods is allowed but other methods such as setters are rejected by default.
+
+Example:
+
+```java
+class MyPojo
+{
+    private String name;
+    private List<MyPojo> children = new ArrayList<>();
+    // getters and setters
+}
+```
+```java
+MyPojo original = new MyPojo();
+original.setName("original");
+MyPojo immutableProxy = ImmutableProxy.create(original);
+immutableProxy.getName()    // ✔ returns "original"
+immutableProxy.setName("…") // ✖ throws UnsupportedOperationException
+```
+
+By default, `ImmutableProxy` wraps the return value of a getter in a immutable proxy:
+
+```java
+original.getChildren().add(new MyPojo("child"));
+immutableProxy.getChildren().size()  // ✔ returns 1
+
+MyPojo firstChild = immutableProxy.getChildren().get(0);
+firstChild.getName()    // ✔ returns "child"
+firstChild.setName("…") // ✖ throws UnsupportedOperationException
+
+immutableProxy.getChildren().clear() // ✖ throws UnsupportedOperationException
+```
+
+Some methods need to be annotated with `@ReadOnly`
+if `ImmutableProxy` incorrectly considers the method as mutating:
+
+```java
+class MyPojo
+{
+    List<String> elements;
+
+    @ReadOnly
+    int size() {
+        return elements.size();
+    }
+}
+```
+
+As a final word of warning, please note that `ImmutableProxy` follows a best-effort approach but cannot _guarantee_ to detect all possible modifications.
+For example, it cannot detect that a getter actually modifies the state as a side-effect.
+
 ## Usage ##
 Add the following Maven dependency to your project:
 
@@ -72,15 +126,19 @@ Add the following Maven dependency to your project:
 </dependency>
 ```
 
-## Dependencies ##
+## Requirements ##
 
 - Java 8+
 
 ## Related Work ##
 
-- [Apache Commons BeanUtils][apache-commons-beanutils]
-- [Jodd Methref][jodd-methref]
+- [Apache Commons BeanUtils](apache-commons-beanutils)
+- [Jodd Methref](jodd-methref)
+- `ImmutableProxy`: [Immutator](https://github.com/verhas/immutator)
 
 [apache-commons-beanutils]: http://commons.apache.org/proper/commons-beanutils/
 [property-descriptor]: https://docs.oracle.com/javase/10/docs/api/java/beans/PropertyDescriptor.html
 [jodd-methref]: https://jodd.org/ref/methref.html
+[pojo]: https://en.wikipedia.org/wiki/Plain_old_Java_object
+[java-bean-conventions]: https://en.wikipedia.org/wiki/JavaBeans#JavaBean_conventions
+[verhas/immutator]: https://github.com/verhas/immutator

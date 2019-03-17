@@ -1,9 +1,12 @@
 package de.cronn.reflection.util.testclasses;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OtherTestEntity {
+public class OtherTestEntity implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private String name;
 	private final String immutableValue;

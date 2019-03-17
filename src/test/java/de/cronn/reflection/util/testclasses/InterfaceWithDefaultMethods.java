@@ -1,14 +1,21 @@
 package de.cronn.reflection.util.testclasses;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import de.cronn.reflection.util.immutable.ReadOnly;
 
 public interface InterfaceWithDefaultMethods {
 
-    String getId();
+	@NotNull
+	String getId();
 
-    @Size(min = 15)
-    default String getName() {
-        return "some name";
-    }
+	@Size(min = 15)
+	default String getName() {
+		return "some name";
+	}
+
+	@ReadOnly
+	int size();
 
 }
