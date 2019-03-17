@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
@@ -178,4 +179,7 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 		return (TestEntity) super.clone();
 	}
 
+	public TreeMap<String, String> getSomeTreeMap() {
+		return new TreeMap<>();
+	}
 }

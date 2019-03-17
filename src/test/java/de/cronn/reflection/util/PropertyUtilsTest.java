@@ -67,6 +67,7 @@ public class PropertyUtilsTest {
 			"someMap",
 			"someObject",
 			"someSet",
+			"someTreeMap",
 			"string"
 		);
 	}

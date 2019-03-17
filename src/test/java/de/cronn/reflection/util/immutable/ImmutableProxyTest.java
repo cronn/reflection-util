@@ -179,6 +179,7 @@ public class ImmutableProxyTest {
 		assertThat(immutableList).hasSameHashCodeAs(original.getSomeList());
 
 		assertThat(ImmutableProxy.isImmutable(immutableProxy.getSomeArrayList())).isFalse();
+		assertThat(ImmutableProxy.isImmutable(immutableProxy.getSomeTreeMap())).isFalse();
 
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableList.add(new OtherTestEntity()))
