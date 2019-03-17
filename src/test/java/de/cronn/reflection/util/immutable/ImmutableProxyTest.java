@@ -178,9 +178,6 @@ public class ImmutableProxyTest {
 		assertThat(immutableList).hasSameSizeAs(original.getSomeList());
 		assertThat(immutableList).hasSameHashCodeAs(original.getSomeList());
 
-		assertThat(ImmutableProxy.isImmutable(immutableProxy.getSomeArrayList())).isFalse();
-		assertThat(ImmutableProxy.isImmutable(immutableProxy.getSomeTreeMap())).isFalse();
-
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableList.add(new OtherTestEntity()))
 			.withMessage("This list is immutable");
@@ -223,6 +220,25 @@ public class ImmutableProxyTest {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableList.removeIf(w -> true))
 			.withMessage("This list is immutable");
+	}
+
+	@Test
+	public void testImmutableProxy_TooSpecificReturnType() throws Exception {
+		TestEntity original = new TestEntity();
+		original.setSomeList(Collections.emptyList());
+		TestEntity immutableProxy = ImmutableProxy.create(original);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(immutableProxy::getSomeArrayList)
+			.withMessage("Cannot create immutable collection for TestEntity.getSomeArrayList." +
+				" The return type is unknown or too specific: class java.util.ArrayList." +
+				" Consider to define a more generic type: Set/List/Collection");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(immutableProxy::getSomeTreeMap)
+			.withMessage("Cannot create immutable map for TestEntity.getSomeTreeMap." +
+				" The return type is unknown or too specific: class java.util.TreeMap." +
+				" Consider to define a more generic type: Map");
 	}
 
 	@Test

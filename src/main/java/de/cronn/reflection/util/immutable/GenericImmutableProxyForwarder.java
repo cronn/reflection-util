@@ -76,8 +76,9 @@ public final class GenericImmutableProxyForwarder {
 			Collection<?> collection = (Collection<?>) value;
 			return ImmutableProxy.create(collection);
 		} else {
-			log.trace("Cannot create immutable collection for {}. Collection type is unknown or too specific: {}", method, returnType);
-			return value;
+			throw new UnsupportedOperationException("Cannot create immutable collection for " + describeMethod(method) + "."
+				+ " The return type is unknown or too specific: " + returnType + "."
+				+ " Consider to define a more generic type: Set/List/Collection");
 		}
 	}
 
@@ -87,9 +88,14 @@ public final class GenericImmutableProxyForwarder {
 			Map<?, ?> map = (Map<?, ?>) value;
 			return ImmutableProxy.create(map);
 		} else {
-			log.trace("Cannot create immutable map for {}. Map type is unknown or too specific: {}", method, returnType);
-			return value;
+			throw new UnsupportedOperationException("Cannot create immutable map for " + describeMethod(method) + "."
+				+ " The return type is unknown or too specific: " + returnType + "."
+				+ " Consider to define a more generic type: Map");
 		}
+	}
+
+	private static String describeMethod(Method method) {
+		return method.getDeclaringClass().getSimpleName() + "." + method.getName();
 	}
 
 }
