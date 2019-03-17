@@ -12,8 +12,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -25,6 +27,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.junit.Test;
 
 import de.cronn.reflection.util.immutable.collection.DeepImmutableList;
+import de.cronn.reflection.util.immutable.collection.DeepImmutableMap;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableSet;
 import de.cronn.reflection.util.testclasses.ClassWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.ClassWithInheritedDefaultMethods;
@@ -36,7 +39,7 @@ import de.cronn.reflection.util.testclasses.TestEnum;
 
 public class ImmutableProxyTest {
 
-	private static final String IMMUTABLE_EXCEPTION_MESSAGE = "This instance is immutable."
+	public static final String IMMUTABLE_EXCEPTION_MESSAGE = "This instance is immutable."
 		+ " Annotate the method with @ReadOnly if this is a false-positive.";
 
 	private static final long TEST_TIMEOUT_MILLIS = 30_000;
@@ -279,6 +282,25 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
+	public void testImmutableProxy_Map() throws Exception {
+		TestEntity original = new TestEntity();
+		original.setSomeMap(new LinkedHashMap<>());
+		original.getSomeMap().put("a", new OtherTestEntity("a"));
+		original.getSomeMap().put("b", new OtherTestEntity("b"));
+
+		TestEntity immutableProxy = ImmutableProxy.create(original);
+
+		Map<String, OtherTestEntity> immutableMap = immutableProxy.getSomeMap();
+		assertThat(ImmutableProxy.isImmutable(immutableMap)).isTrue();
+		assertThat(immutableMap).hasSameSizeAs(original.getSomeMap());
+		assertThat(immutableMap.get("a").getImmutableValue()).isEqualTo("a");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableMap.get("a").setName("new name"))
+			.withMessage(IMMUTABLE_EXCEPTION_MESSAGE);
+	}
+
+	@Test
 	public void testImmutableProxyOnImmutableValue() throws Exception {
 		Object nullValue = null;
 
@@ -408,6 +430,13 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
+	public void testSerializeDeepImmutableMap() throws Exception {
+		DeepImmutableMap<String, String> proxy = (DeepImmutableMap<String, String>) ImmutableProxy.create(Collections.singletonMap("k", "v"));
+		DeepImmutableMap<String, String> clone = SerializationUtils.clone(proxy);
+		assertThat(clone).isNotSameAs(proxy).containsExactly(entry("k", "v"));
+	}
+
+	@Test
 	public void testSerializeImmutableProxy() throws Exception {
 		TestEntity original = new TestEntity(123);
 		original.setSomeList(Arrays.asList(
@@ -416,8 +445,14 @@ public class ImmutableProxyTest {
 		));
 
 		TestEntity proxy = ImmutableProxy.create(original);
+
+		OtherTestEntity firstElementBefore = proxy.getSomeList().get(0);
+
 		TestEntity clone = SerializationUtils.clone(proxy);
 		assertThat(clone).isInstanceOf(Immutable.class);
+
+		OtherTestEntity firstElementAfter = clone.getSomeList().get(0);
+		assertThat(firstElementAfter).isNotSameAs(firstElementBefore);
 	}
 
 }

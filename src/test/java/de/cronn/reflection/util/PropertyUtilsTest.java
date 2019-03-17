@@ -64,6 +64,7 @@ public class PropertyUtilsTest {
 			"someInstant",
 			"someIterable",
 			"someList",
+			"someMap",
 			"someObject",
 			"someSet",
 			"string"

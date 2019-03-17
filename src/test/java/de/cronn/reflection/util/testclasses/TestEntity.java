@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -35,6 +36,8 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 	private List<OtherTestEntity> someList;
 
 	private Set<String> someSet;
+
+	private Map<String, OtherTestEntity> someMap;
 
 	public TestEntity() {
 	}
@@ -140,6 +143,14 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 
 	public ArrayList<OtherTestEntity> getSomeArrayList() {
 		return new ArrayList<>(getSomeList());
+	}
+
+	public Map<String, OtherTestEntity> getSomeMap() {
+		return someMap;
+	}
+
+	public void setSomeMap(Map<String, OtherTestEntity> someMap) {
+		this.someMap = someMap;
 	}
 
 	@Override

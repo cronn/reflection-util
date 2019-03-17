@@ -33,7 +33,11 @@ public class DeepImmutableCollection<E> extends AbstractCollection<E> implements
 	}
 
 	E getImmutableElement(E element) {
-		return immutableProxyCache.computeIfAbsent(element, ImmutableProxy::create);
+		return immutableProxyCache.computeIfAbsent(element, this::createImmutableElement);
+	}
+
+	E createImmutableElement(E value) {
+		return ImmutableProxy.create(value);
 	}
 
 	@Override

@@ -41,6 +41,8 @@ public final class GenericImmutableProxyForwarder {
 		}
 		if (value instanceof Collection) {
 			return createImmutableCollection(value, method);
+		} else if (value instanceof Map) {
+			return createImmutableMap(value, method);
 		} else {
 			return ImmutableProxy.create(value);
 		}
@@ -75,6 +77,17 @@ public final class GenericImmutableProxyForwarder {
 			return ImmutableProxy.create(collection);
 		} else {
 			log.trace("Cannot create immutable collection for {}. Collection type is unknown or too specific: {}", method, returnType);
+			return value;
+		}
+	}
+
+	private static Object createImmutableMap(Object value, Method method) {
+		Class<?> returnType = method.getReturnType();
+		if (returnType.equals(Map.class)) {
+			Map<?, ?> map = (Map<?, ?>) value;
+			return ImmutableProxy.create(map);
+		} else {
+			log.trace("Cannot create immutable map for {}. Map type is unknown or too specific: {}", method, returnType);
 			return value;
 		}
 	}

@@ -17,6 +17,7 @@ import de.cronn.reflection.util.ClassUtils;
 import de.cronn.reflection.util.PropertyUtils;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableCollection;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableList;
+import de.cronn.reflection.util.immutable.collection.DeepImmutableMap;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableSet;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.method.MethodDescription;
@@ -58,6 +59,10 @@ public final class ImmutableProxy {
 
 	public static <T> Set<T> create(Set<T> set) {
 		return new DeepImmutableSet<>(set);
+	}
+
+	public static <K, V> Map<K, V> create(Map<K, V> map) {
+		return new DeepImmutableMap<>(map);
 	}
 
 	public static <T> T unwrap(T immutableProxy) {
