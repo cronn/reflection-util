@@ -48,24 +48,24 @@ public final class ImmutableProxy {
 		return proxy;
 	}
 
+	public static <T> Collection<T> create(Collection<T> collection) {
+		return new DeepImmutableCollection<>(collection);
+	}
+
+	public static <T> List<T> create(List<T> list) {
+		return new DeepImmutableList<>(list);
+	}
+
+	public static <T> Set<T> create(Set<T> set) {
+		return new DeepImmutableSet<>(set);
+	}
+
 	public static <T> T unwrap(T immutableProxy) {
 		if (!isImmutableProxy(immutableProxy)) {
 			return immutableProxy;
 		} else {
 			return PropertyUtils.readDirectly(immutableProxy, DELEGATE_FIELD_NAME);
 		}
-	}
-
-	static <T> Collection<T> create(Collection<T> collection) {
-		return new DeepImmutableCollection<>(collection);
-	}
-
-	static <T> List<T> create(List<T> list) {
-		return new DeepImmutableList<>(list);
-	}
-
-	static <T> Set<T> create(Set<T> set) {
-		return new DeepImmutableSet<>(set);
 	}
 
 	static boolean isImmutable(Object value) {

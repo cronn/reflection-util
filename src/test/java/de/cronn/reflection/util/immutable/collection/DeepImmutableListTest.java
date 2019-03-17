@@ -24,6 +24,13 @@ public class DeepImmutableListTest {
 	}
 
 	@Test
+	public void testCreateImmutableProxy() throws Exception {
+		List<TestEntity> immutableProxy = ImmutableProxy.create(Collections.singletonList(new TestEntity(123)));
+		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy));
+		assertThat(immutableProxy.get(0).getNumber()).isEqualTo(123);
+	}
+
+	@Test
 	public void testWriteMethodsAreRejected() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
