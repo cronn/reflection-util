@@ -7,7 +7,7 @@
 
 Utility classes that simplify common use cases of Java Reflection.
 
-We ship the utility classes `PropertyUtils`, `ClassUtils` and `ImmutableProxy` that are described in the following sections.
+We ship the utility classes `PropertyUtils`, `ClassUtils`, and `ImmutableProxy` that are described in the following sections.
 
 ## PropertyUtils ##
 
@@ -57,14 +57,19 @@ assertEquals(MyInterface.class, ClassUtils.getRealClass(proxy));
 It’s sometimes desirable to make objects immutable to prevent programming mistakes,
 such as the accidental modification of an object that is passed to another method.
 
-In some cases the class itself cannot be made immutable. For example, because mutability is required by the JPA provider,
-the JSON serialization library, or the class is not owned by you.
+In some cases the class itself cannot be made immutable. For example, because
+mutability is required by the JPA provider, the JSON serialization library,
+or the class is not owned by you.
 
-Creating deep clones might come to the rescue, however, the negative performance impact might not be acceptable.
+Creating deep clones might come to the rescue, however, the negative
+performance impact might not be acceptable and you cannot detect that the clone
+is accidentally modified.
 
-In such cases, `ImmutableProxy` can be used to create a deep but lightweight read-only view of a [POJO](pojo)
-that follows the [JavaBean conventions](java-bean-conventions).
-Invocation of getters and read-only methods is allowed but other methods such as setters are rejected by default.
+In such cases, `ImmutableProxy` can be used to create a deep but lightweight
+read-only view of a [POJO](pojo) that follows the [JavaBean
+conventions](java-bean-conventions).
+Invocation of getters and read-only methods is allowed but other methods such
+as setters are rejected by default.
 
 Example:
 
