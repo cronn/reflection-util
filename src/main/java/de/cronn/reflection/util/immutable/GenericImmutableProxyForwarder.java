@@ -8,9 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.cronn.reflection.util.ClassUtils;
 import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.implementation.bind.annotation.AllArguments;
@@ -20,8 +17,6 @@ import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.matcher.ElementMatchers;
 
 public final class GenericImmutableProxyForwarder {
-
-	private static final Logger log = LoggerFactory.getLogger(GenericImmutableProxyForwarder.class);
 
 	private static final Map<Method, Boolean> shouldProxyReturnValueCache = new ConcurrentHashMap<>();
 
