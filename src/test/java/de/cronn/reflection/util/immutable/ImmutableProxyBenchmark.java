@@ -28,6 +28,11 @@ public class ImmutableProxyBenchmark {
 		public Long getValue() {
 			return value;
 		}
+
+		public Object getValueAsObject() {
+			return value;
+		}
+
 	}
 
 	private final Bean bean = new Bean();
@@ -48,8 +53,7 @@ public class ImmutableProxyBenchmark {
 	@Benchmark
 	public void unproxiedSimpleFieldAccess() {
 		for (long i = 0; i < 10_000; i++) {
-			Long value = bean.getValue();
-			bean.setValue(value);
+			bean.getValue();
 		}
 	}
 
@@ -57,8 +61,15 @@ public class ImmutableProxyBenchmark {
 	public void proxiedSimpleFieldAccess() {
 		Bean proxy = ImmutableProxy.create(bean);
 		for (long i = 0; i < 10_000; i++) {
-			Long value = proxy.getValue();
-			bean.setValue(value);
+			proxy.getValue();
+		}
+	}
+
+	@Benchmark
+	public void proxiedSimpleFieldAccessAsObject() {
+		Bean proxy = ImmutableProxy.create(bean);
+		for (long i = 0; i < 10_000; i++) {
+			proxy.getValueAsObject();
 		}
 	}
 

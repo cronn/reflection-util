@@ -26,6 +26,7 @@ import net.bytebuddy.description.type.TypeDescription;
 import net.bytebuddy.implementation.ExceptionMethod;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatcher;
+import net.bytebuddy.matcher.ElementMatcher.Junction;
 import net.bytebuddy.matcher.ElementMatchers;
 
 public final class ImmutableProxy {
@@ -110,15 +111,25 @@ public final class ImmutableProxy {
 			.method(any())
 			.intercept(ExceptionMethod.throwing(UnsupportedOperationException.class, "This instance is immutable."
 				+ " Annotate the method with @" + ReadOnly.class.getSimpleName() + " if this is a false-positive."))
-			.method(not(isSetter())
-				.and(isGetter()
-					.or(isHashCode()).or(isEquals()).or(isToString()).or(isClone())
-					.or(isDeclaredBy(Object.class))
-					.or(isAnnotatedWith(ReadOnly.class))))
-			.intercept(MethodDelegation.to(ImmutableProxyForwarder.class))
+			.method(isReadyOnlyMethod())
+			.intercept(MethodDelegation.to(GenericImmutableProxyForwarder.class))
+			.method(isReadyOnlyMethod().and(returns(Long.class).or(returns(long.class))))
+			.intercept(MethodDelegation.to(ImmutableProxyForwarderLong.class))
+			.method(isReadyOnlyMethod().and(returns(Integer.class).or(returns(int.class))))
+			.intercept(MethodDelegation.to(ImmutableProxyForwarderInteger.class))
+			.method(isReadyOnlyMethod().and(returns(String.class)))
+			.intercept(MethodDelegation.to(ImmutableProxyForwarderString.class))
 			.make()
 			.load(ImmutableProxy.class.getClassLoader())
 			.getLoaded();
+	}
+
+	private static Junction<MethodDescription> isReadyOnlyMethod() {
+		return not(isSetter())
+			.and(isGetter()
+				.or(isHashCode()).or(isEquals()).or(isToString()).or(isClone())
+				.or(isDeclaredBy(Object.class))
+				.or(isAnnotatedWith(ReadOnly.class)));
 	}
 
 	private static ElementMatcher<MethodDescription> isAnnotatedWith(Class<? extends Annotation> annotation) {

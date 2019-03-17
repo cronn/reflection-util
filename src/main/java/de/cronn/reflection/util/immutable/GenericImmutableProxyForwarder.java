@@ -19,13 +19,13 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.matcher.ElementMatchers;
 
-public final class ImmutableProxyForwarder {
+public final class GenericImmutableProxyForwarder {
 
-	private static final Logger log = LoggerFactory.getLogger(ImmutableProxyForwarder.class);
+	private static final Logger log = LoggerFactory.getLogger(GenericImmutableProxyForwarder.class);
 
 	private static final Map<Method, Boolean> shouldProxyReturnValueCache = new ConcurrentHashMap<>();
 
-	private ImmutableProxyForwarder() {
+	private GenericImmutableProxyForwarder() {
 	}
 
 	@RuntimeType
