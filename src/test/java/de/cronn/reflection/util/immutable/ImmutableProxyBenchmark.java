@@ -1,5 +1,7 @@
 package de.cronn.reflection.util.immutable;
 
+import java.util.Objects;
+
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
@@ -33,14 +35,31 @@ public class ImmutableProxyBenchmark {
 			return value;
 		}
 
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) {
+				return true;
+			}
+			if (!(o instanceof Bean)) {
+				return false;
+			}
+			Bean bean = (Bean) o;
+			return Objects.equals(getValue(), bean.getValue());
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(getValue());
+		}
 	}
 
 	private final Bean bean = new Bean();
+	private final Bean otherBean = new Bean();
 
 	public static void main(String[] args) throws Exception {
 		Options opt = new OptionsBuilder()
 			.include(ImmutableProxyBenchmark.class.getSimpleName())
-			.warmupIterations(3)
+			.warmupIterations(5)
 			.warmupTime(TimeValue.seconds(10))
 			.measurementIterations(3)
 			.measurementTime(TimeValue.seconds(5))
@@ -70,6 +89,21 @@ public class ImmutableProxyBenchmark {
 		Bean proxy = ImmutableProxy.create(bean);
 		for (long i = 0; i < 10_000; i++) {
 			proxy.getValueAsObject();
+		}
+	}
+
+	@Benchmark
+	public void unproxiedEquals() {
+		for (long i = 0; i < 10_000; i++) {
+			bean.equals(otherBean);
+		}
+	}
+
+	@Benchmark
+	public void proxiedEquals() {
+		Bean proxy = ImmutableProxy.create(this.bean);
+		for (long i = 0; i < 10_000; i++) {
+			proxy.equals(otherBean);
 		}
 	}
 

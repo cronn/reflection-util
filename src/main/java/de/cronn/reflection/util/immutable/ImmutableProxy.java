@@ -122,6 +122,8 @@ public final class ImmutableProxy {
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderLong.class))
 			.method(isReadyOnlyMethod().and(returns(Integer.class).or(returns(int.class))))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderInteger.class))
+			.method(isReadyOnlyMethod().and(returns(Boolean.class).or(returns(boolean.class))))
+			.intercept(MethodDelegation.to(ImmutableProxyForwarderBoolean.class))
 			.method(isReadyOnlyMethod().and(returns(String.class)))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderString.class))
 			.make()
