@@ -6,7 +6,7 @@ com.google.code.findbugs:jsr305:3.0.2
 javax.validation:validation-api:2.0.1.Final
 junit:junit:4.12
 net.bytebuddy:byte-buddy-agent:1.9.7
-net.bytebuddy:byte-buddy:1.9.10
+net.bytebuddy:byte-buddy:1.9.11
 net.sf.jopt-simple:jopt-simple:4.6
 nl.jqno.equalsverifier:equalsverifier:3.1.7
 org.apache.ant:ant-launcher:1.10.3
