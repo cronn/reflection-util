@@ -10,7 +10,6 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 
-	id 'maven'
 	id 'maven-publish'
 	id 'org.sonarqube' version '2.7'
 	id 'com.jfrog.bintray' version '1.8.4'
@@ -82,48 +81,55 @@ publishing {
 	}
 }
 
-def pomConfig = {
-	licenses {
-		license {
-			name "The Apache Software License, Version 2.0"
-			url "http://www.apache.org/licenses/LICENSE-2.0.txt"
-			distribution "repo"
-		}
-	}
-
-	developers {
-		developer {
-			id "benedikt.waldvogel"
-			name "Benedikt Waldvogel"
-			email "benedikt.waldvogel@cronn.de"
-		}
-		developer {
-			id "mark.s.fischer"
-			name "Mark S. Fischer"
-			email "reflection-util.x.msf@spam-en.de"
-		}
-	}
-
-	scm {
-		url "https://github.com/cronn-de/reflection-util"
-	}
-}
-
 publishing {
 	publications {
 		CronnPublication(MavenPublication) {
+			groupId = project.group
+			artifactId = project.name
+			version = project.version
+			pom {
+				name = project.name
+				description = 'Java Reflection Utility Classes'
+				url = 'https://github.com/cronn-de/reflection-util'
+
+				licenses {
+					license {
+						name = "The Apache Software License, Version 2.0"
+						url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+						distribution = "repo"
+					}
+				}
+
+				developers {
+					developer {
+						id = "benedikt.waldvogel"
+						name = "Benedikt Waldvogel"
+						email = "benedikt.waldvogel@cronn.de"
+					}
+					developer {
+						id = "mark.s.fischer"
+						name = "Mark S. Fischer"
+						email = "reflection-util.x.msf@spam-en.de"
+					}
+				}
+
+				scm {
+					url = "https://github.com/cronn-de/reflection-util"
+				}
+			}
+
 			from components.java
+
 			artifact sourcesJar
 			artifact javadocJar
-			groupId project.group
-			artifactId project.name
-			version project.version
-			pom.withXml {
-				def root = asNode()
-				root.appendNode('description', 'Java Reflection Utility Classes')
-				root.appendNode('name', project.name)
-				root.appendNode('url', 'https://github.com/cronn-de/reflection-util')
-				root.children().last() + pomConfig
+
+			versionMapping {
+				usage('java-api') {
+					fromResolutionOf('runtimeClasspath')
+				}
+				usage('java-runtime') {
+					fromResolutionResult()
+				}
 			}
 		}
 	}
