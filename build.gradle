@@ -73,16 +73,6 @@ artifacts {
 
 publishing {
 	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-			artifact sourcesJar
-			artifact javadocJar
-		}
-	}
-}
-
-publishing {
-	publications {
 		CronnPublication(MavenPublication) {
 			groupId = project.group
 			artifactId = project.name
