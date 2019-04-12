@@ -28,13 +28,13 @@ public final class ClassUtils {
 	private ClassUtils() {
 	}
 
-	public static <T> Class<T> getRealClass(T object) {
+	public static <T> Class<? extends T> getRealClass(T object) {
 		@SuppressWarnings("unchecked")
 		Class<T> entityClass = (Class<T>) object.getClass();
 		return getRealClass(entityClass);
 	}
 
-	private static <T> Class<T> getRealClass(Class<T> clazz) {
+	private static <T> Class<? extends T> getRealClass(Class<T> clazz) {
 		if (isProxyClass(clazz)) {
 			if (Proxy.isProxyClass(clazz)) {
 				Class<?>[] interfaces = clazz.getInterfaces();
