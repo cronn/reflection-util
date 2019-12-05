@@ -17,6 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
@@ -83,6 +84,7 @@ public class ImmutableProxyTest {
 	public void testImmutableProxy_TestEntity() throws Exception {
 		TestEntity original = new TestEntity(123);
 		original.setSomeInstant(Instant.parse("2018-07-12T13:38:56Z"));
+		original.setSomeUuid(UUID.fromString("28e93b24-7252-43d8-a223-ca0b3270bd7f"));
 		original.setSomeList(Arrays.asList(new OtherTestEntity("one"), new OtherTestEntity("other")));
 		original.setSomeSet(new LinkedHashSet<>(Arrays.asList("a", "b", "c")));
 
@@ -117,6 +119,7 @@ public class ImmutableProxyTest {
 
 		assertThat(immutableProxy.asMyself()).isInstanceOf(Immutable.class);
 		assertThat(immutableProxy.asMyself().getSomeInstant()).isSameAs(original.getSomeInstant());
+		assertThat(immutableProxy.asMyself().getSomeUuid()).isSameAs(original.getSomeUuid());
 	}
 
 	@Test
