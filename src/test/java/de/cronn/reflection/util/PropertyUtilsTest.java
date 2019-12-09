@@ -61,13 +61,16 @@ public class PropertyUtilsTest {
 			"propertyWithoutField",
 			"someArrayList",
 			"someCollection",
+			"someFile",
 			"someInstant",
 			"someIterable",
 			"someList",
 			"someMap",
 			"someObject",
+			"somePath",
 			"someSet",
 			"someTreeMap",
+			"someUri",
 			"someUuid",
 			"string"
 		);

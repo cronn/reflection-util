@@ -2,7 +2,10 @@ package de.cronn.reflection.util.immutable;
 
 import static net.bytebuddy.matcher.ElementMatchers.*;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
+import java.net.URI;
+import java.nio.file.Path;
 import java.time.temporal.Temporal;
 import java.time.temporal.TemporalAmount;
 import java.util.Collection;
@@ -92,6 +95,12 @@ public final class ImmutableProxy {
 		} else if (value instanceof TemporalAmount) {
 			return true;
 		} else if (value instanceof UUID) {
+			return true;
+		} else if (value instanceof File) {
+			return true;
+		} else if (value instanceof Path) {
+			return true;
+		} else if (value instanceof URI) {
 			return true;
 		} else if (isEnumValue(value)) {
 			return true;

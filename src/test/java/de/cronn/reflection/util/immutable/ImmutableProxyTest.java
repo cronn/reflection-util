@@ -2,6 +2,9 @@ package de.cronn.reflection.util.immutable;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.io.File;
+import java.net.URI;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -85,6 +88,9 @@ public class ImmutableProxyTest {
 		TestEntity original = new TestEntity(123);
 		original.setSomeInstant(Instant.parse("2018-07-12T13:38:56Z"));
 		original.setSomeUuid(UUID.fromString("28e93b24-7252-43d8-a223-ca0b3270bd7f"));
+		original.setSomeFile(new File("some-file"));
+		original.setSomePath(Paths.get("some path"));
+		original.setSomeUri(new URI("file://some-path"));
 		original.setSomeList(Arrays.asList(new OtherTestEntity("one"), new OtherTestEntity("other")));
 		original.setSomeSet(new LinkedHashSet<>(Arrays.asList("a", "b", "c")));
 
@@ -120,6 +126,9 @@ public class ImmutableProxyTest {
 		assertThat(immutableProxy.asMyself()).isInstanceOf(Immutable.class);
 		assertThat(immutableProxy.asMyself().getSomeInstant()).isSameAs(original.getSomeInstant());
 		assertThat(immutableProxy.asMyself().getSomeUuid()).isSameAs(original.getSomeUuid());
+		assertThat(immutableProxy.asMyself().getSomeFile()).isSameAs(original.getSomeFile());
+		assertThat(immutableProxy.asMyself().getSomePath()).isSameAs(original.getSomePath());
+		assertThat(immutableProxy.asMyself().getSomeUri()).isSameAs(original.getSomeUri());
 	}
 
 	@Test

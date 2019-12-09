@@ -1,6 +1,9 @@
 package de.cronn.reflection.util.testclasses;
 
+import java.io.File;
 import java.io.Serializable;
+import java.net.URI;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,6 +37,12 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 	private Instant someInstant;
 
 	private UUID someUuid;
+
+	private File someFile;
+
+	private Path somePath;
+
+	private URI someUri;
 
 	private OtherTestEntity otherTestEntity;
 
@@ -113,6 +122,30 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 
 	public void setSomeUuid(UUID someUuid) {
 		this.someUuid = someUuid;
+	}
+
+	public File getSomeFile() {
+		return someFile;
+	}
+
+	public void setSomeFile(File someFile) {
+		this.someFile = someFile;
+	}
+
+	public Path getSomePath() {
+		return somePath;
+	}
+
+	public void setSomePath(Path somePath) {
+		this.somePath = somePath;
+	}
+
+	public URI getSomeUri() {
+		return someUri;
+	}
+
+	public void setSomeUri(URI someUri) {
+		this.someUri = someUri;
 	}
 
 	public OtherTestEntity getOtherTestEntity() {
