@@ -68,6 +68,7 @@ public class PropertyUtilsTest {
 			"someObject",
 			"someSet",
 			"someTreeMap",
+			"someUuid",
 			"string"
 		);
 	}
