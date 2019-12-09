@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.objenesis.ObjenesisHelper;
@@ -89,6 +90,8 @@ public final class ImmutableProxy {
 		} else if (value instanceof Temporal) {
 			return true;
 		} else if (value instanceof TemporalAmount) {
+			return true;
+		} else if (value instanceof UUID) {
 			return true;
 		} else if (isEnumValue(value)) {
 			return true;

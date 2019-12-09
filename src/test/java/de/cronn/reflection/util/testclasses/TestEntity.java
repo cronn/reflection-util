@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import javax.annotation.Nullable;
 import javax.validation.constraints.Size;
@@ -31,6 +32,8 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 	private String fieldWithAnnotationOnSetter;
 
 	private Instant someInstant;
+
+	private UUID someUuid;
 
 	private OtherTestEntity otherTestEntity;
 
@@ -102,6 +105,14 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 
 	public void setSomeInstant(Instant someInstant) {
 		this.someInstant = someInstant;
+	}
+
+	public UUID getSomeUuid() {
+		return someUuid;
+	}
+
+	public void setSomeUuid(UUID someUuid) {
+		this.someUuid = someUuid;
 	}
 
 	public OtherTestEntity getOtherTestEntity() {
