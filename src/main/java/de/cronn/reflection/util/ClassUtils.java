@@ -34,7 +34,7 @@ public final class ClassUtils {
 		return getRealClass(entityClass);
 	}
 
-	private static <T> Class<T> getRealClass(Class<T> clazz) {
+	public static <T> Class<T> getRealClass(Class<T> clazz) {
 		if (isProxyClass(clazz)) {
 			if (Proxy.isProxyClass(clazz)) {
 				Class<?>[] interfaces = clazz.getInterfaces();

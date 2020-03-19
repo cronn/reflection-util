@@ -48,7 +48,9 @@ public class ClassUtilsTest {
 	@Test
 	public void testGetRealClass() throws Exception {
 		assertThat(ClassUtils.getRealClass(new TestEntity())).isSameAs(TestEntity.class);
+		assertThat(ClassUtils.getRealClass(TestEntity.class)).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class))).isSameAs(SomeTestInterface.class);
+		assertThat(ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class).getClass())).isSameAs(SomeTestInterface.class);
 		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(new TestEntity()))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createJavassistProxy(new TestEntity()))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createCglibProxy(new TestEntity()))).isSameAs(TestEntity.class);
