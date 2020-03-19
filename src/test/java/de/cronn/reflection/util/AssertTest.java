@@ -3,17 +3,17 @@ package de.cronn.reflection.util;
 import static de.cronn.reflection.util.TestUtils.*;
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class AssertTest {
+class AssertTest {
 
 	@Test
-	public void testConstructor() throws Exception {
+	void testConstructor() throws Exception {
 		assertThatConstructorIsPrivate(Assert.class);
 	}
 
 	@Test
-	public void testIsNull() throws Exception {
+	void testIsNull() throws Exception {
 		Assert.isNull(null, null);
 		Assert.isNull(null, () -> "some message");
 
@@ -27,7 +27,7 @@ public class AssertTest {
 	}
 
 	@Test
-	public void testNotNull() throws Exception {
+	void testNotNull() throws Exception {
 		Assert.notNull("", null);
 		Assert.notNull(new Object(), () -> "some message");
 		Assert.notNull(123, () -> "some message");

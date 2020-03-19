@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.immutable.ImmutableProxy;
 import de.cronn.reflection.util.immutable.ImmutableProxyTest;
@@ -17,7 +17,7 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableMapTest {
 
 	@Test
-	public void testImmutableMap() throws Exception {
+	void testImmutableMap() throws Exception {
 		TestEntity original = new TestEntity();
 		original.setSomeMap(new LinkedHashMap<>());
 		original.getSomeMap().put("a", new OtherTestEntity("a"));
@@ -69,7 +69,7 @@ public class DeepImmutableMapTest {
 	}
 
 	@Test
-	public void testImmutableMap_ImmutableKey() throws Exception {
+	void testImmutableMap_ImmutableKey() throws Exception {
 		Map<Date, Object> immutableMap = ImmutableProxy.create(Collections.singletonMap(new Date(123L), null));
 		Date immutableValue = immutableMap.keySet().iterator().next();
 

@@ -4,12 +4,12 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Method;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-public class MethodCaptorTest {
+class MethodCaptorTest {
 
 	@Test
-	public void testCapture_HappyCase() throws Exception {
+	void testCapture_HappyCase() throws Exception {
 		MethodCaptor methodCaptor = new MethodCaptor();
 		Method method = MethodCaptorTest.class.getDeclaredMethod("testCapture_HappyCase");
 
@@ -19,7 +19,7 @@ public class MethodCaptorTest {
 	}
 
 	@Test
-	public void testCapture_NothingCaptured() throws Exception {
+	void testCapture_NothingCaptured() throws Exception {
 		MethodCaptor methodCaptor = new MethodCaptor();
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
@@ -28,7 +28,7 @@ public class MethodCaptorTest {
 	}
 
 	@Test
-	public void testCapture_Twice() throws Exception {
+	void testCapture_Twice() throws Exception {
 		MethodCaptor methodCaptor = new MethodCaptor();
 		Method method = MethodCaptorTest.class.getDeclaredMethod("testCapture_HappyCase");
 

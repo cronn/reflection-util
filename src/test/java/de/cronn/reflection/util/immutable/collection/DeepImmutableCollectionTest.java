@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.immutable.ImmutableProxy;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
@@ -15,7 +15,7 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableCollectionTest {
 
 	@Test
-	public void testWriteMethodsAreRejected() throws Exception {
+	void testWriteMethodsAreRejected() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),
@@ -45,7 +45,7 @@ public class DeepImmutableCollectionTest {
 	}
 
 	@Test
-	public void testReadOnlyMethods() throws Exception {
+	void testReadOnlyMethods() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),
@@ -60,7 +60,7 @@ public class DeepImmutableCollectionTest {
 	}
 
 	@Test
-	public void testCreateImmutableProxy() throws Exception {
+	void testCreateImmutableProxy() throws Exception {
 		Collection<TestEntity> original = Collections.singleton(new TestEntity(123));
 		Collection<TestEntity> immutableProxy = ImmutableProxy.create(original);
 		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy));

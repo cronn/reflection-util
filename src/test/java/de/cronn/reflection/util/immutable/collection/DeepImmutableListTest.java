@@ -8,7 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.immutable.ImmutableProxy;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
@@ -17,21 +17,21 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableListTest {
 
 	@Test
-	public void testConstruction() throws Exception {
+	void testConstruction() throws Exception {
 		assertThat(DeepImmutableList.of(1)).hasSize(1);
 		assertThat(DeepImmutableList.of(1, 2)).hasSize(2);
 		assertThat(DeepImmutableList.of(1, 2, 3)).hasSize(3);
 	}
 
 	@Test
-	public void testCreateImmutableProxy() throws Exception {
+	void testCreateImmutableProxy() throws Exception {
 		List<TestEntity> immutableProxy = ImmutableProxy.create(Collections.singletonList(new TestEntity(123)));
 		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy));
 		assertThat(immutableProxy.get(0).getNumber()).isEqualTo(123);
 	}
 
 	@Test
-	public void testWriteMethodsAreRejected() throws Exception {
+	void testWriteMethodsAreRejected() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),
@@ -101,7 +101,7 @@ public class DeepImmutableListTest {
 	}
 
 	@Test
-	public void testReadOnlyMethods() throws Exception {
+	void testReadOnlyMethods() throws Exception {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),

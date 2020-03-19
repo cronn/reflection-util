@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.immutable.ReadOnly;
 import de.cronn.reflection.util.testclasses.BaseInterface;
@@ -41,12 +41,12 @@ public class ClassUtilsTest {
 	private static final Class<?> SOME_TEST_INTERFACE_CLASS = SomeTestInterface.class;
 
 	@Test
-	public void testConstructor() throws Exception {
+	void testConstructor() throws Exception {
 		assertThatConstructorIsPrivate(ClassUtils.class);
 	}
 
 	@Test
-	public void testGetRealClass() throws Exception {
+	void testGetRealClass() throws Exception {
 		assertThat(ClassUtils.getRealClass(new TestEntity())).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(TestEntity.class)).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class))).isSameAs(SomeTestInterface.class);
@@ -66,7 +66,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testMatchesWellKnownProxyClassPattern() throws Exception {
+	void testMatchesWellKnownProxyClassPattern() throws Exception {
 		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(Object.class.getName())).isFalse();
 		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(String.class.getName())).isFalse();
 		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass")).isFalse();
@@ -77,7 +77,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testCreateNewInstanceLikeOfProxy() throws Exception {
+	void testCreateNewInstanceLikeOfProxy() throws Exception {
 		Object sourceEntity = new TestEntity();
 		Object proxy = createCglibProxy(sourceEntity);
 
@@ -86,20 +86,20 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testCreateNewInstanceLike_Null() throws Exception {
+	void testCreateNewInstanceLike_Null() throws Exception {
 		Object instance = ClassUtils.createNewInstanceLike(null);
 		assertThat(instance).isNull();
 	}
 
 	@Test
-	public void testCreateNewInstanceLikeProtectedNoArgConstructor() throws Exception {
+	void testCreateNewInstanceLikeProtectedNoArgConstructor() throws Exception {
 		Object sourceEntity = EntityProtectedConstructor.newEntity();
 		Object actual = ClassUtils.createNewInstanceLike(sourceEntity);
 		assertThat(actual).isInstanceOf(EntityProtectedConstructor.class);
 	}
 
 	@Test
-	public void testCreateNewInstanceLikeProtectedConstructor() throws Exception {
+	void testCreateNewInstanceLikeProtectedConstructor() throws Exception {
 		Object sourceEntity = EntityProtectedNoDefaultConstructor.newEntity();
 
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
@@ -115,7 +115,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testGetVoidMethod_CallSiteSpecificLambda() throws Exception {
+	void testGetVoidMethod_CallSiteSpecificLambda() throws Exception {
 		VoidMethod<ClassUtilsTest> lambda = ClassUtilsTest::testGetVoidMethod;
 		VoidMethod<ClassUtilsTest> callSiteSpecificLambda = lambda::invoke;
 
@@ -125,7 +125,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testGetVoidMethod_lambdaWithException() throws Exception {
+	void testGetVoidMethod_lambdaWithException() throws Exception {
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
 			.isThrownBy(() -> ClassUtils.getVoidMethod(ClassUtilsTest.class, bean -> {
 				throw new IllegalStateException("some exception");
@@ -146,7 +146,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testGetVoidMethodName_AnonymousClass() throws Exception {
+	void testGetVoidMethodName_AnonymousClass() throws Exception {
 		SomeClass bean = new SomeClass() {
 		};
 
@@ -158,7 +158,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testIsProxy() throws Exception {
+	void testIsProxy() throws Exception {
 		Object testObject = new TestEntity();
 		assertThat(ClassUtils.isProxy(createJdkProxy(BaseInterface.class))).isTrue();
 		assertThat(ClassUtils.isProxy(createByteBuddyProxy(testObject))).isTrue();
@@ -169,7 +169,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testIsProxyClass() throws Exception {
+	void testIsProxyClass() throws Exception {
 		Object testObject = new TestEntity();
 		assertThat(ClassUtils.isProxyClass(createJdkProxy(BaseInterface.class).getClass())).isTrue();
 		assertThat(ClassUtils.isProxyClass(createByteBuddyProxy(testObject).getClass())).isTrue();
@@ -181,35 +181,35 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testHasMethodWithSameSignature_happyPath_shouldMatchMethodSignature_whenReturnTypeAndNameAndParametersAreEqual() throws Exception {
+	void testHasMethodWithSameSignature_happyPath_shouldMatchMethodSignature_whenReturnTypeAndNameAndParametersAreEqual() throws Exception {
 		Method targetMethod = findMethod(SomeClass.class, "doWork", int.class);
 
 		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isTrue();
 	}
 
 	@Test
-	public void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenReturnTypeIsDifferentThanHappyPath() throws Exception {
+	void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenReturnTypeIsDifferentThanHappyPath() throws Exception {
 		Method targetMethod = findMethod(OtherClass.class, "doWork", int.class);
 
 		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isFalse();
 	}
 
 	@Test
-	public void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenNameIsDifferentThanHappyPath() throws Exception {
+	void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenNameIsDifferentThanHappyPath() throws Exception {
 		Method targetMethod = findMethod(SomeClass.class, "doWorkLater", int.class);
 
 		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isFalse();
 	}
 
 	@Test
-	public void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenParametersAreDifferentThanHappyPath() throws Exception {
+	void testHasMethodWithSameSignature_shouldNotMatchMethodSignature_whenParametersAreDifferentThanHappyPath() throws Exception {
 		Method targetMethod = findMethod(SomeClass.class, "doWork", int.class, int.class);
 
 		assertThat(ClassUtils.hasMethodWithSameSignature(SOME_TEST_INTERFACE_CLASS, targetMethod)).isFalse();
 	}
 
 	@Test
-	public void testIsFromPackage() throws Exception {
+	void testIsFromPackage() throws Exception {
 		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection.util")).isTrue();
 		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection")).isFalse();
 		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn")).isFalse();
@@ -218,13 +218,13 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testFindDeclaredMethodsByArgumentTypes() throws Exception {
+	void testFindDeclaredMethodsByArgumentTypes() throws Exception {
 		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseClass.class, String.class, Integer.class)).hasSize(2);
 		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseSubclass.class, String.class, Integer.class)).hasSize(3);
 	}
 
 	@Test
-	public void testHaveSameSignature() throws Exception {
+	void testHaveSameSignature() throws Exception {
 		Method oneMethod = SomeClass.class.getMethod("doOtherWork");
 		Method otherMethod = SomeTestInterface.class.getMethod("doOtherWork");
 		Method hashCodeMethod = Object.class.getMethod("hashCode");
@@ -242,13 +242,13 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testGetAllDeclaredMethods() throws Exception {
+	void testGetAllDeclaredMethods() throws Exception {
 		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(BaseInterface.class))).hasSize(1);
 		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(SomeClass.class))).hasSize(6);
 	}
 
 	@Test
-	public void testGetAllDeclaredMethodSignatures() throws Exception {
+	void testGetAllDeclaredMethodSignatures() throws Exception {
 		Set<MethodSignature> methodsOfSomeClass = withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(SomeClass.class));
 		withoutJacocoMethodSignatures(methodsOfSomeClass);
 		assertThat(mapToString(methodsOfSomeClass)).containsExactly(
@@ -274,7 +274,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testCreateInstance_AccessibleFlagIsRestored() throws Exception {
+	void testCreateInstance_AccessibleFlagIsRestored() throws Exception {
 		Constructor<TestEntity> constructor = TestEntity.class.getDeclaredConstructor();
 		assertThat(constructor.isAccessible()).isFalse();
 
@@ -290,7 +290,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testFindAnnotation() throws Exception {
+	void testFindAnnotation() throws Exception {
 		Method getNumberMethod = ClassUtils.getVoidMethod(TestEntity.class, TestEntity::getNumber);
 		assertThat(ClassUtils.findAnnotation(getNumberMethod, ReadOnly.class)).isNull();
 

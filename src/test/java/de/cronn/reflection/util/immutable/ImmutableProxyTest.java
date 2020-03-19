@@ -28,7 +28,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import de.cronn.reflection.util.immutable.collection.DeepImmutableList;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableMap;
@@ -46,10 +47,10 @@ public class ImmutableProxyTest {
 	public static final String IMMUTABLE_EXCEPTION_MESSAGE = "This instance is immutable."
 		+ " Annotate the method with @ReadOnly if this is a false-positive.";
 
-	private static final long TEST_TIMEOUT_MILLIS = 30_000;
+	private static final long TEST_TIMEOUT_SECONDS = 30;
 
 	@Test
-	public void testImmutableProxy() throws Exception {
+	void testImmutableProxy() throws Exception {
 		TestEntity original = new TestEntity(123);
 
 		TestEntity immutableProxy = ImmutableProxy.create(original);
@@ -65,7 +66,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testUnwrap() throws Exception {
+	void testUnwrap() throws Exception {
 		TestEntity original = new TestEntity(123);
 
 		TestEntity immutableProxy = ImmutableProxy.create(original);
@@ -75,7 +76,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxyOnFinalClass() throws Exception {
+	void testImmutableProxyOnFinalClass() throws Exception {
 		FinalClass finalClass = new FinalClass();
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
@@ -84,7 +85,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_TestEntity() throws Exception {
+	void testImmutableProxy_TestEntity() throws Exception {
 		TestEntity original = new TestEntity(123);
 		original.setSomeInstant(Instant.parse("2018-07-12T13:38:56Z"));
 		original.setSomeUuid(UUID.fromString("28e93b24-7252-43d8-a223-ca0b3270bd7f"));
@@ -132,7 +133,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testDate() throws Exception {
+	void testDate() throws Exception {
 		Date original = new Date(12345678);
 
 		Date immutableDate = ImmutableProxy.create(original);
@@ -147,7 +148,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxyOnObject() throws Exception {
+	void testImmutableProxyOnObject() throws Exception {
 		Object original = new Object();
 
 		Object immutableProxy = ImmutableProxy.create(original);
@@ -157,7 +158,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxyIsAView() throws Exception {
+	void testImmutableProxyIsAView() throws Exception {
 		TestEntity original = new TestEntity(123);
 
 		TestEntity immutableProxy = ImmutableProxy.create(original);
@@ -167,7 +168,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_ReferencedEntityIsAlsoImmutable() throws Exception {
+	void testImmutableProxy_ReferencedEntityIsAlsoImmutable() throws Exception {
 		TestEntity original = new TestEntity();
 		original.setOtherTestEntity(new OtherTestEntity());
 		TestEntity immutableProxy = ImmutableProxy.create(original);
@@ -178,7 +179,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_Collection() throws Exception {
+	void testImmutableProxy_Collection() throws Exception {
 		TestEntity original = new TestEntity();
 		original.setSomeList(new ArrayList<>());
 		original.setSomeSet(new LinkedHashSet<>());
@@ -235,7 +236,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_TooSpecificReturnType() throws Exception {
+	void testImmutableProxy_TooSpecificReturnType() throws Exception {
 		TestEntity original = new TestEntity();
 		original.setSomeList(Collections.emptyList());
 		TestEntity immutableProxy = ImmutableProxy.create(original);
@@ -254,7 +255,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_Collection_Stream() throws Exception {
+	void testImmutableProxy_Collection_Stream() throws Exception {
 		Collection<TestEntity> entities = Arrays.asList(new TestEntity(1), new TestEntity(2));
 
 		Collection<TestEntity> immutableCollection = ImmutableProxy.create(entities);
@@ -268,7 +269,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_Collection_Iterator() throws Exception {
+	void testImmutableProxy_Collection_Iterator() throws Exception {
 		Collection<TestEntity> entities = Arrays.asList(new TestEntity(1), new TestEntity(2));
 
 		Collection<TestEntity> immutableEntityCollection = ImmutableProxy.create(entities);
@@ -311,7 +312,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxy_Map() throws Exception {
+	void testImmutableProxy_Map() throws Exception {
 		TestEntity original = new TestEntity();
 		original.setSomeMap(new LinkedHashMap<>());
 		original.getSomeMap().put("a", new OtherTestEntity("a"));
@@ -330,7 +331,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxyOnImmutableValue() throws Exception {
+	void testImmutableProxyOnImmutableValue() throws Exception {
 		Object nullValue = null;
 
 		assertThat(ImmutableProxy.create(nullValue)).isNull();
@@ -357,7 +358,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxyIsEqualToOriginal() throws Exception {
+	void testImmutableProxyIsEqualToOriginal() throws Exception {
 		TestEntity original = new TestEntity(123);
 
 		TestEntity immutableProxy = ImmutableProxy.create(original);
@@ -366,7 +367,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testImmutableProxyOnImmutableProxy() throws Exception {
+	void testImmutableProxyOnImmutableProxy() throws Exception {
 		TestEntity original = new TestEntity(123);
 
 		TestEntity proxy1 = ImmutableProxy.create(original);
@@ -375,8 +376,9 @@ public class ImmutableProxyTest {
 		assertThat(proxy2).isSameAs(proxy1);
 	}
 
-	@Test(timeout = TEST_TIMEOUT_MILLIS)
-	public void testConcurrentlyCreateProxy() throws Exception {
+	@Test
+	@Timeout(TEST_TIMEOUT_SECONDS)
+	void testConcurrentlyCreateProxy() throws Exception {
 		ExecutorService executorService = Executors.newFixedThreadPool(5);
 		try {
 			CompletionService<TestEntity> completionService = new ExecutorCompletionService<>(executorService);
@@ -395,26 +397,26 @@ public class ImmutableProxyTest {
 			}
 		} finally {
 			executorService.shutdown();
-			executorService.awaitTermination(TEST_TIMEOUT_MILLIS, TimeUnit.MILLISECONDS);
+			executorService.awaitTermination(TEST_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 		}
 	}
 
 	@Test
-	public void testIsImmutableProxy() throws Exception {
+	void testIsImmutableProxy() throws Exception {
 		assertThat(ImmutableProxy.isImmutableProxy(null)).isFalse();
 		assertThat(ImmutableProxy.isImmutableProxy(ImmutableProxy.create("foo"))).isFalse();
 		assertThat(ImmutableProxy.isImmutableProxy(ImmutableProxy.create(new TestEntity()))).isTrue();
 	}
 
 	@Test
-	public void testReadOnlyAnnotationsInInterface() throws Exception {
+	void testReadOnlyAnnotationsInInterface() throws Exception {
 		assertThat(ImmutableProxy.create(new ClassWithInheritedDefaultMethods()).size()).isEqualTo(0);
 		assertThat(ImmutableProxy.create(new SubclassOfClassWithDefaultMethods()).size()).isEqualTo(0);
 		assertThat(ImmutableProxy.create(new ClassWithDefaultMethods()).size()).isEqualTo(0);
 	}
 
 	@Test
-	public void testDoNotProxyReturnValueIfDisabledByReadOnlyAnnotation() throws Exception {
+	void testDoNotProxyReturnValueIfDisabledByReadOnlyAnnotation() throws Exception {
 		TestEntity proxy = ImmutableProxy.create(new TestEntity(123));
 
 		TestEntity reference = proxy.asReference();
@@ -433,7 +435,7 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testDoNotProxyReturnValueInCloneMethod() throws Exception {
+	void testDoNotProxyReturnValueInCloneMethod() throws Exception {
 		TestEntity proxy = ImmutableProxy.create(new TestEntity(123));
 
 		TestEntity clone = proxy.clone();
@@ -445,28 +447,28 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
-	public void testSerializeDeepImmutableSet() throws Exception {
+	void testSerializeDeepImmutableSet() throws Exception {
 		DeepImmutableSet<String> proxy = (DeepImmutableSet<String>) ImmutableProxy.create(Collections.singleton("foo"));
 		DeepImmutableSet<String> clone = SerializationUtils.clone(proxy);
 		assertThat(clone).isNotSameAs(proxy).containsExactly("foo");
 	}
 
 	@Test
-	public void testSerializeDeepImmutableList() throws Exception {
+	void testSerializeDeepImmutableList() throws Exception {
 		DeepImmutableList<String> proxy = (DeepImmutableList<String>) ImmutableProxy.create(Arrays.asList("a", "b", "c"));
 		DeepImmutableList<String> clone = SerializationUtils.clone(proxy);
 		assertThat(clone).isNotSameAs(proxy).containsExactly("a", "b", "c");
 	}
 
 	@Test
-	public void testSerializeDeepImmutableMap() throws Exception {
+	void testSerializeDeepImmutableMap() throws Exception {
 		DeepImmutableMap<String, String> proxy = (DeepImmutableMap<String, String>) ImmutableProxy.create(Collections.singletonMap("k", "v"));
 		DeepImmutableMap<String, String> clone = SerializationUtils.clone(proxy);
 		assertThat(clone).isNotSameAs(proxy).containsExactly(entry("k", "v"));
 	}
 
 	@Test
-	public void testSerializeImmutableProxy() throws Exception {
+	void testSerializeImmutableProxy() throws Exception {
 		TestEntity original = new TestEntity(123);
 		original.setSomeList(Arrays.asList(
 			new OtherTestEntity("one"),
