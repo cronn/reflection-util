@@ -166,7 +166,7 @@ dependencies {
 	testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
 
 	testImplementation "org.openjdk.jmh:jmh-core:latest.release"
-	testAnnotationProcessor "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
+	testRuntimeOnly "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
 
 	testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
 	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
