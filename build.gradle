@@ -76,7 +76,7 @@ publishing {
 			pom {
 				name = project.name
 				description = 'Java Reflection Utility Classes'
-				url = 'https://github.com/cronn-de/reflection-util'
+				url = 'https://github.com/cronn/reflection-util'
 
 				licenses {
 					license {
@@ -100,7 +100,7 @@ publishing {
 				}
 
 				scm {
-					url = "https://github.com/cronn-de/reflection-util"
+					url = "https://github.com/cronn/reflection-util"
 				}
 			}
 
@@ -132,9 +132,9 @@ bintray {
 		name = rootProject.name
 		userOrg = 'cronn'
 		licenses = ['Apache-2.0']
-		websiteUrl = 'https://github.com/cronn-de/reflection-util'
-		issueTrackerUrl = 'https://github.com/cronn-de/reflection-util/issues'
-		vcsUrl = 'https://github.com/cronn-de/reflection-util.git'
+		websiteUrl = 'https://github.com/cronn/reflection-util'
+		issueTrackerUrl = 'https://github.com/cronn/reflection-util/issues'
+		vcsUrl = 'https://github.com/cronn/reflection-util.git'
 		version {
 			name = project.version
 			released = new Date()
