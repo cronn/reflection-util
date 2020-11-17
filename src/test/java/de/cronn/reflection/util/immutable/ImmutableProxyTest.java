@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -328,6 +329,95 @@ public class ImmutableProxyTest {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableMap.get("a").setName("new name"))
 			.withMessage(IMMUTABLE_EXCEPTION_MESSAGE);
+	}
+
+	// https://github.com/cronn/reflection-util/issues/5
+	@Test
+	void testImmutableProxy_MapWithList() throws Exception {
+		List<Integer> origin = new ArrayList<>();
+		origin.add(1);
+		origin.add(2);
+
+		Map<String, List<Integer>> wrapper = new HashMap<>();
+
+		wrapper.put("AAA", origin);
+
+		Map<String, List<Integer>> immutable = ImmutableProxy.create(wrapper);
+		assertThat(immutable).isInstanceOf(DeepImmutableMap.class);
+
+		List<Integer> list = immutable.get("AAA");
+		assertThat(list).isInstanceOf(DeepImmutableList.class);
+		assertThat(list).containsExactly(1, 2);
+		assertThat(list.get(0)).isEqualTo(1);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> list.set(0, 3))
+			.withMessage("This list is immutable");
+	}
+
+	@Test
+	void testImmutableProxy_ListWithList() throws Exception {
+		List<Integer> origin = new ArrayList<>();
+		origin.add(1);
+		origin.add(2);
+
+		List<List<Integer>> wrapper = new ArrayList<>();
+
+		wrapper.add(origin);
+
+		List<List<Integer>> immutable = ImmutableProxy.create(wrapper);
+		assertThat(immutable).isInstanceOf(DeepImmutableList.class);
+
+		List<Integer> list = immutable.get(0);
+		assertThat(list).isInstanceOf(DeepImmutableList.class);
+		assertThat(list).containsExactly(1, 2);
+		assertThat(list.get(0)).isEqualTo(1);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> list.set(0, 3))
+			.withMessage("This list is immutable");
+	}
+
+	@Test
+	void testImmutableProxy_MapWithSet() throws Exception {
+		Set<Integer> origin = new LinkedHashSet<>();
+		origin.add(1);
+		origin.add(2);
+
+		Map<String, Set<Integer>> wrapper = new HashMap<>();
+
+		wrapper.put("AAA", origin);
+
+		Map<String, Set<Integer>> immutable = ImmutableProxy.create(wrapper);
+		assertThat(immutable).isInstanceOf(DeepImmutableMap.class);
+
+		Set<Integer> set = immutable.get("AAA");
+		assertThat(set).isInstanceOf(DeepImmutableSet.class);
+		assertThat(set).containsExactly(1, 2);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> set.add(3))
+			.withMessage("This set is immutable");
+	}
+
+	@Test
+	void testImmutableProxy_MapWithMap() throws Exception {
+		Map<String, Integer> origin = Collections.singletonMap("a", 123);
+
+		Map<String, Map<String, Integer>> wrapper = new HashMap<>();
+
+		wrapper.put("AAA", origin);
+
+		Map<String, Map<String, Integer>> immutable = ImmutableProxy.create(wrapper);
+		assertThat(immutable).isInstanceOf(DeepImmutableMap.class);
+
+		Map<String, Integer> map = immutable.get("AAA");
+		assertThat(map).isInstanceOf(DeepImmutableMap.class);
+		assertThat(map).containsExactly(entry("a", 123));
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> map.put("b", 345))
+			.withMessage("This map is immutable");
 	}
 
 	@Test

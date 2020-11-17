@@ -46,6 +46,18 @@ public final class ImmutableProxy {
 	public static <T> T create(T instance) {
 		if (isImmutable(instance)) {
 			return instance;
+		} else if (instance instanceof List) {
+			@SuppressWarnings("unchecked")
+			T immutableList = (T) create((List<?>) instance);
+			return immutableList;
+		} else if (instance instanceof Set) {
+			@SuppressWarnings("unchecked")
+			T immutableSet = (T) create((Set<?>) instance);
+			return immutableSet;
+		} else if (instance instanceof Map) {
+			@SuppressWarnings("unchecked")
+			T immutableMap = (T) create((Map<?, ?>) instance);
+			return immutableMap;
 		}
 		Class<? extends T> proxyClass = getOrCreateProxyClass(instance);
 		T proxy = ObjenesisHelper.newInstance(proxyClass);
