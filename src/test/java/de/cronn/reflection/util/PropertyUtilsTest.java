@@ -463,7 +463,7 @@ class PropertyUtilsTest {
 			.withMessageMatching("Failed to create proxy on class .+?")
 			.withCauseExactlyInstanceOf(IllegalAccessError.class)
 			.withStackTraceContaining("to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
-				" from " + ClassExtendingNonPublicBaseClass.class);
+									  " from " + ClassExtendingNonPublicBaseClass.class);
 	}
 
 	@Test
@@ -473,7 +473,7 @@ class PropertyUtilsTest {
 			.withMessageMatching("Failed to create proxy on class .+?")
 			.withCauseExactlyInstanceOf(IllegalAccessError.class)
 			.withStackTraceContaining("to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
-				" from " + ClassExtendingClassThatExtendsNonPublicBaseClass.class);
+									  " from " + ClassExtendingClassThatExtendsNonPublicBaseClass.class);
 	}
 
 	@Test

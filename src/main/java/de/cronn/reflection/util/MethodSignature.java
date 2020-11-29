@@ -27,9 +27,9 @@ final class MethodSignature implements Comparable<MethodSignature> {
 			return false;
 		}
 		MethodSignature that = (MethodSignature) o;
-		return Objects.equals(name, that.name) &&
-			Objects.equals(returnType, that.returnType) &&
-			Arrays.equals(parameterTypes, that.parameterTypes);
+		return Objects.equals(name, that.name)
+			   && Objects.equals(returnType, that.returnType)
+			   && Arrays.equals(parameterTypes, that.parameterTypes);
 	}
 
 	@Override

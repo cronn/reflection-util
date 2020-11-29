@@ -65,7 +65,7 @@ public final class PropertyUtils {
 	}
 
 	public static <A extends Annotation> Map<PropertyDescriptor, A> getPropertyDescriptorsWithAnnotation(Class<?> type,
-		Class<A> annotationClass) {
+																										 Class<A> annotationClass) {
 		PropertyDescriptorCache<?> propertyDescriptorCache = getCache(type);
 		return propertyDescriptorCache.getDescriptorsForAnnotation(annotationClass);
 	}

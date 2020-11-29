@@ -93,7 +93,7 @@ class PropertyDescriptorCache<T> {
 
 	private void putAnnotations(PropertyDescriptor propertyDescriptor, Annotation[] annotations) {
 		for (Annotation annotation : annotations) {
-			propertyDescriptorsByAnnotation.computeIfAbsent(annotation.annotationType(),k -> new LinkedHashMap<>()) //
+			propertyDescriptorsByAnnotation.computeIfAbsent(annotation.annotationType(), k -> new LinkedHashMap<>()) //
 				.put(propertyDescriptor, annotation);
 		}
 	}
@@ -115,7 +115,7 @@ class PropertyDescriptorCache<T> {
 
 	// workaround for https://bugs.openjdk.java.net/browse/JDK-8071693
 	private static void collectPropertyDescriptorsOfInterfaces(Class<?> type, Map<String, PropertyDescriptor> propertyDescriptors)
-			throws IntrospectionException {
+		throws IntrospectionException {
 		if (type == null || type.equals(Object.class)) {
 			return;
 		}

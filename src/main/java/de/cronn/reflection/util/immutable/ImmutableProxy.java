@@ -123,7 +123,7 @@ public final class ImmutableProxy {
 
 	private static boolean isEnumValue(Object value) {
 		return value.getClass().isEnum()
-			|| (value.getClass().getSuperclass() != null && value.getClass().getSuperclass().isEnum());
+			   || (value.getClass().getSuperclass() != null && value.getClass().getSuperclass().isEnum());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -139,7 +139,7 @@ public final class ImmutableProxy {
 			.defineField(DELEGATE_FIELD_NAME, clazz)
 			.method(any())
 			.intercept(ExceptionMethod.throwing(UnsupportedOperationException.class, "This instance is immutable."
-				+ " Annotate the method with @" + ReadOnly.class.getSimpleName() + " if this is a false-positive."))
+																					 + " Annotate the method with @" + ReadOnly.class.getSimpleName() + " if this is a false-positive."))
 			.method(isReadyOnlyMethod())
 			.intercept(MethodDelegation.to(GenericImmutableProxyForwarder.class))
 			.method(isReadyOnlyMethod().and(returns(Long.class).or(returns(long.class))))

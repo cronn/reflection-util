@@ -51,7 +51,7 @@ public final class GenericImmutableProxyForwarder {
 			}
 			ReadOnly readOnlyAnnotation = ClassUtils.findAnnotation(m, ReadOnly.class);
 			return readOnlyAnnotation == null
-				|| readOnlyAnnotation.proxyReturnValue();
+				   || readOnlyAnnotation.proxyReturnValue();
 		}).booleanValue();
 	}
 
@@ -72,8 +72,8 @@ public final class GenericImmutableProxyForwarder {
 			return ImmutableProxy.create(collection);
 		} else {
 			throw new UnsupportedOperationException("Cannot create immutable collection for " + describeMethod(method) + "."
-				+ " The return type is unknown or too specific: " + returnType + "."
-				+ " Consider to define a more generic type: Set/List/Collection");
+													+ " The return type is unknown or too specific: " + returnType + "."
+													+ " Consider to define a more generic type: Set/List/Collection");
 		}
 	}
 
@@ -84,8 +84,8 @@ public final class GenericImmutableProxyForwarder {
 			return ImmutableProxy.create(map);
 		} else {
 			throw new UnsupportedOperationException("Cannot create immutable map for " + describeMethod(method) + "."
-				+ " The return type is unknown or too specific: " + returnType + "."
-				+ " Consider to define a more generic type: Map");
+													+ " The return type is unknown or too specific: " + returnType + "."
+													+ " Consider to define a more generic type: Map");
 		}
 	}
 

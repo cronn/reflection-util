@@ -126,8 +126,8 @@ public final class ClassUtils {
 
 	static boolean matchesWellKnownProxyClassNamePattern(String className) {
 		return className.contains(BYTE_BUDDY_CLASS_SEPARATOR)
-			|| className.contains(CGLIB_JAVASSIST_CLASS_SEPARATOR)
-			|| className.contains(HIBERNATE_PROXY_CLASS_SEPARATOR);
+			   || className.contains(CGLIB_JAVASSIST_CLASS_SEPARATOR)
+			   || className.contains(HIBERNATE_PROXY_CLASS_SEPARATOR);
 	}
 
 	public static boolean haveSameSignature(Method oneMethod, Method otherMethod) {
@@ -203,7 +203,7 @@ public final class ClassUtils {
 
 	private static boolean isOverride(Method method, Method candidate) {
 		return method.getName().equals(candidate.getName())
-			&& candidate.getParameterCount() == method.getParameterCount()
-			&& Arrays.equals(candidate.getParameterTypes(), method.getParameterTypes());
+			   && candidate.getParameterCount() == method.getParameterCount()
+			   && Arrays.equals(candidate.getParameterTypes(), method.getParameterTypes());
 	}
 }

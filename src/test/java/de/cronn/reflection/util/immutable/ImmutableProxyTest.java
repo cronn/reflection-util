@@ -45,8 +45,8 @@ import de.cronn.reflection.util.testclasses.TestEnum;
 
 public class ImmutableProxyTest {
 
-	public static final String IMMUTABLE_EXCEPTION_MESSAGE = "This instance is immutable."
-		+ " Annotate the method with @ReadOnly if this is a false-positive.";
+	public static final String IMMUTABLE_EXCEPTION_MESSAGE = "This instance is immutable." +
+															 " Annotate the method with @ReadOnly if this is a false-positive.";
 
 	private static final long TEST_TIMEOUT_SECONDS = 30;
 
@@ -245,14 +245,14 @@ public class ImmutableProxyTest {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(immutableProxy::getSomeArrayList)
 			.withMessage("Cannot create immutable collection for TestEntity.getSomeArrayList." +
-				" The return type is unknown or too specific: class java.util.ArrayList." +
-				" Consider to define a more generic type: Set/List/Collection");
+						 " The return type is unknown or too specific: class java.util.ArrayList." +
+						 " Consider to define a more generic type: Set/List/Collection");
 
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(immutableProxy::getSomeTreeMap)
 			.withMessage("Cannot create immutable map for TestEntity.getSomeTreeMap." +
-				" The return type is unknown or too specific: class java.util.TreeMap." +
-				" Consider to define a more generic type: Map");
+						 " The return type is unknown or too specific: class java.util.TreeMap." +
+						 " Consider to define a more generic type: Map");
 	}
 
 	@Test
