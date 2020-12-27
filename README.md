@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cronn/reflection-util.png?branch=master)](https://travis-ci.org/cronn/reflection-util)
+![CI](https://github.com/cronn/reflection-util/workflows/CI/badge.svg)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.cronn/reflection-util/badge.svg)](http://maven-badges.herokuapp.com/maven-central/de.cronn/reflection-util)
 [![Apache 2.0](https://img.shields.io/github/license/cronn/reflection-util.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Coverage Status](https://coveralls.io/repos/github/cronn/reflection-util/badge.svg?branch=master)](https://coveralls.io/github/cronn/reflection-util?branch=master)
