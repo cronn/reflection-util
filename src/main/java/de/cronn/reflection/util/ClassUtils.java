@@ -108,6 +108,45 @@ public final class ClassUtils {
 		return cache.getMethod(voidMethod);
 	}
 
+	@Nonnull
+	public static <T> Method getMethod(Class<T> beanClass, PropertyGetter<T> getterMethod) {
+		PropertyDescriptorCache<T> cache = PropertyUtils.getCache(beanClass);
+		return cache.getMethod(getterMethod);
+	}
+
+	@Nonnull
+	public static <T> Method getMethod(T bean, PropertyGetter<T> getterMethod) {
+		Class<T> beanClass = getRealClass(bean);
+		return getMethod(beanClass, getterMethod);
+	}
+
+	@Nonnull
+	public static <T> String getMethodName(T bean, PropertyGetter<T> getterMethod) {
+		Class<T> beanClass = getRealClass(bean);
+		return getMethodName(beanClass, getterMethod);
+	}
+
+	@Nonnull
+	public static <T> String getMethodName(Class<T> beanClass, PropertyGetter<T> getterMethod) {
+		Method method = getMethod(beanClass, getterMethod);
+		return method.getName();
+	}
+
+	@Nonnull
+	public static <T> Method getMethod(Class<T> beanClass, VoidMethod<T> voidMethod) {
+		return getVoidMethod(beanClass, voidMethod);
+	}
+
+	@Nonnull
+	public static <T> String getMethodName(T bean, VoidMethod<T> voidMethod) {
+		return getVoidMethodName(bean, voidMethod);
+	}
+
+	@Nonnull
+	public static <T> String getMethodName(Class<T> beanClass, VoidMethod<T> voidMethod) {
+		return getVoidMethodName(beanClass, voidMethod);
+	}
+
 	public static boolean isProxy(Object object) {
 		return object != null && isProxyClass(object.getClass());
 	}

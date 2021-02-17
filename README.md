@@ -38,12 +38,19 @@ assertEquals(12345L, number);
 interface MyInterface
 {
     void doSomething();
+
+    int getSomething();
 }
 ```
 
 ```java
-String methodName = ClassUtils.getVoidMethodName(MyInterface.class, MyInterface::doSomething);
+String methodName = ClassUtils.getMethodName(MyInterface.class, MyInterface::doSomething);
 assertEquals("doSomething", methodName);
+```
+
+```java
+String methodName = ClassUtils.getMethodName(MyInterface.class, MyInterface::getSomething);
+assertEquals("getSomething", methodName);
 ```
 
 ```java

@@ -146,6 +146,15 @@ public class ClassUtilsTest {
 	}
 
 	@Test
+	void testGetVoidMethod_lambdaThatIsNoRealMethod() throws Exception {
+		VoidMethod<TestEntity> lambda = bean -> {
+		};
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> ClassUtils.getMethod(TestEntity.class, lambda))
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+	}
+
+	@Test
 	public void testGetVoidMethodName() throws Exception {
 		String voidMethodName = ClassUtils.getVoidMethodName(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
 		assertThat(voidMethodName).isEqualTo("testGetVoidMethod");
@@ -166,6 +175,60 @@ public class ClassUtilsTest {
 			.withMessageMatching("Failed to create proxy on class .+?")
 			.withCauseExactlyInstanceOf(IllegalAccessError.class)
 			.withStackTraceContaining("cannot access its superclass");
+	}
+
+	@Test
+	void testGetMethodName() throws Exception {
+		assertThat(ClassUtils.getMethodName(TestEntity.class, TestEntity::getNumber)).isEqualTo("getNumber");
+		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::getNumber)).isEqualTo("getNumber");
+		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::getSomePath)).isEqualTo("getSomePath");
+		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::getString)).isEqualTo("getString");
+		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::doNothing)).isEqualTo("doNothing");
+		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::clear)).isEqualTo("clear");
+		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::countSomeList)).isEqualTo("countSomeList");
+		assertThat(ClassUtils.getMethodName(TestEntity.class, TestEntity::countSomeList)).isEqualTo("countSomeList");
+		assertThat(ClassUtils.getMethodName(SomeClass.class, SomeClass::doOtherWork)).isEqualTo("doOtherWork");
+		assertThat(ClassUtils.getMethodName(new SomeClass(), SomeClass::doOtherWork)).isEqualTo("doOtherWork");
+	}
+
+	@Test
+	void testGetMethod() throws Exception {
+		assertThat(ClassUtils.getMethod(TestEntity.class, TestEntity::getNumber).getName()).isEqualTo("getNumber");
+		assertThat(ClassUtils.getMethod(new TestEntity(), TestEntity::getNumber).getName()).isEqualTo("getNumber");
+		assertThat(ClassUtils.getMethod(new TestEntity(), TestEntity::getSomePath).getName()).isEqualTo("getSomePath");
+		assertThat(ClassUtils.getMethod(new TestEntity(), TestEntity::doNothing).getName()).isEqualTo("doNothing");
+		assertThat(ClassUtils.getMethod(new TestEntity(), TestEntity::countSomeList).getName()).isEqualTo("countSomeList");
+		assertThat(ClassUtils.getMethod(TestEntity.class, TestEntity::countSomeList).getName()).isEqualTo("countSomeList");
+	}
+
+	@Test
+	void testGetMethod_lambdaWithException() throws Exception {
+		PropertyGetter<TestEntity> getter = bean -> {
+			throw new IllegalStateException("some exception");
+		};
+		assertThatExceptionOfType(IllegalStateException.class)
+			.isThrownBy(() -> ClassUtils.getMethod(TestEntity.class, getter))
+			.withMessage("some exception");
+	}
+
+	@Test
+	void testGetMethod_lambdaThatIsNoRealGetter() throws Exception {
+		PropertyGetter<TestEntity> getter = bean -> {
+			return null;
+		};
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> ClassUtils.getMethod(TestEntity.class, getter))
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+	}
+
+	@Test
+	void testGetMethod_CallSiteSpecificLambda() throws Exception {
+		PropertyGetter<TestEntity> lambda = TestEntity::getNumber;
+		PropertyGetter<TestEntity> callSiteSpecificLambda = lambda::get;
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> ClassUtils.getMethod(TestEntity.class, callSiteSpecificLambda))
+			.withMessage(callSiteSpecificLambda + " is call site specific");
 	}
 
 	@Test
