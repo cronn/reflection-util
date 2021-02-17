@@ -156,6 +156,7 @@ dependencies {
 	implementation "org.slf4j:slf4j-api:latest.release"
 
 	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: 'latest.release'
+	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: 'latest.release'
 	testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: 'latest.release'
 	testImplementation "org.mockito:mockito-core:latest.release"
 	testImplementation "org.assertj:assertj-core:latest.release"

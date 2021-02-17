@@ -12,11 +12,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import de.cronn.reflection.util.immutable.ReadOnly;
 import de.cronn.reflection.util.testclasses.BaseInterface;
@@ -65,15 +69,22 @@ public class ClassUtilsTest {
 			.withMessage("Unexpected number of interfaces: 2");
 	}
 
-	@Test
-	void testMatchesWellKnownProxyClassPattern() throws Exception {
-		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(Object.class.getName())).isFalse();
-		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(String.class.getName())).isFalse();
-		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass")).isFalse();
+	private static Stream<Arguments> testMatchesWellKnownProxyClassPatternParams() {
+		return Stream.of(
+			Arguments.of(Object.class.getName(), false),
+			Arguments.of(String.class.getName(), false),
+			Arguments.of("my.package.SomeClass", false),
 
-		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass$$proxy")).isTrue();
-		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass$ByteBuddy$abcdef")).isTrue();
-		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern("my.package.SomeClass$HibernateProxy$abcdef")).isTrue();
+			Arguments.of("my.package.SomeClass$$proxy", true),
+			Arguments.of("my.package.SomeClass$ByteBuddy$abcdef", true),
+			Arguments.of("my.package.SomeClass$HibernateProxy$abcdef", true)
+		);
+	}
+
+	@ParameterizedTest
+	@MethodSource("testMatchesWellKnownProxyClassPatternParams")
+	void testMatchesWellKnownProxyClassPattern(String given, boolean expected) throws Exception {
+		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(given)).isEqualTo(expected);
 	}
 
 	@Test
