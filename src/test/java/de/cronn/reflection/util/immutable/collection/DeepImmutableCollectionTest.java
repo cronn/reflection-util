@@ -63,7 +63,7 @@ public class DeepImmutableCollectionTest {
 	void testCreateImmutableProxy() throws Exception {
 		Collection<TestEntity> original = Collections.singleton(new TestEntity(123));
 		Collection<TestEntity> immutableProxy = ImmutableProxy.create(original);
-		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy));
+		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy)).isTrue();
 		assertThat(immutableProxy.iterator().next().getNumber()).isEqualTo(123);
 	}
 
