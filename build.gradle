@@ -172,6 +172,9 @@ dependencies {
 	testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
 	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
 
+    // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
+    compileOnly "org.jetbrains:annotations:latest.release"
+
 	components.all { ComponentMetadataDetails details ->
 		details.statusScheme = ['candidate', 'release']
 		if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|M\d+).*/) {

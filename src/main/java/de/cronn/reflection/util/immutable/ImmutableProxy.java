@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.jetbrains.annotations.UnmodifiableView;
 import org.objenesis.ObjenesisHelper;
 
 import de.cronn.reflection.util.ClassUtils;
@@ -65,18 +66,22 @@ public final class ImmutableProxy {
 		return proxy;
 	}
 
+	@UnmodifiableView
 	public static <T> Collection<T> create(Collection<T> collection) {
 		return new DeepImmutableCollection<>(collection);
 	}
 
+	@UnmodifiableView
 	public static <T> List<T> create(List<T> list) {
 		return new DeepImmutableList<>(list);
 	}
 
+	@UnmodifiableView
 	public static <T> Set<T> create(Set<T> set) {
 		return new DeepImmutableSet<>(set);
 	}
 
+	@UnmodifiableView
 	public static <K, V> Map<K, V> create(Map<K, V> map) {
 		return new DeepImmutableMap<>(map);
 	}
