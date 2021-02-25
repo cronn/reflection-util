@@ -1,20 +1,20 @@
 buildscript {
-	repositories {
-		mavenCentral()
-	}
+    repositories {
+        mavenCentral()
+    }
 }
 
 plugins {
-	id 'java-library'
-	id 'jacoco'
-	id 'eclipse'
-	id 'idea'
+    id 'java-library'
+    id 'jacoco'
+    id 'eclipse'
+    id 'idea'
 
-	id 'maven-publish'
-	id 'org.sonarqube' version '3.0'
-	id 'com.jfrog.bintray' version '1.8.5'
-	id 'com.github.kt3k.coveralls' version '2.10.2'
-	id 'info.solidsoft.pitest' version '1.5.2'
+    id 'maven-publish'
+    id 'org.sonarqube' version '3.0'
+    id 'com.jfrog.bintray' version '1.8.5'
+    id 'com.github.kt3k.coveralls' version '2.10.2'
+    id 'info.solidsoft.pitest' version '1.5.2'
 }
 
 group = 'de.cronn'
@@ -22,7 +22,7 @@ group = 'de.cronn'
 version = "2.9.0"
 
 if (System.env.BUILD_NUMBER) {
-	version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
+    version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
 }
 
 sourceCompatibility = 1.8
@@ -31,160 +31,160 @@ targetCompatibility = 1.8
 compileJava.options.encoding = 'UTF-8'
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 jacocoTestReport {
-	reports {
-		html.enabled = false
-		xml.enabled = true
-		csv.enabled = false
-	}
-	dependsOn test
+    reports {
+        html.enabled = false
+        xml.enabled = true
+        csv.enabled = false
+    }
+    dependsOn test
 }
 
 pitest {
-	timestampedReports = false
-	outputFormats = ['XML', 'HTML']
+    timestampedReports = false
+    outputFormats = ['XML', 'HTML']
 }
 
 tasks.withType(JavaCompile) {
-	options.incremental = true
+    options.incremental = true
 }
 
 wrapper {
-	gradleVersion = "6.8.2"
-	distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = "6.8.2"
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
+    classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
-	classifier = 'javadoc'
-	from javadoc.destinationDir
+    classifier = 'javadoc'
+    from javadoc.destinationDir
 }
 
 publishing {
-	publications {
-		CronnPublication(MavenPublication) {
-			groupId = project.group
-			artifactId = project.name
-			version = project.version
-			pom {
-				name = project.name
-				description = 'Java Reflection Utility Classes'
-				url = 'https://github.com/cronn/reflection-util'
+    publications {
+        CronnPublication(MavenPublication) {
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
+            pom {
+                name = project.name
+                description = 'Java Reflection Utility Classes'
+                url = 'https://github.com/cronn/reflection-util'
 
-				licenses {
-					license {
-						name = "The Apache Software License, Version 2.0"
-						url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-						distribution = "repo"
-					}
-				}
+                licenses {
+                    license {
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
+                    }
+                }
 
-				developers {
-					developer {
-						id = "benedikt.waldvogel"
-						name = "Benedikt Waldvogel"
-						email = "benedikt.waldvogel@cronn.de"
-					}
-					developer {
-						id = "mark.s.fischer"
-						name = "Mark S. Fischer"
-						email = "reflection-util.x.msf@spam-en.de"
-					}
-				}
+                developers {
+                    developer {
+                        id = "benedikt.waldvogel"
+                        name = "Benedikt Waldvogel"
+                        email = "benedikt.waldvogel@cronn.de"
+                    }
+                    developer {
+                        id = "mark.s.fischer"
+                        name = "Mark S. Fischer"
+                        email = "reflection-util.x.msf@spam-en.de"
+                    }
+                }
 
-				scm {
-					url = "https://github.com/cronn/reflection-util"
-				}
-			}
+                scm {
+                    url = "https://github.com/cronn/reflection-util"
+                }
+            }
 
-			from components.java
+            from components.java
 
-			artifact sourcesJar
-			artifact javadocJar
+            artifact sourcesJar
+            artifact javadocJar
 
-			versionMapping {
-				usage('java-api') {
-					fromResolutionOf('runtimeClasspath')
-				}
-				usage('java-runtime') {
-					fromResolutionResult()
-				}
-			}
-		}
-	}
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+        }
+    }
 }
 
 bintray {
-	user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-	key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
 
-	publications = ['CronnPublication']
-	dryRun = false
-	pkg {
-		repo = 'maven'
-		name = rootProject.name
-		userOrg = 'cronn'
-		licenses = ['Apache-2.0']
-		websiteUrl = 'https://github.com/cronn/reflection-util'
-		issueTrackerUrl = 'https://github.com/cronn/reflection-util/issues'
-		vcsUrl = 'https://github.com/cronn/reflection-util.git'
-		version {
-			name = project.version
-			released = new Date()
-		}
-	}
-	override = true
+    publications = ['CronnPublication']
+    dryRun = false
+    pkg {
+        repo = 'maven'
+        name = rootProject.name
+        userOrg = 'cronn'
+        licenses = ['Apache-2.0']
+        websiteUrl = 'https://github.com/cronn/reflection-util'
+        issueTrackerUrl = 'https://github.com/cronn/reflection-util/issues'
+        vcsUrl = 'https://github.com/cronn/reflection-util.git'
+        version {
+            name = project.version
+            released = new Date()
+        }
+    }
+    override = true
 }
 
 test {
-	useJUnitPlatform()
+    useJUnitPlatform()
 
-	maxHeapSize = "256m"
+    maxHeapSize = "256m"
 }
 
 dependencies {
-	implementation "net.bytebuddy:byte-buddy:latest.release"
-	implementation "org.objenesis:objenesis:latest.release"
-	implementation "org.slf4j:slf4j-api:latest.release"
+    implementation "net.bytebuddy:byte-buddy:latest.release"
+    implementation "org.objenesis:objenesis:latest.release"
+    implementation "org.slf4j:slf4j-api:latest.release"
 
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: 'latest.release'
-	testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: 'latest.release'
-	testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: 'latest.release'
-	testImplementation "org.mockito:mockito-core:latest.release"
-	testImplementation "org.assertj:assertj-core:latest.release"
-	testImplementation "javax.validation:validation-api:latest.release"
-	testImplementation "org.apache.commons:commons-lang3:latest.release"
-	testImplementation "cglib:cglib:latest.release"
-	testImplementation "org.javassist:javassist:latest.release"
-	testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: 'latest.release'
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: 'latest.release'
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: 'latest.release'
+    testImplementation "org.mockito:mockito-core:latest.release"
+    testImplementation "org.assertj:assertj-core:latest.release"
+    testImplementation "javax.validation:validation-api:latest.release"
+    testImplementation "org.apache.commons:commons-lang3:latest.release"
+    testImplementation "cglib:cglib:latest.release"
+    testImplementation "org.javassist:javassist:latest.release"
+    testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
 
-	testImplementation "org.openjdk.jmh:jmh-core:latest.release"
-	testRuntimeOnly "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
+    testImplementation "org.openjdk.jmh:jmh-core:latest.release"
+    testRuntimeOnly "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
 
-	testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
-	testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
+    testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
+    testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
 
     // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
     compileOnly "org.jetbrains:annotations:latest.release"
     testCompileOnly "org.jetbrains:annotations:latest.release"
 
-	components.all { ComponentMetadataDetails details ->
-		details.statusScheme = ['candidate', 'release']
-		if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|M\d+).*/) {
-			details.status = 'candidate'
-		} else {
-			details.status = 'release'
-		}
-	}
+    components.all { ComponentMetadataDetails details ->
+        details.statusScheme = ['candidate', 'release']
+        if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|M\d+).*/) {
+            details.status = 'candidate'
+        } else {
+            details.status = 'release'
+        }
+    }
 }
 
 dependencyLocking {
-	lockAllConfigurations()
+    lockAllConfigurations()
 }
