@@ -67,6 +67,14 @@ public class ClassUtilsTest {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class, BaseInterface.class)))
 			.withMessage("Unexpected number of interfaces: 2");
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> {
+				Object entity = TestEntity.class;
+				ClassUtils.getRealClass(entity);
+			})
+			.withMessage("The provided object is already a class: class de.cronn.reflection.util.testclasses.TestEntity." +
+						 " You probably want to call ClassUtils.getRealClass(Class) instead.");
 	}
 
 	private static Stream<Arguments> testMatchesWellKnownProxyClassPatternParams() {

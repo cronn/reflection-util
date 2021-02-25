@@ -29,6 +29,10 @@ public final class ClassUtils {
 	}
 
 	public static <T> Class<T> getRealClass(T object) {
+		if (object instanceof Class<?>) {
+			throw new IllegalArgumentException("The provided object is already a class: " + object + ". " +
+											   "You probably want to call ClassUtils.getRealClass(Class) instead.");
+		}
 		@SuppressWarnings("unchecked")
 		Class<T> entityClass = (Class<T>) object.getClass();
 		return getRealClass(entityClass);
