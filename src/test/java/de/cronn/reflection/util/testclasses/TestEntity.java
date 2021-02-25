@@ -14,7 +14,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 public class TestEntity extends AbstractClassWithAnnotatedMethods implements InterfaceWithReadOnlyMethods, Serializable, Cloneable {
@@ -27,7 +27,7 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 	@Size(min = 0, max = 1000)
 	private String string;
 
-	@Nullable
+	@NotNull
 	private Object someObject = Arrays.asList("abc", "def");
 
 	private Object fieldWithoutGetter;

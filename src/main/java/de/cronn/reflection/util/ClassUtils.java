@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public final class ClassUtils {
 
@@ -94,59 +94,59 @@ public final class ClassUtils {
 		}
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getVoidMethodName(T bean, VoidMethod<T> voidMethod) {
 		Class<T> beanClass = getRealClass(bean);
 		return getVoidMethodName(beanClass, voidMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getVoidMethodName(Class<T> beanClass, VoidMethod<T> voidMethod) {
 		Method method = getVoidMethod(beanClass, voidMethod);
 		return method.getName();
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> Method getVoidMethod(Class<T> beanClass, VoidMethod<T> voidMethod) {
 		PropertyDescriptorCache<T> cache = PropertyUtils.getCache(beanClass);
 		return cache.getMethod(voidMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> Method getMethod(Class<T> beanClass, PropertyGetter<T> getterMethod) {
 		PropertyDescriptorCache<T> cache = PropertyUtils.getCache(beanClass);
 		return cache.getMethod(getterMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> Method getMethod(T bean, PropertyGetter<T> getterMethod) {
 		Class<T> beanClass = getRealClass(bean);
 		return getMethod(beanClass, getterMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getMethodName(T bean, PropertyGetter<T> getterMethod) {
 		Class<T> beanClass = getRealClass(bean);
 		return getMethodName(beanClass, getterMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getMethodName(Class<T> beanClass, PropertyGetter<T> getterMethod) {
 		Method method = getMethod(beanClass, getterMethod);
 		return method.getName();
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> Method getMethod(Class<T> beanClass, VoidMethod<T> voidMethod) {
 		return getVoidMethod(beanClass, voidMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getMethodName(T bean, VoidMethod<T> voidMethod) {
 		return getVoidMethodName(bean, voidMethod);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getMethodName(Class<T> beanClass, VoidMethod<T> voidMethod) {
 		return getVoidMethodName(beanClass, voidMethod);
 	}

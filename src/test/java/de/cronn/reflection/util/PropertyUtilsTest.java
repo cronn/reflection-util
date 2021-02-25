@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.junit.jupiter.api.Test;
@@ -210,11 +210,11 @@ class PropertyUtilsTest {
 
 	@Test
 	void testGetPropertyDescriptorsWithAnnotation() {
-		Map<PropertyDescriptor, Nullable> map = PropertyUtils.getPropertyDescriptorsWithAnnotation(TestEntity.class,
-			Nullable.class);
+		Map<PropertyDescriptor, NotNull> map = PropertyUtils.getPropertyDescriptorsWithAnnotation(TestEntity.class,
+			NotNull.class);
 		assertThat(map).hasSize(1);
 		PropertyDescriptor someObject = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject);
-		assertThat(map.get(someObject)).isInstanceOf(Nullable.class);
+		assertThat(map.get(someObject)).isInstanceOf(NotNull.class);
 
 		Map<PropertyDescriptor, Size> sizeProperties = PropertyUtils.getPropertyDescriptorsWithAnnotation(new DerivedClass(), Size.class);
 		assertThat(collectPropertyNames(sizeProperties.keySet())).containsExactly("baseClassStringProperty", "otherStringProperty");
@@ -485,7 +485,7 @@ class PropertyUtilsTest {
 
 	@Test
 	void testGetAnnotationOfProperty() throws Exception {
-		Nullable relationship = PropertyUtils.getAnnotationOfProperty(TestEntity.class, TestEntity::getSomeObject, Nullable.class);
+		NotNull relationship = PropertyUtils.getAnnotationOfProperty(TestEntity.class, TestEntity::getSomeObject, NotNull.class);
 		assertThat(relationship).isNotNull();
 
 		Size size = PropertyUtils.getAnnotationOfProperty(TestEntity.class, TestEntity::getSomeObject, Size.class);
@@ -534,7 +534,7 @@ class PropertyUtilsTest {
 	@Test
 	void testHasAnnotationOfProperty() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject);
-		assertThat(PropertyUtils.hasAnnotationOfProperty(TestEntity.class, propertyDescriptor, Nullable.class)).isTrue();
+		assertThat(PropertyUtils.hasAnnotationOfProperty(TestEntity.class, propertyDescriptor, NotNull.class)).isTrue();
 		assertThat(PropertyUtils.hasAnnotationOfProperty(TestEntity.class, propertyDescriptor, Size.class)).isFalse();
 	}
 

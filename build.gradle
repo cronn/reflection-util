@@ -150,7 +150,6 @@ test {
 }
 
 dependencies {
-	api "com.google.code.findbugs:jsr305:latest.release"
 	implementation "net.bytebuddy:byte-buddy:latest.release"
 	implementation "org.objenesis:objenesis:latest.release"
 	implementation "org.slf4j:slf4j-api:latest.release"
@@ -174,6 +173,7 @@ dependencies {
 
     // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
     compileOnly "org.jetbrains:annotations:latest.release"
+    testCompileOnly "org.jetbrains:annotations:latest.release"
 
 	components.all { ComponentMetadataDetails details ->
 		details.statusScheme = ['candidate', 'release']

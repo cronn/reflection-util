@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 import de.cronn.reflection.util.immutable.Immutable;
 import de.cronn.reflection.util.immutable.ImmutableProxy;
@@ -55,14 +55,14 @@ public class DeepImmutableCollection<E> extends AbstractCollection<E> implements
 		return delegate.contains(o);
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public Iterator<E> iterator() {
 		return new ImmutableIterator<>(this, delegate.iterator(), immutableMessage);
 	}
 
 	@Override
-	public boolean containsAll(@Nonnull Collection<?> c) {
+	public boolean containsAll(@NotNull Collection<?> c) {
 		return delegate.containsAll(c);
 	}
 
@@ -87,17 +87,17 @@ public class DeepImmutableCollection<E> extends AbstractCollection<E> implements
 	}
 
 	@Override
-	public boolean addAll(@Nonnull Collection<? extends E> c) {
+	public boolean addAll(@NotNull Collection<? extends E> c) {
 		throw new UnsupportedOperationException(immutableMessage);
 	}
 
 	@Override
-	public boolean removeAll(@Nonnull Collection<?> c) {
+	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException(immutableMessage);
 	}
 
 	@Override
-	public boolean retainAll(@Nonnull Collection<?> c) {
+	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException(immutableMessage);
 	}
 

@@ -14,9 +14,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.objenesis.ObjenesisHelper;
 
 public final class PropertyUtils {
@@ -37,13 +36,13 @@ public final class PropertyUtils {
 		return propertyDescriptorCache.getDescriptorByName(propertyName);
 	}
 
-	@Nonnull
+	@NotNull
 	public static PropertyDescriptor getPropertyDescriptorByNameOrThrow(Object bean, String propertyName) {
 		Class<Object> beanClass = ClassUtils.getRealClass(bean);
 		return getPropertyDescriptorByNameOrThrow(beanClass, propertyName);
 	}
 
-	@Nonnull
+	@NotNull
 	public static PropertyDescriptor getPropertyDescriptorByNameOrThrow(Class<?> beanClass, String propertyName) {
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptorByName(beanClass, propertyName);
 		Assert.notNull(propertyDescriptor, () -> String.format("Property '%s' not found for '%s'", propertyName, beanClass.getSimpleName()));
@@ -271,13 +270,13 @@ public final class PropertyUtils {
 		return PropertyUtils.read(entity, propertyDescriptor);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> PropertyDescriptor getPropertyDescriptor(T bean, TypedPropertyGetter<T, ?> propertyGetter) {
 		Class<T> beanClass = ClassUtils.getRealClass(bean);
 		return getPropertyDescriptor(beanClass, propertyGetter);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> PropertyDescriptor getPropertyDescriptor(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		Method method = getMethod(beanClass, propertyGetter);
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptorByMethod(beanClass, method);
@@ -285,13 +284,13 @@ public final class PropertyUtils {
 		return propertyDescriptor;
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getPropertyName(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		PropertyDescriptor propertyDescriptor = getPropertyDescriptor(beanClass, propertyGetter);
 		return propertyDescriptor.getName();
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> String getPropertyName(T bean, TypedPropertyGetter<T, ?> propertyGetter) {
 		Class<T> beanClass = ClassUtils.getRealClass(bean);
 		return getPropertyName(beanClass, propertyGetter);
@@ -309,7 +308,7 @@ public final class PropertyUtils {
 		return propertyDescriptorCache.getDescriptorByField(field);
 	}
 
-	@Nonnull
+	@NotNull
 	public static <T> Method getMethod(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
 		PropertyDescriptorCache<T> cache = getCache(beanClass);
 		return cache.getMethod(propertyGetter);

@@ -7,7 +7,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 
-import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements List<E> {
 
@@ -50,19 +50,19 @@ public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements 
 		return listDelegate.lastIndexOf(o);
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator() {
 		return new ImmutableListIterator<>(this, listDelegate.listIterator());
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public ListIterator<E> listIterator(int index) {
 		return new ImmutableListIterator<>(this, listDelegate.listIterator(index));
 	}
 
-	@Nonnull
+	@NotNull
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
 		return new DeepImmutableList<>(listDelegate.subList(fromIndex, toIndex));
@@ -84,7 +84,7 @@ public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements 
 	}
 
 	@Override
-	public boolean addAll(int index, @Nonnull Collection<? extends E> c) {
+	public boolean addAll(int index, @NotNull Collection<? extends E> c) {
 		throw new UnsupportedOperationException(IMMUTABLE_MESSAGE);
 	}
 
