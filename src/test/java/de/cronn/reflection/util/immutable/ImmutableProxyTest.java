@@ -134,6 +134,18 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
+	void testImmutableProxy_fluentSetter() throws Exception {
+		TestEntity original = new TestEntity(123);
+		original.setSomeUuid(UUID.fromString("28e93b24-7252-43d8-a223-ca0b3270bd7f"));
+
+		TestEntity immutableProxy = ImmutableProxy.create(original);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.someUuid(UUID.fromString("abcdef00-cafe-beef-abcd-987654321000")))
+			.withMessage(IMMUTABLE_EXCEPTION_MESSAGE);
+	}
+
+	@Test
 	void testDate() throws Exception {
 		Date original = new Date(12345678);
 

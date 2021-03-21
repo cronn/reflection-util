@@ -124,6 +124,11 @@ public class TestEntity extends AbstractClassWithAnnotatedMethods implements Int
 		this.someUuid = someUuid;
 	}
 
+	public TestEntity someUuid(UUID someUuid) {
+		setSomeUuid(someUuid);
+		return this;
+	}
+
 	public File getSomeFile() {
 		return someFile;
 	}
