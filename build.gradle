@@ -13,7 +13,6 @@ plugins {
     id 'maven-publish'
     id 'org.sonarqube' version '3.0'
     id 'com.jfrog.bintray' version '1.8.5'
-    id 'com.github.kt3k.coveralls' version '2.12.0'
     id 'info.solidsoft.pitest' version '1.5.2'
 }
 
