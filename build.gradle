@@ -175,11 +175,8 @@ dependencies {
     testCompileOnly "org.jetbrains:annotations:latest.release"
 
     components.all { ComponentMetadataDetails details ->
-        details.statusScheme = ['candidate', 'release']
         if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|M\d+).*/) {
-            details.status = 'candidate'
-        } else {
-            details.status = 'release'
+            details.status = 'milestone'
         }
     }
 }
