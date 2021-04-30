@@ -380,7 +380,14 @@ class PropertyUtilsTest {
 	void testGetPropertyDescriptorByPropertyGetter_FinalMethodCannotBeCaptured() throws Exception {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getClass))
-			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
+	}
+
+	@Test
+	void testGetPropertyDescriptorByPropertyGetter_NonPublicMethodCannotBeCaptured() throws Exception {
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestClassWithDefaultVisibility.class, TestClassWithDefaultVisibility::getPropertyWithDefaultVisibilityGetter))
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test
@@ -398,7 +405,7 @@ class PropertyUtilsTest {
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, propertyGetter))
-			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test

@@ -24,7 +24,7 @@ class MethodCaptorTest {
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(methodCaptor::getCapturedMethod)
-			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test

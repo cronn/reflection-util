@@ -159,7 +159,7 @@ public class ClassUtilsTest {
 		};
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> ClassUtils.getMethod(TestEntity.class, lambda))
-			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test
@@ -226,7 +226,7 @@ public class ClassUtilsTest {
 		};
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> ClassUtils.getMethod(TestEntity.class, getter))
-			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is private or final.");
+			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test

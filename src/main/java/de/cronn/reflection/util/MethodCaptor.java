@@ -27,7 +27,7 @@ public class MethodCaptor {
 	Method getCapturedMethod() {
 		Method method = capturedMethod.get();
 		Assert.notNull(method, () -> "Method could not be captured." +
-									 " This can happen when no method was invoked or the method is private or final.");
+									 " This can happen when no method was invoked or the method is final or non-public.");
 		return method;
 	}
 
