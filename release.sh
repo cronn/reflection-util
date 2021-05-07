@@ -1,3 +1,3 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-./gradlew bintrayUpload
+./gradlew --no-daemon clean build publish
