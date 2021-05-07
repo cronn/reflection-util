@@ -37,4 +37,4 @@ org.ow2.asm:asm:7.1=testCompileClasspath,testRuntimeClasspath
 org.ow2.asm:asm:8.0.1=jacocoAnt
 org.slf4j:jcl-over-slf4j:1.7.30=testRuntimeClasspath
 org.slf4j:slf4j-api:1.7.30=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
-empty=annotationProcessor,pitest,testAnnotationProcessor
+empty=annotationProcessor,pitest,signatures,testAnnotationProcessor
