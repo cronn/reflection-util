@@ -45,10 +45,6 @@ pitest {
     outputFormats = ['XML', 'HTML']
 }
 
-tasks.withType(JavaCompile) {
-    options.incremental = true
-}
-
 wrapper {
     gradleVersion = "7.0"
     distributionType = Wrapper.DistributionType.ALL
