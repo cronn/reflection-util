@@ -2,8 +2,8 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    configurations.classpath {
-        resolutionStrategy.activateDependencyLocking()
+    dependencyLocking {
+        lockAllConfigurations()
     }
 }
 
