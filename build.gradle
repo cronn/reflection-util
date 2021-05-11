@@ -13,8 +13,8 @@ plugins {
     id 'signing'
     id 'jacoco'
 
-    id 'org.sonarqube' version '3.1.1'
-    id 'info.solidsoft.pitest' version '1.5.2'
+    id 'org.sonarqube' version 'latest.release'
+    id 'info.solidsoft.pitest' version 'latest.release'
 }
 
 group = 'de.cronn'
