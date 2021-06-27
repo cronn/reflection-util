@@ -1,10 +1,8 @@
 package de.cronn.reflection.util.testclasses;
 
-public final class FinalClass {
+import lombok.Value;
 
-	private String someProperty;
-
-	public String getSomeProperty() {
-		return someProperty;
-	}
+@Value
+public class FinalClass {
+	Object someProperty;
 }

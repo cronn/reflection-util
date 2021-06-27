@@ -1,5 +1,7 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import static de.cronn.reflection.util.immutable.SoftImmutableProxy.*;
+
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.Collection;
@@ -12,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import de.cronn.reflection.util.immutable.Immutable;
 import de.cronn.reflection.util.immutable.ImmutableProxy;
+import de.cronn.reflection.util.immutable.SoftImmutableProxy;
 
 public class DeepImmutableCollection<E> extends AbstractCollection<E> implements Collection<E>, Immutable, Serializable {
 
@@ -21,15 +24,22 @@ public class DeepImmutableCollection<E> extends AbstractCollection<E> implements
 
 	private final Collection<E> delegate;
 
+	private final boolean softImmutable;
+
 	private final Map<E, E> immutableProxyCache = new IdentityHashMap<>();
 
 	public DeepImmutableCollection(Collection<E> delegate) {
-		this(delegate, "This collection is immutable");
+		this(delegate, "This collection is immutable", SOFT_IMMUTABLE_DEFAULT);
 	}
 
-	DeepImmutableCollection(Collection<E> delegate, String immutableMessage) {
+	public DeepImmutableCollection(Collection<E> delegate, boolean softImmutable) {
+		this(delegate, "This collection is immutable", softImmutable);
+	}
+
+	DeepImmutableCollection(Collection<E> delegate, String immutableMessage, boolean softImmutable) {
 		this.delegate = Objects.requireNonNull(delegate);
 		this.immutableMessage = immutableMessage;
+		this.softImmutable = softImmutable;
 	}
 
 	E getImmutableElement(E element) {
@@ -37,7 +47,11 @@ public class DeepImmutableCollection<E> extends AbstractCollection<E> implements
 	}
 
 	E createImmutableElement(E value) {
-		return ImmutableProxy.create(value);
+		if (softImmutable) {
+			return SoftImmutableProxy.create(value);
+		} else {
+			return ImmutableProxy.create(value);
+		}
 	}
 
 	@Override

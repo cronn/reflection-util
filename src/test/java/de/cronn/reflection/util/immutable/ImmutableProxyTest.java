@@ -1,6 +1,8 @@
 package de.cronn.reflection.util.immutable;
 
+import static de.cronn.reflection.util.immutable.SoftImmutableProxy.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
 import java.net.URI;
@@ -27,6 +29,8 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import de.cronn.reflection.util.testclasses.SomeClass;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.Test;
@@ -78,7 +82,7 @@ public class ImmutableProxyTest {
 
 	@Test
 	void testImmutableProxyOnFinalClass() throws Exception {
-		FinalClass finalClass = new FinalClass();
+		FinalClass finalClass = new FinalClass("");
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> ImmutableProxy.create(finalClass))
@@ -334,7 +338,7 @@ public class ImmutableProxyTest {
 		TestEntity immutableProxy = ImmutableProxy.create(original);
 
 		Map<String, OtherTestEntity> immutableMap = immutableProxy.getSomeMap();
-		assertThat(ImmutableProxy.isImmutable(immutableMap)).isTrue();
+		assertThat(ImmutableProxySupport.isImmutable(immutableMap, SOFT_IMMUTABLE_DEFAULT)).isTrue();
 		assertThat(immutableMap).hasSameSizeAs(original.getSomeMap());
 		assertThat(immutableMap.get("a").getImmutableValue()).isEqualTo("a");
 
@@ -586,6 +590,17 @@ public class ImmutableProxyTest {
 
 		OtherTestEntity firstElementAfter = clone.getSomeList().get(0);
 		assertThat(firstElementAfter).isNotSameAs(firstElementBefore);
+	}
+
+	@Test
+	void testIsImmutableProxyClass() throws Exception {
+		SomeClass target = new SomeClass();
+		SomeClass proxy = ImmutableProxy.create(target);
+
+		assertAll(
+			() -> assertThat(ImmutableProxy.isImmutableProxyClass(target.getClass())).isFalse(),
+			() -> assertThat(ImmutableProxy.isImmutableProxyClass(proxy.getClass())).isTrue()
+		);
 	}
 
 }

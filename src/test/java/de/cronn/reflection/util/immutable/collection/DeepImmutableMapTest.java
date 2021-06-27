@@ -1,6 +1,8 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Collections;
 import java.util.Date;
@@ -11,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.immutable.ImmutableProxy;
 import de.cronn.reflection.util.immutable.ImmutableProxyTest;
+import de.cronn.reflection.util.testclasses.FinalClass;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
 import de.cronn.reflection.util.testclasses.TestEntity;
 
@@ -70,7 +73,7 @@ public class DeepImmutableMapTest {
 
 	@Test
 	void testImmutableMap_ImmutableKey() throws Exception {
-		Map<Date, Object> immutableMap = ImmutableProxy.create(Collections.singletonMap(new Date(123L), null));
+		Map<Date, Object> immutableMap = ImmutableProxy.create(singletonMap(new Date(123L), null));
 		Date immutableValue = immutableMap.keySet().iterator().next();
 
 		assertThat(immutableValue.getTime()).isEqualTo(123L);
@@ -78,6 +81,14 @@ public class DeepImmutableMapTest {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableValue.setTime(456L))
 			.withMessage(ImmutableProxyTest.IMMUTABLE_EXCEPTION_MESSAGE);
+	}
+
+	@Test
+	void shouldNotBeSoftByDefault() throws Exception {
+		FinalClass finalClass = new FinalClass("");
+		DeepImmutableMap<String, FinalClass> immutableMap = new DeepImmutableMap<>(singletonMap("key", finalClass));
+
+		assertThrows(IllegalArgumentException.class, () -> immutableMap.get("key"));
 	}
 
 }

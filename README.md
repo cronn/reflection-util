@@ -127,6 +127,20 @@ class MyPojo
 As a final word of warning, please note that `ImmutableProxy` follows a best-effort approach but cannot _guarantee_ to detect all possible modifications.
 For example, it cannot detect that a getter actually modifies the state as a side-effect.
 
+## SoftImmutableProxy ##
+
+Sometimes you cannot control types of all nested objects, but you still want to make your objects immutable as deep as possible.
+
+In such cases `SoftImmutableProxy` can help you. It behaves almost the same as `ImmutableProxy` except it doesn't throw an exception if encounters a final class that it cannot wrap into a proxy.
+
+```java
+MyFinalClass original = new MyFinalClass();
+original.setProperty(new MyPojo());
+List<MyFinalClass> proxyList = SoftImmutableProxy.create(List.of(original));
+proxyList.get(0)               // ✔ returns original, because it cannot create a proxy for final class
+proxyList.get(0).getProperty() // ✔ returns original, because parent class is not a proxy
+```
+
 ### JMH Benchmark
 
 To get a rough idea about the performance impact of the `ImmutableProxy` method interception,

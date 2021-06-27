@@ -163,6 +163,9 @@ dependencies {
     compileOnly "org.jetbrains:annotations:latest.release"
     testCompileOnly "org.jetbrains:annotations:latest.release"
 
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
     components.all { ComponentMetadataDetails details ->
         if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|M\d+).*/) {
             details.status = 'milestone'

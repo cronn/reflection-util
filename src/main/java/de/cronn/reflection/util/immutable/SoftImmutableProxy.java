@@ -1,7 +1,5 @@
 package de.cronn.reflection.util.immutable;
 
-import static de.cronn.reflection.util.immutable.SoftImmutableProxy.*;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -10,32 +8,36 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.UnmodifiableView;
 
-public abstract class ImmutableProxy {
+public abstract class SoftImmutableProxy {
+
+	public static final boolean SOFT_IMMUTABLE_ENABLED = true;
+	public static final boolean SOFT_IMMUTABLE_DISABLED = false;
+	public static final boolean SOFT_IMMUTABLE_DEFAULT = SOFT_IMMUTABLE_DISABLED;
 
 	private static final Map<Class<?>, Class<?>> immutableProxyClassCache = new ConcurrentHashMap<>();
 
 	public static <T> T create(T instance) {
-		return ImmutableProxySupport.create(instance, SOFT_IMMUTABLE_DEFAULT, ImmutableProxy::getProxy);
+		return ImmutableProxySupport.create(instance, SOFT_IMMUTABLE_ENABLED, SoftImmutableProxy::getProxy);
 	}
 
 	@UnmodifiableView
 	public static <T> Collection<T> create(Collection<T> collection) {
-		return ImmutableProxySupport.create(collection, SOFT_IMMUTABLE_DEFAULT);
+		return ImmutableProxySupport.create(collection, SOFT_IMMUTABLE_ENABLED);
 	}
 
 	@UnmodifiableView
 	public static <T> List<T> create(List<T> list) {
-		return ImmutableProxySupport.create(list, SOFT_IMMUTABLE_DEFAULT);
+		return ImmutableProxySupport.create(list, SOFT_IMMUTABLE_ENABLED);
 	}
 
 	@UnmodifiableView
 	public static <T> Set<T> create(Set<T> set) {
-		return ImmutableProxySupport.create(set, SOFT_IMMUTABLE_DEFAULT);
+		return ImmutableProxySupport.create(set, SOFT_IMMUTABLE_ENABLED);
 	}
 
 	@UnmodifiableView
 	public static <K, V> Map<K, V> create(Map<K, V> map) {
-		return ImmutableProxySupport.create(map, SOFT_IMMUTABLE_DEFAULT);
+		return ImmutableProxySupport.create(map, SOFT_IMMUTABLE_ENABLED);
 	}
 
 	public static <T> T unwrap(T immutableProxy) {
@@ -55,7 +57,7 @@ public abstract class ImmutableProxy {
 	}
 
 	private static <T> T getProxy(T instance) {
-		return ImmutableProxySupport.getProxy(instance, immutableProxyClassCache, GenericImmutableProxyForwarder.class);
+		return ImmutableProxySupport.getProxy(instance, immutableProxyClassCache, GenericSoftImmutableProxyForwarder.class);
 	}
 
 }

@@ -13,7 +13,7 @@ public final class ImmutableProxyForwarderLong {
 	}
 
 	public static Long forward(@Origin Method method,
-							   @FieldValue(ImmutableProxy.DELEGATE_FIELD_NAME) Object delegate,
+							   @FieldValue(ImmutableProxySupport.DELEGATE_FIELD_NAME) Object delegate,
 							   @AllArguments Object[] args) throws InvocationTargetException, IllegalAccessException {
 		return (Long) method.invoke(delegate, args);
 	}

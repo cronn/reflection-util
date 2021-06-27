@@ -1,10 +1,14 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import static java.util.Collections.*;
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+
+import de.cronn.reflection.util.testclasses.FinalClass;
 
 import org.junit.jupiter.api.Test;
 
@@ -65,6 +69,14 @@ public class DeepImmutableCollectionTest {
 		Collection<TestEntity> immutableProxy = ImmutableProxy.create(original);
 		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy)).isTrue();
 		assertThat(immutableProxy.iterator().next().getNumber()).isEqualTo(123);
+	}
+
+	@Test
+	void shouldNotBeSoftByDefault() throws Exception {
+		FinalClass finalClass = new FinalClass("");
+		DeepImmutableCollection<FinalClass> immutableMap = new DeepImmutableCollection<>(singleton(finalClass));
+
+		assertThrows(IllegalArgumentException.class, () -> immutableMap.iterator().next());
 	}
 
 }

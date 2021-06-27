@@ -1,5 +1,7 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import static de.cronn.reflection.util.immutable.SoftImmutableProxy.*;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,7 +20,11 @@ public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements 
 	private final List<E> listDelegate;
 
 	public DeepImmutableList(List<E> list) {
-		super(list, IMMUTABLE_MESSAGE);
+		this(list, SOFT_IMMUTABLE_DEFAULT);
+	}
+
+	public DeepImmutableList(List<E> list, boolean softImmutable) {
+		super(list, IMMUTABLE_MESSAGE, softImmutable);
 		this.listDelegate = list;
 	}
 

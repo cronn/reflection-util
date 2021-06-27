@@ -13,7 +13,7 @@ public final class ImmutableProxyForwarderInteger {
 	}
 
 	public static Integer forward(@Origin Method method,
-								  @FieldValue(ImmutableProxy.DELEGATE_FIELD_NAME) Object delegate,
+								  @FieldValue(ImmutableProxySupport.DELEGATE_FIELD_NAME) Object delegate,
 								  @AllArguments Object[] args) throws InvocationTargetException, IllegalAccessException {
 		return (Integer) method.invoke(delegate, args);
 	}
