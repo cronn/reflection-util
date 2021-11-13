@@ -2,13 +2,13 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 cglib:cglib:3.3.0=testCompileClasspath,testRuntimeClasspath
-ch.qos.logback:logback-classic:1.2.6=testRuntimeClasspath
-ch.qos.logback:logback-core:1.2.6=testRuntimeClasspath
+ch.qos.logback:logback-classic:1.2.7=testRuntimeClasspath
+ch.qos.logback:logback-core:1.2.7=testRuntimeClasspath
 javax.validation:validation-api:2.0.1.Final=testCompileClasspath,testRuntimeClasspath
-net.bytebuddy:byte-buddy-agent:1.11.13=testCompileClasspath,testRuntimeClasspath
-net.bytebuddy:byte-buddy:1.11.19=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+net.bytebuddy:byte-buddy-agent:1.11.19=testCompileClasspath,testRuntimeClasspath
+net.bytebuddy:byte-buddy:1.12.1=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 net.sf.jopt-simple:jopt-simple:4.6=testCompileClasspath,testRuntimeClasspath
-nl.jqno.equalsverifier:equalsverifier:3.7.1=testCompileClasspath,testRuntimeClasspath
+nl.jqno.equalsverifier:equalsverifier:3.7.2=testCompileClasspath,testRuntimeClasspath
 org.apache.commons:commons-lang3:3.12.0=testCompileClasspath,testRuntimeClasspath
 org.apache.commons:commons-math3:3.2=testCompileClasspath,testRuntimeClasspath
 org.apiguardian:apiguardian-api:1.1.2=testCompileClasspath
@@ -18,14 +18,14 @@ org.jacoco:org.jacoco.ant:0.8.7=jacocoAnt
 org.jacoco:org.jacoco.core:0.8.7=jacocoAnt
 org.jacoco:org.jacoco.report:0.8.7=jacocoAnt
 org.javassist:javassist:3.28.0-GA=testCompileClasspath,testRuntimeClasspath
-org.jetbrains:annotations:22.0.0=compileClasspath,testCompileClasspath
+org.jetbrains:annotations:23.0.0=compileClasspath,testCompileClasspath
 org.junit.jupiter:junit-jupiter-api:5.8.1=testCompileClasspath,testRuntimeClasspath
 org.junit.jupiter:junit-jupiter-engine:5.8.1=testRuntimeClasspath
 org.junit.jupiter:junit-jupiter-params:5.8.1=testCompileClasspath,testRuntimeClasspath
 org.junit.platform:junit-platform-commons:1.8.1=testCompileClasspath,testRuntimeClasspath
 org.junit.platform:junit-platform-engine:1.8.1=testRuntimeClasspath
 org.junit:junit-bom:5.8.1=testCompileClasspath,testRuntimeClasspath
-org.mockito:mockito-core:3.12.4=testCompileClasspath,testRuntimeClasspath
+org.mockito:mockito-core:4.0.0=testCompileClasspath,testRuntimeClasspath
 org.objenesis:objenesis:3.2=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 org.openjdk.jmh:jmh-core:1.33=testCompileClasspath,testRuntimeClasspath
 org.openjdk.jmh:jmh-generator-annprocess:1.33=testRuntimeClasspath
