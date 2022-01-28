@@ -135,6 +135,14 @@ test {
     useJUnitPlatform()
 
     maxHeapSize = "256m"
+
+    try {
+        if (Runtime.version().feature() >= 14) {
+            jvmArgs += '-XX:+ShowCodeDetailsInExceptionMessages'
+        }
+    } catch (MissingMethodException ignore) {
+        // Do not enable ShowCodeDetailsInExceptionMessages on older JVMs
+    }
 }
 
 dependencies {
