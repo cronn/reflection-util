@@ -33,7 +33,7 @@ class PropertyDescriptorCache<T> {
 	private final Map<VoidMethod<T>, Method> methodByVoidMethodCache = new ConcurrentHashMap<>();
 	private final Map<PropertyDescriptor, Object> defaultValues = new ConcurrentHashMap<>();
 
-	private PropertyDescriptorCache(Class<T> originalClass) {
+	PropertyDescriptorCache(Class<T> originalClass) {
 		this.originalClass = originalClass;
 
 		for (PropertyDescriptor propertyDescriptor : getAllPropertyDescriptors()) {
@@ -150,10 +150,6 @@ class PropertyDescriptorCache<T> {
 		Map<PropertyDescriptor, A> descriptors = (Map<PropertyDescriptor, A>) propertyDescriptorsByAnnotation.getOrDefault(
 			annotationClass, Collections.emptyMap());
 		return Collections.unmodifiableMap(descriptors);
-	}
-
-	static <T> PropertyDescriptorCache<T> compute(Class<T> originalClass) {
-		return new PropertyDescriptorCache<>(originalClass);
 	}
 
 	PropertyDescriptor getDescriptorByName(String propertyName) {

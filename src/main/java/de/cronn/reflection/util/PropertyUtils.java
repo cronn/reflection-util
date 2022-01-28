@@ -9,18 +9,23 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
 public final class PropertyUtils {
 
-	private static final Map<Class<?>, PropertyDescriptorCache<?>> cache = new ConcurrentHashMap<>();
+	private static final ClassValue<PropertyDescriptorCache<?>> cache = new ClassValue<PropertyDescriptorCache<?>>() {
+		@Override
+		protected PropertyDescriptorCache<?> computeValue(Class<?> type) {
+			return new PropertyDescriptorCache<>(type);
+		}
+	};
 
 	private PropertyUtils() {
 	}
@@ -71,7 +76,7 @@ public final class PropertyUtils {
 
 	@SuppressWarnings("unchecked")
 	static <T> PropertyDescriptorCache<T> getCache(Class<T> type) {
-		return (PropertyDescriptorCache<T>) cache.computeIfAbsent(type, PropertyDescriptorCache::compute);
+		return (PropertyDescriptorCache<T>) cache.get(type);
 	}
 
 	public static <T> T copyNonDefaultValues(T source, T destination) {
@@ -474,8 +479,9 @@ public final class PropertyUtils {
 		}
 	}
 
-	static void clearCache() {
-		cache.clear();
+	@VisibleForTesting
+	static void removeClassFromCache(Class<?> type) {
+		cache.remove(type);
 	}
 
 }

@@ -860,7 +860,7 @@ class PropertyUtilsTest {
 				completionService.submit(() -> {
 					for (int r = 0; r < 100; r++) {
 						PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
-						PropertyUtils.clearCache();
+						PropertyUtils.removeClassFromCache(TestEntity.class);
 					}
 					return null;
 				});
@@ -899,7 +899,7 @@ class PropertyUtilsTest {
 		Class<? extends TestEntity> proxy2 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
 		assertThat(proxy1).isSameAs(proxy2);
 
-		PropertyUtils.clearCache();
+		PropertyUtils.removeClassFromCache(TestEntity.class);
 
 		Class<? extends TestEntity> proxy3 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
 		assertThat(proxy1).isNotSameAs(proxy3);
