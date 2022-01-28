@@ -100,9 +100,9 @@ class PropertyDescriptorCache<T> {
 
 	private static Collection<PropertyDescriptor> collectAllPropertyDescriptors(Class<?> type) {
 		try {
-			BeanInfo beanInfo = Introspector.getBeanInfo(type);
 			Map<String, PropertyDescriptor> propertyDescriptors = new TreeMap<>();
-			for (PropertyDescriptor propertyDescriptor : beanInfo.getPropertyDescriptors()) {
+
+			for (PropertyDescriptor propertyDescriptor : collectPropertyDescriptorsOfClass(type)) {
 				propertyDescriptors.put(propertyDescriptor.getName(), propertyDescriptor);
 			}
 
@@ -111,6 +111,14 @@ class PropertyDescriptorCache<T> {
 		} catch (IntrospectionException e) {
 			throw new ReflectionRuntimeException(e);
 		}
+	}
+
+	private static Collection<PropertyDescriptor> collectPropertyDescriptorsOfClass(Class<?> type) throws IntrospectionException {
+		if (RecordSupport.isRecord(type)) {
+			return RecordSupport.collectPropertyDescriptorsOfRecord(type);
+		}
+		BeanInfo beanInfo = Introspector.getBeanInfo(type);
+		return Arrays.asList(beanInfo.getPropertyDescriptors());
 	}
 
 	// workaround for https://bugs.openjdk.java.net/browse/JDK-8071693

@@ -320,12 +320,16 @@ public final class PropertyUtils {
 	}
 
 	public static <T> Method findMethodByGetter(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
-		MethodCaptor methodCaptor = new MethodCaptor();
-		T proxy = createProxy(beanClass, methodCaptor);
+		if (RecordSupport.isRecord(beanClass)) {
+			return RecordSupport.findMethod(beanClass, propertyGetter);
+		} else {
+			MethodCaptor methodCaptor = new MethodCaptor();
+			T proxy = createProxy(beanClass, methodCaptor);
 
-		propertyGetter.get(proxy);
+			propertyGetter.get(proxy);
 
-		return methodCaptor.getCapturedMethod();
+			return methodCaptor.getCapturedMethod();
+		}
 	}
 
 	private static <T> T createProxy(Class<T> beanClass, MethodCaptor methodCaptor) {
