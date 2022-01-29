@@ -133,11 +133,11 @@ To get a rough idea about the performance impact of the `ImmutableProxy` method 
 we include a JMH benchmark: [ImmutableProxyBenchmark.java](src/test/java/de/cronn/reflection/util/immutable/ImmutableProxyBenchmark.java).
 
 The benchmark compares direct method invocation of simple fields vs. method invocations through the immutable proxy.
-Below you can find one of the benchmark results as conducted on a Thinkpad T480s with an Intel i7-8650U CPU running on Linux `5.10.16`.
+Below you can find one of the benchmark results as conducted on a Thinkpad T480s with an Intel i7-8650U CPU running on Linux `5.16.2`.
 
 ```
-# JMH version: 1.28
-# VM version: JDK 15.0.2, OpenJDK 64-Bit Server VM, 15.0.2+7
+# JMH version: 1.34
+# VM version: JDK 17.0.1, OpenJDK 64-Bit Server VM, 17.0.1+12
 
 […]
 
@@ -146,14 +146,14 @@ Below you can find one of the benchmark results as conducted on a Thinkpad T480s
 REMEMBER: The numbers below are just data. To gain reusable insights, you need to follow up on
 why the numbers are the way they are. […]
 
-Benchmark                                                  Mode  Cnt       Score       Error  Units
-ImmutableProxyBenchmark.unproxiedEquals                   thrpt   25   77108,438 ±  2576,836  ops/s
-ImmutableProxyBenchmark.proxiedEquals                     thrpt   25   10867,996 ±   175,106  ops/s
+Benchmark                                 Mode  Cnt      Score       Error  Units
+ImmutableProxyBenchmark.unproxiedEquals  thrpt    3  66768,034 ±  5273,754  ops/s
+ImmutableProxyBenchmark.proxiedEquals    thrpt    3  11333,664 ±  5113,473  ops/s
 ```
 
-It shows that the invocation of the `equals()` method is about 8 times slower when routed through the `ImmutableProxy`.
+It shows that the invocation of the `equals()` method is about 6 times slower when routed through the `ImmutableProxy`.
 However, please note that the benchmark itself runs an inner loop with 10000 cycles.
-This actually gives us 10867,996 * 10000 ops/s ≈ 10 million invocations per second!
+This actually gives us 10000 * 11333,664 ops/s ≈ 113 million invocations per second!
 
 ## Usage ##
 Add the following Maven dependency to your project:
