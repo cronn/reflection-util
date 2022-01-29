@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.runner.Runner;
 import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
@@ -70,40 +71,40 @@ public class ImmutableProxyBenchmark {
 	}
 
 	@Benchmark
-	public void unproxiedSimpleFieldAccess() {
+	public void unproxiedSimpleFieldAccess(Blackhole blackhole) {
 		for (long i = 0; i < 10_000; i++) {
-			bean.getValue();
+			blackhole.consume(bean.getValue());
 		}
 	}
 
 	@Benchmark
-	public void proxiedSimpleFieldAccess() {
+	public void proxiedSimpleFieldAccess(Blackhole blackhole) {
 		Bean proxy = ImmutableProxy.create(bean);
 		for (long i = 0; i < 10_000; i++) {
-			proxy.getValue();
+			blackhole.consume(proxy.getValue());
 		}
 	}
 
 	@Benchmark
-	public void proxiedSimpleFieldAccessAsObject() {
+	public void proxiedSimpleFieldAccessAsObject(Blackhole blackhole) {
 		Bean proxy = ImmutableProxy.create(bean);
 		for (long i = 0; i < 10_000; i++) {
-			proxy.getValueAsObject();
+			blackhole.consume(proxy.getValueAsObject());
 		}
 	}
 
 	@Benchmark
-	public void unproxiedEquals() {
+	public void unproxiedEquals(Blackhole blackhole) {
 		for (long i = 0; i < 10_000; i++) {
-			bean.equals(otherBean);
+			blackhole.consume(bean.equals(otherBean));
 		}
 	}
 
 	@Benchmark
-	public void proxiedEquals() {
+	public void proxiedEquals(Blackhole blackhole) {
 		Bean proxy = ImmutableProxy.create(this.bean);
 		for (long i = 0; i < 10_000; i++) {
-			proxy.equals(otherBean);
+			blackhole.consume(proxy.equals(otherBean));
 		}
 	}
 

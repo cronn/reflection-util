@@ -147,13 +147,13 @@ REMEMBER: The numbers below are just data. To gain reusable insights, you need t
 why the numbers are the way they are. […]
 
 Benchmark                                 Mode  Cnt      Score       Error  Units
-ImmutableProxyBenchmark.unproxiedEquals  thrpt    3  66768,034 ±  5273,754  ops/s
-ImmutableProxyBenchmark.proxiedEquals    thrpt    3  11333,664 ±  5113,473  ops/s
+ImmutableProxyBenchmark.unproxiedEquals  thrpt    3  47106,090 ± 22356,782  ops/s
+ImmutableProxyBenchmark.proxiedEquals    thrpt    3  11537,742 ±  4097,233  ops/s
 ```
 
-It shows that the invocation of the `equals()` method is about 6 times slower when routed through the `ImmutableProxy`.
+It shows that the invocation of the `equals()` method is about 4-5 times slower when routed through the `ImmutableProxy`.
 However, please note that the benchmark itself runs an inner loop with 10000 cycles.
-This actually gives us 10000 * 11333,664 ops/s ≈ 113 million invocations per second!
+This actually gives us 10000 * 11537,742 ≈ 115 million invocations per second!
 
 ## Usage ##
 Add the following Maven dependency to your project:
