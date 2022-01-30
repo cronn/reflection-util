@@ -23,7 +23,12 @@ public final class ClassUtils {
 	private static final String BYTE_BUDDY_CLASS_SEPARATOR = "$ByteBuddy$";
 	private static final String HIBERNATE_PROXY_CLASS_SEPARATOR = "$HibernateProxy$";
 
-	private static final Map<Class<?>, Set<MethodSignature>> methodsSignaturesCache = new ConcurrentHashMap<>();
+	private static final ClassValue<Set<MethodSignature>> methodsSignaturesCache = new ClassValue<Set<MethodSignature>>() {
+		@Override
+		protected Set<MethodSignature> computeValue(Class<?> type) {
+			return getAllDeclaredMethodSignatures(type);
+		}
+	};
 
 	private ClassUtils() {
 	}
@@ -184,7 +189,7 @@ public final class ClassUtils {
 	}
 
 	public static boolean hasMethodWithSameSignature(Class<?> clazz, Method method) {
-		Set<MethodSignature> methods = methodsSignaturesCache.computeIfAbsent(clazz, ClassUtils::getAllDeclaredMethodSignatures);
+		Set<MethodSignature> methods = methodsSignaturesCache.get(clazz);
 		return methods.contains(new MethodSignature(method));
 	}
 

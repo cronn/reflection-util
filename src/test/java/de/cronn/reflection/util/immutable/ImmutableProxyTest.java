@@ -495,7 +495,7 @@ public class ImmutableProxyTest {
 					assertThat(immutableProxy).isNotSameAs(entity);
 					assertThat(immutableProxy.getNumber()).isEqualTo(entity.getNumber());
 				}
-				ImmutableProxy.clearCache();
+				ImmutableProxy.removeClassFromCache(TestEntity.class);
 			}
 		} finally {
 			executorService.shutdown();

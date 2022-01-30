@@ -13,9 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.jetbrains.annotations.UnmodifiableView;
+import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
 import de.cronn.reflection.util.ClassUtils;
@@ -39,7 +39,12 @@ public final class ImmutableProxy {
 
 	static final String DELEGATE_FIELD_NAME = "$delegate";
 
-	private static final Map<Class<?>, Class<?>> immutableProxyClassCache = new ConcurrentHashMap<>();
+	private static final ClassValue<Class<?>> immutableProxyClassCache = new ClassValue<Class<?>>() {
+		@Override
+		protected Class<?> computeValue(Class<?> type) {
+			return createProxyClass(type);
+		}
+	};
 
 	private ImmutableProxy() {
 	}
@@ -134,7 +139,7 @@ public final class ImmutableProxy {
 	@SuppressWarnings("unchecked")
 	private static <T> Class<? extends T> getOrCreateProxyClass(T instance) {
 		Class<T> realClass = ClassUtils.getRealClass(instance);
-		return (Class<? extends T>) immutableProxyClassCache.computeIfAbsent(realClass, clazz -> createProxyClass((Class<T>) clazz));
+		return (Class<? extends T>) immutableProxyClassCache.get(realClass);
 	}
 
 	private static <T> Class<? extends T> createProxyClass(Class<T> clazz) {
@@ -219,8 +224,9 @@ public final class ImmutableProxy {
 		return Immutable.class.isAssignableFrom(beanClass);
 	}
 
-	static void clearCache() {
-		immutableProxyClassCache.clear();
+	@VisibleForTesting
+	static void removeClassFromCache(Class<?> type) {
+		immutableProxyClassCache.remove(type);
 	}
 
 }
