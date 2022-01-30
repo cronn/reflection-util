@@ -493,6 +493,15 @@ public class ImmutableProxyTest {
 	}
 
 	@Test
+	void testImmutableProxyOnClassWithFinalReadOnlyMethods() throws Exception {
+		ClassWithFinalReadOnlyMethods original = new ClassWithFinalReadOnlyMethods();
+		ClassWithFinalReadOnlyMethods readOnlyProxy = ImmutableProxy.create(original);
+
+		assertThat(readOnlyProxy.equals(readOnlyProxy)).isTrue();
+		assertThat(readOnlyProxy).isNotSameAs(original);
+	}
+
+	@Test
 	void testImmutableProxyIsEqualToOriginal() throws Exception {
 		TestEntity original = new TestEntity(123);
 

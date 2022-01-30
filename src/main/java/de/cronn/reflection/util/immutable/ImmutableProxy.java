@@ -166,15 +166,15 @@ public final class ImmutableProxy {
 			.method(any())
 			.intercept(ExceptionMethod.throwing(UnsupportedOperationException.class, "This instance is immutable."
 																					 + " Annotate the method with @" + ReadOnly.class.getSimpleName() + " if this is a false-positive."))
-			.method(isReadyOnlyMethod())
+			.method(isReadOnlyMethod())
 			.intercept(MethodDelegation.to(GenericImmutableProxyForwarder.class))
-			.method(isReadyOnlyMethod().and(returns(Long.class).or(returns(long.class))))
+			.method(isReadOnlyMethod().and(returns(Long.class).or(returns(long.class))))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderLong.class))
-			.method(isReadyOnlyMethod().and(returns(Integer.class).or(returns(int.class))))
+			.method(isReadOnlyMethod().and(returns(Integer.class).or(returns(int.class))))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderInteger.class))
-			.method(isReadyOnlyMethod().and(returns(Boolean.class).or(returns(boolean.class))))
+			.method(isReadOnlyMethod().and(returns(Boolean.class).or(returns(boolean.class))))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderBoolean.class))
-			.method(isReadyOnlyMethod().and(returns(String.class)))
+			.method(isReadOnlyMethod().and(returns(String.class)))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderString.class))
 			.make()
 			.load(ImmutableProxy.class.getClassLoader())
@@ -183,17 +183,46 @@ public final class ImmutableProxy {
 
 	private static <T> void assertPublicMethodsAreNotFinal(Class<T> clazz) {
 		for (Method method : clazz.getMethods()) {
-			if (method.getDeclaringClass().equals(Object.class)) {
-				continue;
-			}
 			if (Modifier.isFinal(method.getModifiers())) {
+				if (method.getDeclaringClass().equals(Object.class)
+					|| isHashCodeMethod(method)
+					|| isEqualsMethod(method)
+					|| isToStringMethod(method)
+					|| isCloneMethod(method)
+					|| method.getDeclaredAnnotation(ReadOnly.class) != null) {
+					continue;
+				}
 				throw new IllegalArgumentException("Cannot create an immutable proxy for " + clazz + ". "
 												   + "Method " + method + " is final.");
 			}
 		}
 	}
 
-	private static Junction<MethodDescription> isReadyOnlyMethod() {
+	private static boolean isHashCodeMethod(Method method) {
+		return method.getName().equals("hashCode")
+			   && method.getReturnType().equals(int.class)
+			   && method.getParameterCount() == 0;
+	}
+
+	private static boolean isEqualsMethod(Method method) {
+		return method.getName().equals("equals")
+			   && method.getReturnType().equals(boolean.class)
+			   && method.getParameterCount() == 1
+			   && method.getParameterTypes()[0].equals(Object.class);
+	}
+
+	static boolean isToStringMethod(Method method) {
+		return method.getName().equals("toString")
+			   && method.getReturnType().equals(String.class)
+			   && method.getParameterCount() == 0;
+	}
+
+	static boolean isCloneMethod(Method method) {
+		return method.getName().equals("clone")
+			   && method.getParameterCount() == 0;
+	}
+
+	private static Junction<MethodDescription> isReadOnlyMethod() {
 		return not(isSetter())
 			.and(isGetter()
 				.or(isHashCode()).or(isEquals()).or(isToString()).or(isClone())
