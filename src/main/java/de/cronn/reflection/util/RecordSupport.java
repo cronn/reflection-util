@@ -84,8 +84,7 @@ class RecordSupport {
 	}
 
 	static <T> Method findMethod(Class<T> recordClass, TypedPropertyGetter<T, ?> componentAccessor) {
-		RecordComponentInfo[] recordComponents = getRecordComponents(recordClass);
-		Object[] uniqueValues = buildUniqueValues(recordComponents);
+		Object[] uniqueValues = buildUniqueValues(recordClass);
 		try {
 			Constructor<T> recordConstructor = getRecordConstructor(recordClass);
 			T record = ClassUtils.createInstance(recordConstructor, uniqueValues);
@@ -101,13 +100,13 @@ class RecordSupport {
 				throw new IllegalArgumentException("Failed to find a component in " + recordClass.getName()
 												   + " for the given component accessor.");
 			}
-			return recordComponents[componentIndex].getAccessor();
+			return getRecordComponentAccessor(recordClass, componentIndex);
 		} catch (ReflectiveOperationException e) {
 			throw new ReflectionRuntimeException(e);
 		}
 	}
 
-	private static RecordComponentInfo[] getRecordComponents(Class<?> recordClass) {
+	private static Stream<RecordComponentInfo> getRecordComponents(Class<?> recordClass) {
 		Object[] recordComponents = invokeMethod(recordClass, "getRecordComponents");
 		return Arrays.stream(recordComponents)
 			.map(recordComponent -> {
@@ -115,8 +114,7 @@ class RecordSupport {
 				Class<?> type = invokeMethod(recordComponent, "getType");
 				Method accessor = invokeMethod(recordComponent, "getAccessor");
 				return new RecordComponentInfo(name, type, accessor);
-			})
-			.toArray(RecordComponentInfo[]::new);
+			});
 	}
 
 	private static <T> T invokeMethod(Object object, String methodName) {
@@ -129,14 +127,14 @@ class RecordSupport {
 	}
 
 	private static <T> Constructor<T> getRecordConstructor(Class<T> recordClass) throws NoSuchMethodException {
-		Class<?>[] constructorTypes = Arrays.stream(getRecordComponents(recordClass))
+		Class<?>[] constructorTypes = getRecordComponents(recordClass)
 			.map(RecordComponentInfo::getType)
 			.toArray(Class[]::new);
 		return recordClass.getDeclaredConstructor(constructorTypes);
 	}
 
-	private static Object[] buildUniqueValues(RecordComponentInfo[] recordComponents) {
-		return Arrays.stream(recordComponents)
+	private static Object[] buildUniqueValues(Class<?> recordClass) {
+		return getRecordComponents(recordClass)
 			.map(RecordComponentInfo::getType)
 			.map(uniqueValueBuilder())
 			.toArray(Object[]::new);
@@ -208,12 +206,20 @@ class RecordSupport {
 			T record = ClassUtils.createInstance(recordConstructor, values);
 			Object value = componentAccessor.get(record);
 			if (value == values[nextIndex]) {
-				return getRecordComponents(recordClass)[nextIndex].getAccessor();
+				return getRecordComponentAccessor(recordClass, nextIndex);
 			}
 		}
 		throw new IllegalArgumentException("Failed to find the component of type " + currentValue.getClass().getName()
 										   + " in the record " + recordClass.getName()
 										   + " using the provided component accessor.");
+	}
+
+	private static Method getRecordComponentAccessor(Class<?> recordClass, int componentIndex) {
+		return getRecordComponents(recordClass)
+			.skip(componentIndex)
+			.findFirst()
+			.map(RecordComponentInfo::getAccessor)
+			.orElseThrow(IllegalStateException::new);
 	}
 
 	private static Object getDefaultValue(Object value) {
@@ -236,7 +242,7 @@ class RecordSupport {
 	static Collection<PropertyDescriptor> collectPropertyDescriptorsOfRecord(Class<?> type) {
 		return Stream.concat(
 				Stream.of(getPropertyDescriptorsOfObject()),
-				Arrays.stream(getRecordComponents(type))
+				getRecordComponents(type)
 					.map(recordComponent -> toPropertyDescriptor(type, recordComponent)))
 			.collect(Collectors.toList());
 	}
