@@ -12,5 +12,4 @@ org.junit.platform:junit-platform-engine:1.8.2=testRuntimeClasspath
 org.junit:junit-bom:5.8.2=testCompileClasspath,testRuntimeClasspath
 org.objenesis:objenesis:3.2=testRuntimeClasspath
 org.opentest4j:opentest4j:1.2.0=testCompileClasspath,testRuntimeClasspath
-org.slf4j:slf4j-api:2.0.0-alpha6=testRuntimeClasspath
 empty=annotationProcessor,compileClasspath,runtimeClasspath,testAnnotationProcessor

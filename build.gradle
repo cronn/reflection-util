@@ -154,7 +154,6 @@ test {
 dependencies {
     implementation "net.bytebuddy:byte-buddy:latest.release"
     implementation "org.objenesis:objenesis:latest.release"
-    implementation "org.slf4j:slf4j-api:latest.release"
 
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: 'latest.release'
     testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: 'latest.release'
@@ -169,9 +168,6 @@ dependencies {
 
     testImplementation "org.openjdk.jmh:jmh-core:latest.release"
     testRuntimeOnly "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
-
-    testRuntimeOnly "ch.qos.logback:logback-classic:latest.release"
-    testRuntimeOnly "org.slf4j:jcl-over-slf4j:latest.release"
 
     // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
     compileOnly "org.jetbrains:annotations:latest.release"

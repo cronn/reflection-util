@@ -2,8 +2,6 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 cglib:cglib:3.3.0=testCompileClasspath,testRuntimeClasspath
-ch.qos.logback:logback-classic:1.2.10=testRuntimeClasspath
-ch.qos.logback:logback-core:1.2.10=testRuntimeClasspath
 javax.validation:validation-api:2.0.1.Final=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy-agent:1.12.7=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy:1.12.7=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
@@ -35,6 +33,4 @@ org.ow2.asm:asm-commons:9.1=jacocoAnt
 org.ow2.asm:asm-tree:9.1=jacocoAnt
 org.ow2.asm:asm:7.1=testCompileClasspath,testRuntimeClasspath
 org.ow2.asm:asm:9.1=jacocoAnt
-org.slf4j:jcl-over-slf4j:1.7.35=testRuntimeClasspath
-org.slf4j:slf4j-api:1.7.35=compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 empty=annotationProcessor,pitest,signatures,testAnnotationProcessor
