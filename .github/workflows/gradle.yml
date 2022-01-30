@@ -30,7 +30,7 @@ jobs:
     - name: Setup Java
       uses: actions/setup-java@v1
       with:
-        java-version: 8
+        java-version: 17
     - name: Build with Gradle
       run: ./gradlew jacocoTestReport
     - name: Upload coverage to Codecov
