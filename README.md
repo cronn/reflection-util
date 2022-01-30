@@ -32,6 +32,19 @@ Long number = PropertyUtils.read(pojo, numberProperty);
 assertEquals(12345L, number);
 ```
 
+### Support for records ###
+
+Records of Java 14 and newer are also supported by `PropertyUtils`.
+
+Example:
+
+```java
+record Point(int x, int y) {}
+
+String propertyName = PropertyUtils.getPropertyName(Point.class, Point::x);
+assertEquals("x", propertyName);
+```
+
 ## ClassUtils ##
 
 ```java
