@@ -4,6 +4,9 @@ import static net.bytebuddy.matcher.ElementMatchers.*;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.nio.file.Path;
 import java.time.temporal.Temporal;
@@ -106,7 +109,19 @@ public final class ImmutableProxy {
 			return true;
 		} else if (value instanceof String) {
 			return true;
-		} else if (value instanceof Number) {
+		} else if (value instanceof Byte) {
+			return true;
+		} else if (value instanceof Short) {
+			return true;
+		} else if (value instanceof Integer) {
+			return true;
+		} else if (value instanceof Long) {
+			return true;
+		} else if (value instanceof Float) {
+			return true;
+		} else if (value instanceof Double) {
+			return true;
+		} else if (value instanceof BigDecimal) {
 			return true;
 		} else if (value instanceof Boolean) {
 			return true;
@@ -143,6 +158,7 @@ public final class ImmutableProxy {
 	}
 
 	private static <T> Class<? extends T> createProxyClass(Class<T> clazz) {
+		assertPublicMethodsAreNotFinal(clazz);
 		return new ByteBuddy()
 			.subclass(clazz)
 			.implement(Immutable.class)
@@ -163,6 +179,18 @@ public final class ImmutableProxy {
 			.make()
 			.load(ImmutableProxy.class.getClassLoader())
 			.getLoaded();
+	}
+
+	private static <T> void assertPublicMethodsAreNotFinal(Class<T> clazz) {
+		for (Method method : clazz.getMethods()) {
+			if (method.getDeclaringClass().equals(Object.class)) {
+				continue;
+			}
+			if (Modifier.isFinal(method.getModifiers())) {
+				throw new IllegalArgumentException("Cannot create an immutable proxy for " + clazz + ". "
+												   + "Method " + method + " is final.");
+			}
+		}
 	}
 
 	private static Junction<MethodDescription> isReadyOnlyMethod() {

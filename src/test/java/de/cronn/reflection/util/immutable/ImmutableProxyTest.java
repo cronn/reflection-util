@@ -3,6 +3,7 @@ package de.cronn.reflection.util.immutable;
 import static org.assertj.core.api.Assertions.*;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.net.URI;
 import java.nio.file.Paths;
 import java.time.Duration;
@@ -27,8 +28,10 @@ import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -444,6 +447,9 @@ public class ImmutableProxyTest {
 		assertImmutableProxyReturnsSameInstance(3.14F);
 		assertImmutableProxyReturnsSameInstance(true);
 		assertImmutableProxyReturnsSameInstance('a');
+		assertImmutableProxyReturnsSameInstance(BigDecimal.ONE);
+		assertImmutableProxyReturnsSameInstance((byte) 0x01);
+		assertImmutableProxyReturnsSameInstance((short) 1);
 		assertImmutableProxyReturnsSameInstance(LocalDate.of(2018, Month.JULY, 12));
 		assertImmutableProxyReturnsSameInstance(Instant.parse("2019-03-17T11:19:38.000Z"));
 		assertImmutableProxyReturnsSameInstance(ZonedDateTime.parse("2019-03-17T11:19:38.000+02:00"));
@@ -457,6 +463,33 @@ public class ImmutableProxyTest {
 
 	private static void assertImmutableProxyReturnsSameInstance(Object value) {
 		assertThat(ImmutableProxy.create(value)).isSameAs(value);
+	}
+
+	@Test
+	void testImmutableProxyOnMutableNumber() throws Exception {
+		MutableLong mutableLong = new MutableLong(25);
+
+		MutableLong immutableProxy = ImmutableProxy.create(mutableLong);
+
+		assertThat(immutableProxy.getValue()).isEqualTo(25);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.add(5))
+			.withMessage("This instance is immutable. Annotate the method with @ReadOnly if this is a false-positive.");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.getAndAdd(5))
+			.withMessage("This instance is immutable. Annotate the method with @ReadOnly if this is a false-positive.");
+	}
+
+	@Test
+	void testImmutableProxyOnAtomicLong() throws Exception {
+		AtomicLong atomicLong = new AtomicLong(25);
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> ImmutableProxy.create(atomicLong))
+			.withMessage("Cannot create an immutable proxy for class java.util.concurrent.atomic.AtomicLong." +
+						 " Method public final long java.util.concurrent.atomic.AtomicLong.get() is final.");
 	}
 
 	@Test
