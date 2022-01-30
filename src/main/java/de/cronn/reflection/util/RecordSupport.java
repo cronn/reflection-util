@@ -59,10 +59,6 @@ class RecordSupport {
 		return recordClass;
 	}
 
-	static boolean isRecord(Object bean) {
-		return isRecord(bean.getClass());
-	}
-
 	static class RecordComponentInfo {
 		private final String name;
 		private final Class<?> type;
