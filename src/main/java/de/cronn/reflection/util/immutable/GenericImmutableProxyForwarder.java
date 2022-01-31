@@ -26,6 +26,7 @@ public final class GenericImmutableProxyForwarder {
 	@RuntimeType
 	public static Object forward(@Origin Method method,
 								 @FieldValue(ImmutableProxy.DELEGATE_FIELD_NAME) Object delegate,
+								 @FieldValue(ImmutableProxy.OPTIONS) ImmutableProxyOption[] options,
 								 @AllArguments Object[] args) throws InvocationTargetException, IllegalAccessException {
 		Object value = method.invoke(delegate, args);
 		if (ImmutableProxy.isImmutable(value)) {
@@ -39,7 +40,7 @@ public final class GenericImmutableProxyForwarder {
 		} else if (value instanceof Map) {
 			return createImmutableMap(value, method);
 		} else {
-			return ImmutableProxy.create(value);
+			return ImmutableProxy.create(value, options);
 		}
 	}
 

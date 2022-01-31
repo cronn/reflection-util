@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.io.File;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
@@ -29,11 +30,15 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.mutable.MutableLong;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import de.cronn.reflection.util.immutable.collection.DeepImmutableList;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableMap;
@@ -628,6 +633,45 @@ public class ImmutableProxyTest {
 
 		OtherTestEntity firstElementAfter = clone.getSomeList().get(0);
 		assertThat(firstElementAfter).isNotSameAs(firstElementBefore);
+	}
+
+	@ParameterizedTest
+	@MethodSource("isImmutableTestData")
+	void testIsImmutable(Class<?> givenClass, boolean expected) {
+		assertThat(ImmutableProxy.isImmutable(givenClass)).isEqualTo(expected);
+	}
+
+	private static Stream<Arguments> isImmutableTestData() {
+		return Stream.of(
+			Arguments.of(boolean.class, true),
+			Arguments.of(Boolean.class, true),
+			Arguments.of(int.class, true),
+			Arguments.of(Integer.class, true),
+			Arguments.of(long.class, true),
+			Arguments.of(Long.class, true),
+			Arguments.of(byte.class, true),
+			Arguments.of(Byte.class, true),
+			Arguments.of(short.class, true),
+			Arguments.of(Short.class, true),
+			Arguments.of(float.class, true),
+			Arguments.of(Float.class, true),
+			Arguments.of(double.class, true),
+			Arguments.of(Double.class, true),
+			Arguments.of(char.class, true),
+			Arguments.of(Character.class, true),
+			Arguments.of(BigDecimal.class, true),
+			Arguments.of(Instant.class, true),
+			Arguments.of(Duration.class, true),
+			Arguments.of(ZonedDateTime.class, true),
+			Arguments.of(String.class, true),
+			Arguments.of(UUID.class, true),
+			Arguments.of(URI.class, true),
+			Arguments.of(Path.class, true),
+			Arguments.of(File.class, true),
+			Arguments.of(AtomicLong.class, false),
+			Arguments.of(ArrayList.class, false),
+			Arguments.of(List.class, false)
+		);
 	}
 
 }

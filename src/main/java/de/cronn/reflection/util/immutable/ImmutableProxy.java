@@ -24,6 +24,7 @@ import org.objenesis.ObjenesisHelper;
 import de.cronn.reflection.util.ClassUtils;
 import de.cronn.reflection.util.ClassValues;
 import de.cronn.reflection.util.PropertyUtils;
+import de.cronn.reflection.util.RecordUtils;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableCollection;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableList;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableMap;
@@ -42,13 +43,14 @@ import net.bytebuddy.matcher.ElementMatchers;
 public final class ImmutableProxy {
 
 	static final String DELEGATE_FIELD_NAME = "$delegate";
+	static final String OPTIONS = "$options";
 
 	private static final ClassValue<Class<?>> immutableProxyClassCache = ClassValues.create(ImmutableProxy::createProxyClass);
 
 	private ImmutableProxy() {
 	}
 
-	public static <T> T create(T instance) {
+	public static <T> T create(T instance, ImmutableProxyOption... options) {
 		if (isImmutable(instance)) {
 			return instance;
 		} else if (instance instanceof List) {
@@ -63,10 +65,21 @@ public final class ImmutableProxy {
 			@SuppressWarnings("unchecked")
 			T immutableMap = (T) create((Map<?, ?>) instance);
 			return immutableMap;
+		} else if (ClassUtils.isRecord(instance)) {
+			if (isOptionEnabled(options, ImmutableProxyOption.ALLOW_CLONING_RECORDS)) {
+				return RecordUtils.cloneRecord(instance, ImmutableProxy::create);
+			} else {
+				throw new IllegalArgumentException(
+					instance.getClass() + " is a record that potentially contains mutable components."
+					+ " Consider using ImmutableProxy.create(bean, "
+					+ ImmutableProxyOption.class.getSimpleName() + "." + ImmutableProxyOption.ALLOW_CLONING_RECORDS
+					+ ") to enable cloning of such records.");
+			}
 		}
 		Class<? extends T> proxyClass = getOrCreateProxyClass(instance);
 		T proxy = ObjenesisHelper.newInstance(proxyClass);
 		PropertyUtils.writeDirectly(proxy, DELEGATE_FIELD_NAME, instance);
+		PropertyUtils.writeDirectly(proxy, OPTIONS, options);
 		return proxy;
 	}
 
@@ -101,50 +114,56 @@ public final class ImmutableProxy {
 	static boolean isImmutable(Object value) {
 		if (value == null) {
 			return true;
-		} else if (isImmutableProxy(value)) {
+		}
+		return isImmutable(value.getClass());
+	}
+
+	public static boolean isImmutable(Class<?> type) {
+		if (isImmutableProxyClass(type)) {
 			return true;
-		} else if (value instanceof String) {
+		} else if (String.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Byte) {
+		} else if (Byte.class.isAssignableFrom(type) || byte.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Short) {
+		} else if (Short.class.isAssignableFrom(type) || short.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Integer) {
+		} else if (Integer.class.isAssignableFrom(type) || int.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Long) {
+		} else if (Long.class.isAssignableFrom(type) || long.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Float) {
+		} else if (Float.class.isAssignableFrom(type) || float.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Double) {
+		} else if (Double.class.isAssignableFrom(type) || double.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof BigDecimal) {
+		} else if (Boolean.class.isAssignableFrom(type) || boolean.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Boolean) {
+		} else if (Character.class.isAssignableFrom(type) || char.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Character) {
+		} else if (BigDecimal.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Temporal) {
+		} else if (Temporal.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof TemporalAmount) {
+		} else if (TemporalAmount.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof UUID) {
+		} else if (UUID.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof File) {
+		} else if (File.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof Path) {
+		} else if (Path.class.isAssignableFrom(type)) {
 			return true;
-		} else if (value instanceof URI) {
+		} else if (URI.class.isAssignableFrom(type)) {
 			return true;
-		} else if (isEnumValue(value)) {
+		} else if (isEnumType(type)) {
 			return true;
+		} else if (ClassUtils.isRecord(type)) {
+			return RecordUtils.hasOnlyImmutableRecordComponents(type);
 		} else {
 			return false;
 		}
 	}
 
-	private static boolean isEnumValue(Object value) {
-		return value.getClass().isEnum()
-			   || (value.getClass().getSuperclass() != null && value.getClass().getSuperclass().isEnum());
+	private static boolean isEnumType(Class<?> type) {
+		return type.isEnum() || (type.getSuperclass() != null && type.getSuperclass().isEnum());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -159,6 +178,7 @@ public final class ImmutableProxy {
 			.subclass(clazz)
 			.implement(Immutable.class)
 			.defineField(DELEGATE_FIELD_NAME, clazz)
+			.defineField(OPTIONS, ImmutableProxyOption[].class)
 			.method(any())
 			.intercept(ExceptionMethod.throwing(UnsupportedOperationException.class, "This instance is immutable."
 																					 + " Annotate the method with @" + ReadOnly.class.getSimpleName() + " if this is a false-positive."))
@@ -282,4 +302,12 @@ public final class ImmutableProxy {
 		immutableProxyClassCache.remove(type);
 	}
 
+	private static boolean isOptionEnabled(ImmutableProxyOption[] options, ImmutableProxyOption optionToTest) {
+		for (ImmutableProxyOption option : options) {
+			if (option == optionToTest) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

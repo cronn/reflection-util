@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import de.cronn.reflection.util.subpackage.RecordInOtherPackage;
+import de.cronn.reflection.util.testclasses.Point;
 
 class PropertyUtilsRecordsTest {
 
@@ -105,7 +105,8 @@ class PropertyUtilsRecordsTest {
 
 	@Test
 	void testGetPropertyName_recordInOtherPackage() throws Exception {
-		assertThat(PropertyUtils.getPropertyName(RecordInOtherPackage.class, RecordInOtherPackage::a)).isEqualTo("a");
+		assertThat(Point.class.getPackage()).isNotEqualTo(getClass().getPackage());
+		assertThat(PropertyUtils.getPropertyName(Point.class, Point::x)).isEqualTo("x");
 	}
 
 	@Test

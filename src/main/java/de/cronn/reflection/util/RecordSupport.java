@@ -36,6 +36,10 @@ class RecordSupport {
 			.getLoaded();
 	}
 
+	static boolean isRecord(Object bean) {
+		return isRecord(bean.getClass());
+	}
+
 	static boolean isRecord(Class<?> beanClass) {
 		if (currentJvmIsKnownNotToSupportRecords) {
 			return false;
@@ -73,12 +77,20 @@ class RecordSupport {
 			return name;
 		}
 
-		Class<?> getType() {
+		public Class<?> getType() {
 			return type;
 		}
 
-		Method getAccessor() {
+		public Method getAccessor() {
 			return accessor;
+		}
+
+		public Object retrieveValueFrom(Object record) {
+			try {
+				return accessor.invoke(record);
+			} catch (ReflectiveOperationException e) {
+				throw new ReflectionRuntimeException(e);
+			}
 		}
 	}
 
@@ -105,7 +117,10 @@ class RecordSupport {
 		}
 	}
 
-	private static Stream<RecordComponentInfo> getRecordComponents(Class<?> recordClass) {
+	static Stream<RecordComponentInfo> getRecordComponents(Class<?> recordClass) {
+		if (!isRecord(recordClass)) {
+			throw new IllegalArgumentException(recordClass + " is not a record");
+		}
 		Object[] recordComponents = invokeMethod(recordClass, "getRecordComponents");
 		return Arrays.stream(recordComponents)
 			.map(recordComponent -> {
@@ -125,7 +140,7 @@ class RecordSupport {
 		}
 	}
 
-	private static <T> Constructor<T> getRecordConstructor(Class<T> recordClass) throws NoSuchMethodException {
+	static <T> Constructor<T> getRecordConstructor(Class<T> recordClass) throws NoSuchMethodException {
 		Class<?>[] constructorTypes = getRecordComponents(recordClass)
 			.map(RecordComponentInfo::getType)
 			.toArray(Class[]::new);

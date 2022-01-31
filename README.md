@@ -140,6 +140,52 @@ class MyPojo
 As a final word of warning, please note that `ImmutableProxy` follows a best-effort approach but cannot _guarantee_ to detect all possible modifications.
 For example, it cannot detect that a getter actually modifies the state as a side-effect.
 
+### Support for records ###
+
+Records of Java 14 and newer are also supported by `ImmutableProxy`.
+
+Example:
+
+```java
+record Point(int x, int y) {}
+
+class MyPojo
+{
+    private String name;
+    private Point point;
+    // getters and setters
+}
+
+MyPojo original = new MyPojo();
+original.setPoint(new Point(1, 2));
+
+MyPojo immutableProxy = ImmutableProxy.create(original);
+
+// The Point record is detected to be (deeply) immutable, so ImmutableProxy can directly return the value
+assertSame(immutableProxy.getPoint(), original.getPoint());
+```
+
+If the record class is (potentially) not deeply immutable, ImmutableProxy can be told to clone the records on-the-fly.
+
+Example:
+
+```java
+record WrappedList(List<String> values) {}
+
+class MyPojo
+{
+    private WrappedList list;
+    // getters and setters
+}
+
+MyPojo original = new MyPojo();
+original.setList(new WrappedList(List.of("a", "b", "c")));
+
+MyPojo immutableProxy = ImmutableProxy.create(original, ImmutableProxyOption.ALLOW_CLONING_RECORDS);
+immutableProxy.getList().values().get(0)   // ✔ returns "a"
+immutableProxy.getList().values().clear()  // ✖ throws UnsupportedOperationException
+```
+
 ### JMH Benchmark
 
 To get a rough idea about the performance impact of the `ImmutableProxy` method interception,
