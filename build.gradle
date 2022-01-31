@@ -8,7 +8,6 @@ buildscript {
 }
 
 plugins {
-    id 'java-library'
     id 'maven-publish'
     id 'signing'
     id 'jacoco'
@@ -23,6 +22,26 @@ version = "2.13.0"
 
 if (System.env.BUILD_NUMBER) {
     version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
+}
+
+allprojects {
+    apply plugin: 'java-library'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        components.all { ComponentMetadataDetails details ->
+            if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|PR|M\d+).*/) {
+                details.status = 'milestone'
+            }
+        }
+    }
+
+    dependencyLocking {
+        lockAllConfigurations()
+    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -57,6 +76,30 @@ task sourcesJar(type: Jar, dependsOn: classes) {
 task javadocJar(type: Jar, dependsOn: javadoc) {
     archiveClassifier = 'javadoc'
     from javadoc.destinationDir
+}
+
+task jacocoMerge(type: JacocoMerge) {
+    allprojects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn allprojects.test, jacocoMerge
+
+    additionalSourceDirs.from = files(allprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories.from = files(allprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from = files(allprojects.sourceSets.main.output)
+    executionData jacocoMerge.destinationFile
+
+    reports {
+        html.required = true // human readable
+        xml.required = true // required by coveralls
+    }
 }
 
 publishing {
@@ -127,16 +170,6 @@ signing {
     sign publishing.publications.mavenJava
 }
 
-allprojects {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencyLocking {
-        lockAllConfigurations()
-    }
-}
-
 test {
     useJUnitPlatform()
 
@@ -172,10 +205,4 @@ dependencies {
     // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
     compileOnly "org.jetbrains:annotations:latest.release"
     testCompileOnly "org.jetbrains:annotations:latest.release"
-
-    components.all { ComponentMetadataDetails details ->
-        if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|M\d+).*/) {
-            details.status = 'milestone'
-        }
-    }
 }
