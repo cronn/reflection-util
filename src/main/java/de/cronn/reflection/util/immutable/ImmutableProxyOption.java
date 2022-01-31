@@ -9,7 +9,7 @@ public enum ImmutableProxyOption {
 	 * <code>
 	 * record RecordWithPrimitives(int a, int b) {}
 	 *
-	 * record RecordWithList(List<String> list) {}
+	 * record RecordWithList(List list) {}
 	 * </code>
 	 *
 	 * For records of type RecordWithPrimitives, no cloning is required since it only contains clearly immutable components.
