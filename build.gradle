@@ -10,7 +10,6 @@ buildscript {
 plugins {
     id 'maven-publish'
     id 'signing'
-    id 'jacoco'
 
     id 'org.sonarqube' version 'latest.release'
     id 'info.solidsoft.pitest' version 'latest.release'
@@ -26,6 +25,7 @@ if (System.env.BUILD_NUMBER) {
 
 allprojects {
     apply plugin: 'java-library'
+    apply plugin: 'jacoco'
 
     repositories {
         mavenCentral()
@@ -42,21 +42,19 @@ allprojects {
     dependencyLocking {
         lockAllConfigurations()
     }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+        }
+        dependsOn test
+    }
 }
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 compileJava.options.encoding = 'UTF-8'
-
-jacocoTestReport {
-    reports {
-        html.required = false
-        xml.required = true
-        csv.required = false
-    }
-    dependsOn test
-}
 
 pitest {
     timestampedReports = false
@@ -78,27 +76,18 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-task jacocoMerge(type: JacocoMerge) {
-    allprojects.each { subproject ->
-        executionData subproject.tasks.withType(Test)
-    }
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
-    }
-}
-
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+task jacocoMergedReport(type: JacocoReport) {
     description = 'Generates an aggregate report from all subprojects'
-    dependsOn allprojects.test, jacocoMerge
+    dependsOn allprojects.test
 
     additionalSourceDirs.from = files(allprojects.sourceSets.main.allSource.srcDirs)
     sourceDirectories.from = files(allprojects.sourceSets.main.allSource.srcDirs)
     classDirectories.from = files(allprojects.sourceSets.main.output)
-    executionData jacocoMerge.destinationFile
+    executionData.from = files(allprojects.jacocoTestReport.executionData)
 
     reports {
         html.required = true // human readable
-        xml.required = true // required by coveralls
+        xml.required = true // required by codecov.io
     }
 }
 
