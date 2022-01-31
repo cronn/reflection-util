@@ -21,12 +21,7 @@ public final class ClassUtils {
 	private static final String BYTE_BUDDY_CLASS_SEPARATOR = "$ByteBuddy$";
 	private static final String HIBERNATE_PROXY_CLASS_SEPARATOR = "$HibernateProxy$";
 
-	private static final ClassValue<Set<MethodSignature>> methodsSignaturesCache = new ClassValue<Set<MethodSignature>>() {
-		@Override
-		protected Set<MethodSignature> computeValue(Class<?> type) {
-			return getAllDeclaredMethodSignatures(type);
-		}
-	};
+	private static final ClassValue<Set<MethodSignature>> methodsSignaturesCache = ClassValues.create(ClassUtils::getAllDeclaredMethodSignatures);
 
 	private ClassUtils() {
 	}

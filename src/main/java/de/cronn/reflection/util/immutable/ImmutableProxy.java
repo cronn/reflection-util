@@ -22,6 +22,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
 import de.cronn.reflection.util.ClassUtils;
+import de.cronn.reflection.util.ClassValues;
 import de.cronn.reflection.util.PropertyUtils;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableCollection;
 import de.cronn.reflection.util.immutable.collection.DeepImmutableList;
@@ -42,12 +43,7 @@ public final class ImmutableProxy {
 
 	static final String DELEGATE_FIELD_NAME = "$delegate";
 
-	private static final ClassValue<Class<?>> immutableProxyClassCache = new ClassValue<Class<?>>() {
-		@Override
-		protected Class<?> computeValue(Class<?> type) {
-			return createProxyClass(type);
-		}
-	};
+	private static final ClassValue<Class<?>> immutableProxyClassCache = ClassValues.create(ImmutableProxy::createProxyClass);
 
 	private ImmutableProxy() {
 	}

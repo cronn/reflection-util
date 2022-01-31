@@ -20,12 +20,7 @@ import org.objenesis.ObjenesisHelper;
 
 public final class PropertyUtils {
 
-	private static final ClassValue<PropertyDescriptorCache<?>> cache = new ClassValue<PropertyDescriptorCache<?>>() {
-		@Override
-		protected PropertyDescriptorCache<?> computeValue(Class<?> type) {
-			return new PropertyDescriptorCache<>(type);
-		}
-	};
+	private static final ClassValue<PropertyDescriptorCache<?>> cache = ClassValues.create(PropertyDescriptorCache::new);
 
 	private PropertyUtils() {
 	}

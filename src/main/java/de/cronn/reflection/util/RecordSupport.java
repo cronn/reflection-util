@@ -26,16 +26,15 @@ class RecordSupport {
 	private static volatile boolean currentJvmIsKnownNotToSupportRecords = false;
 	private static WeakReference<Class<?>> cachedRecordClass = new WeakReference<>(null);
 
-	private static final ClassValue<Class<?>> dummySubclasses = new ClassValue<Class<?>>() {
-		@Override
-		protected Class<?> computeValue(Class<?> type) {
-			return new ByteBuddy()
-				.subclass(type)
-				.make()
-				.load(RecordSupport.class.getClassLoader())
-				.getLoaded();
-		}
-	};
+	private static final ClassValue<Class<?>> dummySubclasses = ClassValues.create(RecordSupport::createDummyProxyClass);
+
+	private static Class<?> createDummyProxyClass(Class<?> type) {
+		return new ByteBuddy()
+			.subclass(type)
+			.make()
+			.load(RecordSupport.class.getClassLoader())
+			.getLoaded();
+	}
 
 	static boolean isRecord(Class<?> beanClass) {
 		if (currentJvmIsKnownNotToSupportRecords) {
