@@ -71,6 +71,13 @@ public class ImmutableProxyBenchmark {
 	}
 
 	@Benchmark
+	public void proxyCreation(Blackhole blackhole) {
+		for (long i = 0; i < 10_000; i++) {
+			blackhole.consume(ImmutableProxy.create(bean));
+		}
+	}
+
+	@Benchmark
 	public void unproxiedSimpleFieldAccess(Blackhole blackhole) {
 		for (long i = 0; i < 10_000; i++) {
 			blackhole.consume(bean.getValue());

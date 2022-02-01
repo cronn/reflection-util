@@ -79,7 +79,9 @@ public final class ImmutableProxy {
 		Class<? extends T> proxyClass = getOrCreateProxyClass(instance);
 		T proxy = ObjenesisHelper.newInstance(proxyClass);
 		PropertyUtils.writeDirectly(proxy, DELEGATE_FIELD_NAME, instance);
-		PropertyUtils.writeDirectly(proxy, OPTIONS, options);
+		if (options != null && options.length > 0) {
+			PropertyUtils.writeDirectly(proxy, OPTIONS, options);
+		}
 		return proxy;
 	}
 
@@ -303,6 +305,9 @@ public final class ImmutableProxy {
 	}
 
 	private static boolean isOptionEnabled(ImmutableProxyOption[] options, ImmutableProxyOption optionToTest) {
+		if (options == null) {
+			return false;
+		}
 		for (ImmutableProxyOption option : options) {
 			if (option == optionToTest) {
 				return true;
