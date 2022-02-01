@@ -22,12 +22,15 @@ import org.objenesis.ObjenesisHelper;
 
 import net.bytebuddy.ByteBuddy;
 
-class RecordSupport {
+final class RecordSupport {
 
 	private static volatile boolean currentJvmIsKnownNotToSupportRecords = false;
 	private static WeakReference<Class<?>> cachedRecordClass = new WeakReference<>(null);
 
 	private static final ClassValue<Class<?>> dummySubclasses = ClassValues.create(RecordSupport::createDummyProxyClass);
+
+	private RecordSupport() {
+	}
 
 	private static Class<?> createDummyProxyClass(Class<?> type) {
 		return new ByteBuddy()
