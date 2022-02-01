@@ -274,7 +274,10 @@ class RecordSupport {
 	}
 
 	@VisibleForTesting
-	static class ArrayUtils {
+	static final class ArrayUtils {
+
+		private ArrayUtils() {
+		}
 
 		static int indexOf(Object[] values, Object valueToFind) {
 			for (int i = 0; i < values.length; i++) {
