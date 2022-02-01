@@ -273,9 +273,10 @@ class RecordSupport {
 		}
 	}
 
-	private static class ArrayUtils {
+	@VisibleForTesting
+	static class ArrayUtils {
 
-		private static int indexOf(Object[] values, Object valueToFind) {
+		static int indexOf(Object[] values, Object valueToFind) {
 			for (int i = 0; i < values.length; i++) {
 				if (areTheSame(values[i], valueToFind)) {
 					return i;
@@ -284,7 +285,7 @@ class RecordSupport {
 			return -1;
 		}
 
-		private static int lastIndexOf(Object[] values, Object valueToFind) {
+		static int lastIndexOf(Object[] values, Object valueToFind) {
 			for (int i = values.length - 1; i >= 0; i--) {
 				if (areTheSame(values[i], valueToFind)) {
 					return i;
