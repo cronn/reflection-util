@@ -17,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
 import net.bytebuddy.ByteBuddy;
@@ -107,10 +108,8 @@ class RecordSupport {
 			}
 
 			int componentIndex = ArrayUtils.indexOf(uniqueValues, value);
-			if (componentIndex < 0) {
-				throw new IllegalArgumentException("Failed to find a component in " + recordClass.getName()
-												   + " for the given component accessor.");
-			}
+			Assert.isTrue(componentIndex >= 0,
+				() -> "Failed to find a component in " + recordClass.getName() + " for the given component accessor.");
 			return getRecordComponentAccessor(recordClass, componentIndex);
 		} catch (ReflectiveOperationException e) {
 			throw new ReflectionRuntimeException(e);
@@ -118,9 +117,7 @@ class RecordSupport {
 	}
 
 	static Stream<RecordComponentInfo> getRecordComponents(Class<?> recordClass) {
-		if (!isRecord(recordClass)) {
-			throw new IllegalArgumentException(recordClass + " is not a record");
-		}
+		Assert.isTrue(isRecord(recordClass), () -> recordClass + " is not a record");
 		Object[] recordComponents = invokeMethod(recordClass, "getRecordComponents");
 		return Arrays.stream(recordComponents)
 			.map(recordComponent -> {
@@ -200,11 +197,9 @@ class RecordSupport {
 
 	private static <T> T safeNumberCast(long currentIndex, T castedValue, long castedValueAsLong, Class<?> valueType) {
 		// This is currently not possible to test since a record must not have more than 255 components
-		if (castedValueAsLong != currentIndex) {
-			throw new IllegalArgumentException("Having more than " + (currentIndex - 1)
-											   + " record components of type " + valueType.getName()
-											   + " is currently not supported");
-		}
+		Assert.isTrue(castedValueAsLong == currentIndex,
+			() -> "Having more than " + (currentIndex - 1) + " record components of type "
+				  + valueType.getName() + " is currently not supported");
 		return castedValue;
 	}
 
@@ -237,11 +232,8 @@ class RecordSupport {
 	}
 
 	private static Object getDefaultValue(Object value) {
-		if (value instanceof Boolean) {
-			return false;
-		} else {
-			throw new IllegalArgumentException("This is currently only expected to happen for boolean types");
-		}
+		Assert.isTrue(value instanceof Boolean, () -> "This is currently only expected to happen for boolean types");
+		return false;
 	}
 
 	private static boolean needsFallbackToComponentSearch(Object[] uniqueValues, Object value) {
@@ -265,9 +257,8 @@ class RecordSupport {
 		try {
 			BeanInfo beanInfo = Introspector.getBeanInfo(Object.class);
 			PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-			if (propertyDescriptors.length != 1) {
-				throw new IllegalStateException("Expected one property descriptor but got " + propertyDescriptors.length);
-			}
+			Assert.isTrue(propertyDescriptors.length == 1,
+				() -> "Expected one property descriptor but got " + propertyDescriptors.length);
 			return propertyDescriptors[0];
 		} catch (IntrospectionException e) {
 			throw new ReflectionRuntimeException(e);

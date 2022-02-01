@@ -37,4 +37,13 @@ class AssertTest {
 			.withMessage("some message");
 	}
 
+	@Test
+	void testIsTrue() throws Exception {
+		Assert.isTrue(true, null);
+
+		assertThatExceptionOfType(IllegalArgumentException.class)
+			.isThrownBy(() -> Assert.isTrue(false, () -> "some message"))
+			.withMessage("some message");
+	}
+
 }

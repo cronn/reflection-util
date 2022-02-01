@@ -19,4 +19,10 @@ final class Assert {
 		}
 	}
 
+	static void isTrue(boolean condition, Supplier<String> message) {
+		if (!condition) {
+			throw new IllegalArgumentException(message.get());
+		}
+	}
+
 }

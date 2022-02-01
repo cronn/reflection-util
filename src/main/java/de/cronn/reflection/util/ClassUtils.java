@@ -40,9 +40,8 @@ public final class ClassUtils {
 		if (isProxyClass(clazz)) {
 			if (Proxy.isProxyClass(clazz)) {
 				Class<?>[] interfaces = clazz.getInterfaces();
-				if (interfaces.length != 1) {
-					throw new IllegalArgumentException("Unexpected number of interfaces: " + interfaces.length);
-				}
+				Assert.isTrue(interfaces.length == 1,
+					() -> "Unexpected number of interfaces: " + interfaces.length);
 				@SuppressWarnings("unchecked")
 				Class<T> proxiedInterface = (Class<T>) interfaces[0];
 				return proxiedInterface;
