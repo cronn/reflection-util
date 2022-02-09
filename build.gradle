@@ -78,7 +78,9 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 dependencies {
-    jacocoAggregation project(':java-17-tests')
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+        jacocoAggregation project(':java-17-tests')
+    }
 }
 
 reporting {
