@@ -1,9 +1,5 @@
 rootProject.name = "reflection-util"
 
-try {
-    if (Runtime.version().feature() >= 17) {
-        include "java-17-tests"
-    }
-} catch (MissingMethodException ignore) {
-    // Do not include java-17-tests on even older JVMs
+if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
+    include "java-17-tests"
 }
