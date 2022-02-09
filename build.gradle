@@ -77,6 +77,18 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
+dependencies {
+    jacocoAggregation project(':java-17-tests')
+}
+
+reporting {
+    reports {
+        testCodeCoverageReport(JacocoCoverageReport) {
+            testType = TestSuiteType.UNIT_TEST
+        }
+    }
+}
+
 tasks.named('check') {
     dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
 }
