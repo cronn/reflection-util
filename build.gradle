@@ -10,6 +10,7 @@ buildscript {
 plugins {
     id 'maven-publish'
     id 'signing'
+    id 'jacoco-report-aggregation'
 
     id 'org.sonarqube' version 'latest.release'
     id 'info.solidsoft.pitest' version 'latest.release'
@@ -76,19 +77,8 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-task jacocoMergedReport(type: JacocoReport) {
-    description = 'Generates an aggregate report from all subprojects'
-    dependsOn allprojects.test
-
-    additionalSourceDirs.from = files(allprojects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories.from = files(allprojects.sourceSets.main.allSource.srcDirs)
-    classDirectories.from = files(allprojects.sourceSets.main.output)
-    executionData.from = files(allprojects.jacocoTestReport.executionData)
-
-    reports {
-        html.required = true // human readable
-        xml.required = true // required by codecov.io
-    }
+tasks.named('check') {
+    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
 }
 
 publishing {
