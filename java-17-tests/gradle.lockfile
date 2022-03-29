@@ -1,7 +1,7 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-net.bytebuddy:byte-buddy:1.12.7=testRuntimeClasspath
+net.bytebuddy:byte-buddy:1.12.8=testRuntimeClasspath
 org.apiguardian:apiguardian-api:1.1.2=testCompileClasspath
 org.assertj:assertj-core:3.22.0=testCompileClasspath,testRuntimeClasspath
 org.jacoco:org.jacoco.agent:0.8.7=jacocoAgent,jacocoAnt
