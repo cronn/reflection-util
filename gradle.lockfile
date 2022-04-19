@@ -4,7 +4,7 @@
 cglib:cglib:3.3.0=testCompileClasspath,testRuntimeClasspath
 javax.validation:validation-api:2.0.1.Final=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy-agent:1.12.8=testCompileClasspath,testRuntimeClasspath
-net.bytebuddy:byte-buddy:1.12.8=allCodeCoverageReportClassDirectories,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
+net.bytebuddy:byte-buddy:1.12.9=allCodeCoverageReportClassDirectories,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 net.sf.jopt-simple:jopt-simple:5.0.4=testCompileClasspath,testRuntimeClasspath
 nl.jqno.equalsverifier:equalsverifier:3.10=testCompileClasspath,testRuntimeClasspath
 org.apache.commons:commons-lang3:3.12.0=testCompileClasspath,testRuntimeClasspath
