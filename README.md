@@ -1,4 +1,5 @@
 [![CI](https://github.com/cronn/reflection-util/workflows/CI/badge.svg)](https://github.com/cronn/reflection-util/actions)
+[![Valid Gradle Wrapper](https://github.com/cronn/reflection-util/workflows/Validate%20Gradle%20Wrapper/badge.svg)](https://github.com/cronn/reflection-util/actions/workflows/gradle-wrapper-validation.yml)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.cronn/reflection-util/badge.svg)](http://maven-badges.herokuapp.com/maven-central/de.cronn/reflection-util)
 [![Apache 2.0](https://img.shields.io/github/license/cronn/reflection-util.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![codecov](https://codecov.io/gh/cronn/reflection-util/branch/master/graph/badge.svg?token=KD1WJK5ZFK)](https://codecov.io/gh/cronn/reflection-util)
