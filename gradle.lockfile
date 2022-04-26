@@ -3,7 +3,7 @@
 # This file is expected to be part of source control.
 cglib:cglib:3.3.0=testCompileClasspath,testRuntimeClasspath
 javax.validation:validation-api:2.0.1.Final=testCompileClasspath,testRuntimeClasspath
-net.bytebuddy:byte-buddy-agent:1.12.8=testCompileClasspath,testRuntimeClasspath
+net.bytebuddy:byte-buddy-agent:1.12.9=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy:1.12.9=allCodeCoverageReportClassDirectories,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 net.sf.jopt-simple:jopt-simple:5.0.4=testCompileClasspath,testRuntimeClasspath
 nl.jqno.equalsverifier:equalsverifier:3.10=testCompileClasspath,testRuntimeClasspath
@@ -23,7 +23,7 @@ org.junit.jupiter:junit-jupiter-params:5.8.2=testCompileClasspath,testRuntimeCla
 org.junit.platform:junit-platform-commons:1.8.2=testCompileClasspath,testRuntimeClasspath
 org.junit.platform:junit-platform-engine:1.8.2=testRuntimeClasspath
 org.junit:junit-bom:5.8.2=testCompileClasspath,testRuntimeClasspath
-org.mockito:mockito-core:4.4.0=testCompileClasspath,testRuntimeClasspath
+org.mockito:mockito-core:4.5.1=testCompileClasspath,testRuntimeClasspath
 org.objenesis:objenesis:3.2=allCodeCoverageReportClassDirectories,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 org.openjdk.jmh:jmh-core:1.35=testCompileClasspath,testRuntimeClasspath
 org.openjdk.jmh:jmh-generator-annprocess:1.35=testRuntimeClasspath
