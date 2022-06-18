@@ -48,6 +48,12 @@ assertEquals("x", propertyName);
 
 ## ClassUtils ##
 
+### Obtaining the method name
+
+`ClassUtils` can be used to obtain the method name in a type-safe way. We currently support getter-like methods as well as methods that return `void`.
+
+#### Example
+
 ```java
 interface MyInterface
 {
@@ -66,6 +72,18 @@ assertEquals("doSomething", methodName);
 String methodName = ClassUtils.getMethodName(MyInterface.class, MyInterface::getSomething);
 assertEquals("getSomething", methodName);
 ```
+
+Note: `ClassUtils.getMethodName` does not support **static** methods.
+
+### Getting the "real" class of a proxy
+
+`ClassUtils.getRealClass(…)` can be used to obtain the underlying "real" class of a proxy.
+Its typical use-case is as drop-in replacement for `object.getClass()` when `object` is _potentially_ a proxy, for example
+when working with JPA/Hibernate.
+
+We currently support [Java][java-proxy], Byte Buddy, Hibernate and cglib/javassist proxies.
+
+#### Example
 
 ```java
 Class<?>[] interfaces = { MyInterface.class };
@@ -242,3 +260,4 @@ Add the following Maven dependency to your project:
 [pojo]: https://en.wikipedia.org/wiki/Plain_old_Java_object
 [java-bean-conventions]: https://en.wikipedia.org/wiki/JavaBeans#JavaBean_conventions
 [verhas/immutator]: https://github.com/verhas/immutator
+[java-proxy]: https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/reflect/Proxy.html
