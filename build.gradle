@@ -18,7 +18,7 @@ plugins {
 
 group = 'de.cronn'
 
-version = "2.13.2"
+version = "2.14.0"
 
 if (System.env.BUILD_NUMBER) {
     version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
