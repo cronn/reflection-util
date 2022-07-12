@@ -94,7 +94,7 @@ class PropertyDescriptorCache<T> {
 	private void putAnnotations(PropertyDescriptor propertyDescriptor, Annotation[] annotations) {
 		for (Annotation annotation : annotations) {
 			propertyDescriptorsByAnnotation.computeIfAbsent(annotation.annotationType(), k -> new LinkedHashMap<>()) //
-				.put(propertyDescriptor, annotation);
+				.putIfAbsent(propertyDescriptor, annotation);
 		}
 	}
 

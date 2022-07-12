@@ -33,6 +33,7 @@ import de.cronn.reflection.util.testclasses.ClassWithMethodCaptorField;
 import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
+import de.cronn.reflection.util.testclasses.EntityWithOverwrittenAnnotations;
 import de.cronn.reflection.util.testclasses.FinalClass;
 import de.cronn.reflection.util.testclasses.InterfaceWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
@@ -536,6 +537,12 @@ class PropertyUtilsTest {
 	void testGetAnnotationOfProperty_AnnotationOnDefaultMethod() throws Exception {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(ClassWithDefaultMethods.class, ClassWithDefaultMethods::getName);
 		assertThat(PropertyUtils.getAnnotationOfProperty(ClassWithDefaultMethods.class, propertyDescriptor, Size.class)).isNotNull();
+	}
+
+	@Test
+	void testGetAnnotationOfProperty_AnnotationOverwrittenOnGetter() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityWithOverwrittenAnnotations.class, EntityWithOverwrittenAnnotations::getBaseClassStringProperty);
+		assertThat(PropertyUtils.getAnnotationOfProperty(EntityWithOverwrittenAnnotations.class, propertyDescriptor, Size.class).max()).isEqualTo(20);
 	}
 
 	@Test
