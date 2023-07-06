@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ClassUtils {
 
-	private static final String CGLIB_JAVASSIST_CLASS_SEPARATOR = "$$";
+	private static final String JAVASSIST_CLASS_SEPARATOR = "$$";
 	private static final String BYTE_BUDDY_CLASS_SEPARATOR = "$ByteBuddy$";
 	private static final String HIBERNATE_PROXY_CLASS_SEPARATOR = "$HibernateProxy$";
 
@@ -174,7 +174,7 @@ public final class ClassUtils {
 
 	static boolean matchesWellKnownProxyClassNamePattern(String className) {
 		return className.contains(BYTE_BUDDY_CLASS_SEPARATOR)
-			   || className.contains(CGLIB_JAVASSIST_CLASS_SEPARATOR)
+			   || className.contains(JAVASSIST_CLASS_SEPARATOR)
 			   || className.contains(HIBERNATE_PROXY_CLASS_SEPARATOR);
 	}
 

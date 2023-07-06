@@ -160,7 +160,6 @@ dependencies {
     testImplementation "org.assertj:assertj-core:latest.release"
     testImplementation "javax.validation:validation-api:latest.release"
     testImplementation "org.apache.commons:commons-lang3:latest.release"
-    testImplementation "cglib:cglib:latest.release"
     testImplementation "org.javassist:javassist:latest.release"
     testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
 

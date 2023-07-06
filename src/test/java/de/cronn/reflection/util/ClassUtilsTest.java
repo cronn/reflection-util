@@ -37,8 +37,6 @@ import de.cronn.reflection.util.testclasses.SubclassOfClassWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.TestEntity;
 import javassist.util.proxy.ProxyFactory;
 import net.bytebuddy.ByteBuddy;
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.FixedValue;
 
 public class ClassUtilsTest {
 
@@ -57,11 +55,7 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class).getClass())).isSameAs(SomeTestInterface.class);
 		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(new TestEntity()))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createJavassistProxy(new TestEntity()))).isSameAs(TestEntity.class);
-		assertThat(ClassUtils.getRealClass(createCglibProxy(new TestEntity()))).isSameAs(TestEntity.class);
-		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createCglibProxy(new TestEntity())))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(new TestEntity())))).isSameAs(TestEntity.class);
-		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(createCglibProxy(new TestEntity()))))).isSameAs(TestEntity.class);
-		assertThat(ClassUtils.getRealClass(createCglibProxy(createByteBuddyProxy(new TestEntity())))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(Long.valueOf(16))).isSameAs(Long.class);
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
@@ -98,7 +92,7 @@ public class ClassUtilsTest {
 	@Test
 	void testCreateNewInstanceLikeOfProxy() throws Exception {
 		Object sourceEntity = new TestEntity();
-		Object proxy = createCglibProxy(sourceEntity);
+		Object proxy = createJavassistProxy(sourceEntity);
 
 		Object newInstance = ClassUtils.createNewInstanceLike(proxy);
 		assertThat(newInstance.getClass()).isSameAs(TestEntity.class);
@@ -244,7 +238,7 @@ public class ClassUtilsTest {
 		Object testObject = new TestEntity();
 		assertThat(ClassUtils.isProxy(createJdkProxy(BaseInterface.class))).isTrue();
 		assertThat(ClassUtils.isProxy(createByteBuddyProxy(testObject))).isTrue();
-		assertThat(ClassUtils.isProxy(createCglibProxy(testObject))).isTrue();
+		assertThat(ClassUtils.isProxy(createJavassistProxy(testObject))).isTrue();
 		assertThat(ClassUtils.isProxy(testObject)).isFalse();
 		assertThat(ClassUtils.isProxy("some string")).isFalse();
 		assertThat(ClassUtils.isProxy(null)).isFalse();
@@ -255,7 +249,7 @@ public class ClassUtilsTest {
 		Object testObject = new TestEntity();
 		assertThat(ClassUtils.isProxyClass(createJdkProxy(BaseInterface.class).getClass())).isTrue();
 		assertThat(ClassUtils.isProxyClass(createByteBuddyProxy(testObject).getClass())).isTrue();
-		assertThat(ClassUtils.isProxyClass(createCglibProxy(testObject).getClass())).isTrue();
+		assertThat(ClassUtils.isProxyClass(createJavassistProxy(testObject).getClass())).isTrue();
 		assertThat(ClassUtils.isProxyClass(PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy())).isTrue();
 		assertThat(ClassUtils.isProxyClass(testObject.getClass())).isFalse();
 		assertThat(ClassUtils.isProxyClass(String.class)).isFalse();
@@ -410,15 +404,6 @@ public class ClassUtilsTest {
 		return methodSignatures.stream()
 			.map(MethodSignature::toString)
 			.collect(Collectors.toList());
-	}
-
-	private static <T> T createCglibProxy(T object) {
-		Enhancer enhancer = new Enhancer();
-		enhancer.setSuperclass(object.getClass());
-		enhancer.setCallback((FixedValue) () -> null);
-		@SuppressWarnings("unchecked")
-		T proxy = (T) enhancer.create();
-		return proxy;
 	}
 
 	private static <T> T createJavassistProxy(T object) {

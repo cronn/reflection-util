@@ -1,7 +1,6 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-cglib:cglib:3.3.0=testCompileClasspath,testRuntimeClasspath
 javax.validation:validation-api:2.0.1.Final=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy-agent:1.14.5=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy:1.14.5=allCodeCoverageReportClassDirectories,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
@@ -31,6 +30,5 @@ org.opentest4j:opentest4j:1.2.0=testCompileClasspath,testRuntimeClasspath
 org.ow2.asm:asm-analysis:9.2=jacocoAnt
 org.ow2.asm:asm-commons:9.2=jacocoAnt
 org.ow2.asm:asm-tree:9.2=jacocoAnt
-org.ow2.asm:asm:7.1=testCompileClasspath,testRuntimeClasspath
 org.ow2.asm:asm:9.2=jacocoAnt
 empty=annotationProcessor,signatures,testAnnotationProcessor
