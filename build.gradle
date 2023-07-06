@@ -15,21 +15,27 @@ plugins {
     id 'org.sonarqube' version 'latest.release'
 }
 
-group = 'de.cronn'
-
-version = "2.14.0"
-
-if (System.env.BUILD_NUMBER) {
-    version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
-}
-
 allprojects {
     apply plugin: 'java-library'
     apply plugin: 'jacoco'
 
+    group = 'de.cronn'
+    version = "2.14.0"
+
+    if (System.env.BUILD_NUMBER) {
+        version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
+    }
+
     repositories {
         mavenCentral()
     }
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    compileJava.options.encoding = 'UTF-8'
 
     dependencies {
         components.all { ComponentMetadataDetails details ->
@@ -51,13 +57,8 @@ allprojects {
     }
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
-compileJava.options.encoding = 'UTF-8'
-
 wrapper {
-    gradleVersion = "7.6"
+    gradleVersion = "8.2"
     distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -162,6 +163,8 @@ dependencies {
     testImplementation "org.apache.commons:commons-lang3:latest.release"
     testImplementation "org.javassist:javassist:latest.release"
     testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation "org.openjdk.jmh:jmh-core:latest.release"
     testRuntimeOnly "org.openjdk.jmh:jmh-generator-annprocess:latest.release"
