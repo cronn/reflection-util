@@ -13,7 +13,6 @@ plugins {
     id 'jacoco-report-aggregation'
 
     id 'org.sonarqube' version 'latest.release'
-    id 'info.solidsoft.pitest' version 'latest.release'
 }
 
 group = 'de.cronn'
@@ -56,11 +55,6 @@ sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
 compileJava.options.encoding = 'UTF-8'
-
-pitest {
-    timestampedReports = false
-    outputFormats = ['XML', 'HTML']
-}
 
 wrapper {
     gradleVersion = "7.6"
