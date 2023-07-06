@@ -5,19 +5,14 @@ buildscript {
     dependencyLocking {
         lockAllConfigurations()
     }
-    dependencies {
-        classpath("org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:latest.release")
-    }
 }
 
 plugins {
     id 'maven-publish'
     id 'signing'
     id 'jacoco-report-aggregation'
-}
 
-if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_11)) {
-    apply plugin: 'org.sonarqube'
+    id 'org.sonarqube' version 'latest.release'
 }
 
 allprojects {
@@ -36,8 +31,8 @@ allprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
 
     compileJava.options.encoding = 'UTF-8'
