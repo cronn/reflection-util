@@ -1,7 +1,7 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-org.sonarqube:org.sonarqube.gradle.plugin:4.2.1.3168=classpath
+org.sonarqube:org.sonarqube.gradle.plugin:4.4.1.3373=classpath
 org.sonarsource.scanner.api:sonar-scanner-api:2.16.2.588=classpath
-org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.2.1.3168=classpath
+org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:4.4.1.3373=classpath
 empty=
