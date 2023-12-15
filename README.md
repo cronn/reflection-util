@@ -240,7 +240,7 @@ Add the following Maven dependency to your project:
 <dependency>
     <groupId>de.cronn</groupId>
     <artifactId>reflection-util</artifactId>
-    <version>2.14.0</version>
+    <version>2.15.0</version>
 </dependency>
 ```
 
