@@ -1,5 +1,6 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements List<E> {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private static final String IMMUTABLE_MESSAGE = "This list is immutable";

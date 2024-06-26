@@ -7,18 +7,6 @@ import org.junit.jupiter.api.Test;
 class RecordUtilsTest {
 
 	@Test
-	void testIsRecord() throws Exception {
-		record TestRecord(int data) {
-		}
-
-		assertThat(ClassUtils.isRecord(TestRecord.class)).isTrue();
-		assertThat(ClassUtils.isRecord(new TestRecord(1))).isTrue();
-
-		assertThat(ClassUtils.isRecord(String.class)).isFalse();
-		assertThat(ClassUtils.isRecord("some value")).isFalse();
-	}
-
-	@Test
 	void testCloneRecord() throws Exception {
 		record TestRecord(int a, int b) {
 		}

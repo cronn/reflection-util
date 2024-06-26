@@ -65,7 +65,7 @@ public final class ImmutableProxy {
 			@SuppressWarnings("unchecked")
 			T immutableMap = (T) create((Map<?, ?>) instance);
 			return immutableMap;
-		} else if (ClassUtils.isRecord(instance)) {
+		} else if (instance instanceof Record) {
 			if (isOptionEnabled(options, ImmutableProxyOption.ALLOW_CLONING_RECORDS)) {
 				return RecordUtils.cloneRecord(instance, ImmutableProxy::create);
 			} else {
@@ -157,7 +157,7 @@ public final class ImmutableProxy {
 			return true;
 		} else if (isEnumType(type)) {
 			return true;
-		} else if (ClassUtils.isRecord(type)) {
+		} else if (type.isRecord()) {
 			return RecordUtils.hasOnlyImmutableRecordComponents(type);
 		} else {
 			return false;

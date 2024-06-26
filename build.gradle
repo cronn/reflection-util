@@ -31,8 +31,8 @@ allprojects {
     }
 
     java {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     compileJava.options.encoding = 'UTF-8'
@@ -159,7 +159,7 @@ dependencies {
     testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: 'latest.release'
     testImplementation "org.mockito:mockito-core:latest.release"
     testImplementation "org.assertj:assertj-core:latest.release"
-    testImplementation "javax.validation:validation-api:latest.release"
+    testImplementation "jakarta.validation:jakarta.validation-api:latest.release"
     testImplementation "org.apache.commons:commons-lang3:latest.release"
     testImplementation "org.javassist:javassist:latest.release"
     testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"

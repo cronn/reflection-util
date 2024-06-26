@@ -1,7 +1,7 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
-javax.validation:validation-api:2.0.1.Final=testCompileClasspath,testRuntimeClasspath
+jakarta.validation:jakarta.validation-api:3.1.0=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy-agent:1.14.15=testCompileClasspath,testRuntimeClasspath
 net.bytebuddy:byte-buddy:1.14.17=aggregateCodeCoverageReportResults,compileClasspath,runtimeClasspath,testCompileClasspath,testRuntimeClasspath
 net.sf.jopt-simple:jopt-simple:5.0.4=testCompileClasspath,testRuntimeClasspath

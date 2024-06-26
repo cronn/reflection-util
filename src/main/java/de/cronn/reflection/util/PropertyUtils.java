@@ -315,7 +315,7 @@ public final class PropertyUtils {
 	}
 
 	public static <T> Method findMethodByGetter(Class<T> beanClass, TypedPropertyGetter<T, ?> propertyGetter) {
-		if (RecordSupport.isRecord(beanClass)) {
+		if (beanClass.isRecord()) {
 			return RecordSupport.findMethod(beanClass, propertyGetter);
 		} else {
 			MethodCaptor methodCaptor = new MethodCaptor();

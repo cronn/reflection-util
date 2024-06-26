@@ -67,14 +67,6 @@ public final class ClassUtils {
 		return aPackage != null && aPackage.getName().equals(packageName);
 	}
 
-	public static boolean isRecord(Object bean) {
-		return RecordSupport.isRecord(bean);
-	}
-
-	public static boolean isRecord(Class<?> beanType) {
-		return RecordSupport.isRecord(beanType);
-	}
-
 	@SuppressWarnings(/* this unchecked cast is OK, since this is the contract of newInstance() */"unchecked")
 	public static <T> T createNewInstance(Class<T> sourceClass) {
 		try {

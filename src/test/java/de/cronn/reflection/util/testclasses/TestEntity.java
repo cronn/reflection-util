@@ -1,6 +1,7 @@
 package de.cronn.reflection.util.testclasses;
 
 import java.io.File;
+import java.io.Serial;
 import java.io.Serializable;
 import java.net.URI;
 import java.nio.file.Path;
@@ -14,11 +15,12 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.UUID;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class TestEntity extends AbstractClassWithAnnotatedMethods implements InterfaceWithReadOnlyMethods, Serializable, Cloneable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	@Size(min = 10, max = 20)

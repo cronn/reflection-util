@@ -246,7 +246,7 @@ Add the following Maven dependency to your project:
 
 ## Requirements ##
 
-- Java 11+
+- Java 17+
 
 ## Related Work ##
 

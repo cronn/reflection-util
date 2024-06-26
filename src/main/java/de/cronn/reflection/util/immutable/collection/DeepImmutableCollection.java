@@ -1,5 +1,6 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import de.cronn.reflection.util.immutable.ImmutableProxy;
 
 public class DeepImmutableCollection<E> extends AbstractCollection<E> implements Collection<E>, Immutable, Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final String immutableMessage;

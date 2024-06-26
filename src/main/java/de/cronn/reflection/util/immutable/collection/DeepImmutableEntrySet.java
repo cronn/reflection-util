@@ -1,10 +1,12 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import java.io.Serial;
 import java.util.Map.Entry;
 import java.util.Set;
 
 class DeepImmutableEntrySet<K, V> extends DeepImmutableCollection<Entry<K, V>> implements Set<Entry<K, V>> {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	private final DeepImmutableMap<K, V> immutableMap;

@@ -4,10 +4,10 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -24,9 +24,6 @@ import net.bytebuddy.ByteBuddy;
 
 final class RecordSupport {
 
-	private static volatile boolean currentJvmIsKnownNotToSupportRecords = false;
-	private static WeakReference<Class<?>> cachedRecordClass = new WeakReference<>(null);
-
 	private static final ClassValue<Class<?>> dummySubclasses = ClassValues.create(RecordSupport::createDummyProxyClass);
 
 	private RecordSupport() {
@@ -38,64 +35,6 @@ final class RecordSupport {
 			.make()
 			.load(RecordSupport.class.getClassLoader())
 			.getLoaded();
-	}
-
-	static boolean isRecord(Object bean) {
-		return isRecord(bean.getClass());
-	}
-
-	static boolean isRecord(Class<?> beanClass) {
-		if (currentJvmIsKnownNotToSupportRecords) {
-			return false;
-		}
-		try {
-			Class<?> recordClass = getRecordClass();
-			return recordClass.isAssignableFrom(beanClass);
-		} catch (ClassNotFoundException e) {
-			currentJvmIsKnownNotToSupportRecords = true;
-			return false;
-		}
-	}
-
-	private static Class<?> getRecordClass() throws ClassNotFoundException {
-		Class<?> recordClass = cachedRecordClass.get();
-		if (recordClass == null) {
-			recordClass = Class.forName("java.lang.Record");
-			cachedRecordClass = new WeakReference<>(recordClass);
-		}
-		return recordClass;
-	}
-
-	static class RecordComponentInfo {
-		private final String name;
-		private final Class<?> type;
-		private final Method accessor;
-
-		RecordComponentInfo(String name, Class<?> type, Method accessor) {
-			this.name = name;
-			this.type = type;
-			this.accessor = accessor;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public Class<?> getType() {
-			return type;
-		}
-
-		public Method getAccessor() {
-			return accessor;
-		}
-
-		public Object retrieveValueFrom(Object record) {
-			try {
-				return accessor.invoke(record);
-			} catch (ReflectiveOperationException e) {
-				throw new ReflectionRuntimeException(e);
-			}
-		}
 	}
 
 	static <T> Method findMethod(Class<T> recordClass, TypedPropertyGetter<T, ?> componentAccessor) {
@@ -119,37 +58,21 @@ final class RecordSupport {
 		}
 	}
 
-	static Stream<RecordComponentInfo> getRecordComponents(Class<?> recordClass) {
-		Assert.isTrue(isRecord(recordClass), () -> recordClass + " is not a record");
-		Object[] recordComponents = invokeMethod(recordClass, "getRecordComponents");
-		return Arrays.stream(recordComponents)
-			.map(recordComponent -> {
-				String name = invokeMethod(recordComponent, "getName");
-				Class<?> type = invokeMethod(recordComponent, "getType");
-				Method accessor = invokeMethod(recordComponent, "getAccessor");
-				return new RecordComponentInfo(name, type, accessor);
-			});
-	}
-
-	private static <T> T invokeMethod(Object object, String methodName) {
-		try {
-			Method method = object.getClass().getMethod(methodName);
-			return (T) method.invoke(object);
-		} catch (ReflectiveOperationException e) {
-			throw new ReflectionRuntimeException(e);
-		}
+	static Stream<RecordComponent> getRecordComponents(Class<?> recordClass) {
+		Assert.isTrue(recordClass.isRecord(), () -> recordClass + " is not a record");
+		return Arrays.stream(recordClass.getRecordComponents());
 	}
 
 	static <T> Constructor<T> getRecordConstructor(Class<T> recordClass) throws NoSuchMethodException {
 		Class<?>[] constructorTypes = getRecordComponents(recordClass)
-			.map(RecordComponentInfo::getType)
+			.map(RecordComponent::getType)
 			.toArray(Class[]::new);
 		return recordClass.getDeclaredConstructor(constructorTypes);
 	}
 
 	private static Object[] buildUniqueValues(Class<?> recordClass) {
 		return getRecordComponents(recordClass)
-			.map(RecordComponentInfo::getType)
+			.map(RecordComponent::getType)
 			.map(uniqueValueBuilder())
 			.toArray(Object[]::new);
 	}
@@ -230,7 +153,7 @@ final class RecordSupport {
 		return getRecordComponents(recordClass)
 			.skip(componentIndex)
 			.findFirst()
-			.map(RecordComponentInfo::getAccessor)
+			.map(RecordComponent::getAccessor)
 			.orElseThrow(IllegalStateException::new);
 	}
 
@@ -268,7 +191,7 @@ final class RecordSupport {
 		}
 	}
 
-	private static PropertyDescriptor toPropertyDescriptor(Class<?> type, RecordComponentInfo recordComponent) {
+	private static PropertyDescriptor toPropertyDescriptor(Class<?> type, RecordComponent recordComponent) {
 		try {
 			return new PropertyDescriptor(recordComponent.getName(), type, recordComponent.getAccessor().getName(), null);
 		} catch (IntrospectionException e) {

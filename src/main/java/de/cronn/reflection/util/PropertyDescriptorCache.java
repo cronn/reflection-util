@@ -114,7 +114,7 @@ class PropertyDescriptorCache<T> {
 	}
 
 	private static Collection<PropertyDescriptor> collectPropertyDescriptorsOfClass(Class<?> type) throws IntrospectionException {
-		if (RecordSupport.isRecord(type)) {
+		if (type.isRecord()) {
 			return RecordSupport.collectPropertyDescriptorsOfRecord(type);
 		}
 		BeanInfo beanInfo = Introspector.getBeanInfo(type);

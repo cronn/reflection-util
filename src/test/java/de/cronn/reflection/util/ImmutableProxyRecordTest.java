@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.immutable.ImmutableProxy;
@@ -35,14 +36,14 @@ class ImmutableProxyRecordTest {
 
 		TestBeanWithRecordField immutableProxy = ImmutableProxy.create(bean);
 
-		assertThat(immutableProxy.getData()).isEqualTo("some value");
+		Assertions.assertThat(immutableProxy.getData()).isEqualTo("some value");
 
-		assertThat(immutableProxy.getPoint()).isNull();
+		Assertions.assertThat(immutableProxy.getPoint()).isNull();
 
 		bean.setPoint(new Point(1, 2));
-		assertThat(immutableProxy.getPoint()).isSameAs(bean.getPoint());
-		assertThat(immutableProxy.getPoint().x()).isEqualTo(1);
-		assertThat(immutableProxy.getPoint().y()).isEqualTo(2);
+		Assertions.assertThat(immutableProxy.getPoint()).isSameAs(bean.getPoint());
+		Assertions.assertThat(immutableProxy.getPoint().x()).isEqualTo(1);
+		Assertions.assertThat(immutableProxy.getPoint().y()).isEqualTo(2);
 	}
 
 	@Test
@@ -70,9 +71,9 @@ class ImmutableProxyRecordTest {
 
 		bean.getRecordWithList().values().add("one");
 
-		assertThat(immutableProxy.getData()).isEqualTo("some value");
+		Assertions.assertThat(immutableProxy.getData()).isEqualTo("some value");
 
-		assertThat(immutableProxy.getRecordWithList().values()).containsExactly("one");
+		Assertions.assertThat(immutableProxy.getRecordWithList().values()).containsExactly("one");
 
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableProxy.getRecordWithList().values().add("two"))

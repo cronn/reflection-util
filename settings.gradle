@@ -1,5 +1,1 @@
 rootProject.name = "reflection-util"
-
-if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_17)) {
-    include "java-17-tests"
-}

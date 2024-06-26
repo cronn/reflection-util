@@ -9,7 +9,7 @@ public final class RecordUtils {
 
 	private static final ClassValue<Boolean> recordImmutabilityCache = ClassValues.create(recordClass -> {
 		return RecordSupport.getRecordComponents(recordClass)
-			.allMatch(recordComponentInfo -> ImmutableProxy.isImmutable(recordComponentInfo.getType()));
+			.allMatch(recordComponent -> ImmutableProxy.isImmutable(recordComponent.getType()));
 	});
 
 	private RecordUtils() {
@@ -22,8 +22,12 @@ public final class RecordUtils {
 	public static <T> T cloneRecord(T record, Function<Object, Object> valueMapping) {
 		Object[] values = RecordSupport.getRecordComponents(record.getClass())
 			.map(recordComponent -> {
-				Object value = recordComponent.retrieveValueFrom(record);
-				return valueMapping.apply(value);
+				try {
+					Object value = recordComponent.getAccessor().invoke(record);
+					return valueMapping.apply(value);
+				} catch (ReflectiveOperationException e) {
+					throw new RuntimeException(e);
+				}
 			})
 			.toArray(Object[]::new);
 		try {

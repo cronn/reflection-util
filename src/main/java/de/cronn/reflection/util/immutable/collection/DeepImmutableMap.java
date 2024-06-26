@@ -1,5 +1,6 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.IdentityHashMap;
@@ -11,6 +12,7 @@ import de.cronn.reflection.util.immutable.ImmutableProxy;
 
 public class DeepImmutableMap<K, V> extends AbstractMap<K, V> implements Immutable, Serializable {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	static final String IMMUTABLE_MESSAGE = "This map is immutable";

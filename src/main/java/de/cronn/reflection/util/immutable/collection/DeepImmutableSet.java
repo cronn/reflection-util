@@ -1,5 +1,6 @@
 package de.cronn.reflection.util.immutable.collection;
 
+import java.io.Serial;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -7,6 +8,7 @@ import java.util.Set;
 
 public class DeepImmutableSet<E> extends DeepImmutableCollection<E> implements Set<E> {
 
+	@Serial
 	private static final long serialVersionUID = 1L;
 
 	public DeepImmutableSet(Set<E> set) {

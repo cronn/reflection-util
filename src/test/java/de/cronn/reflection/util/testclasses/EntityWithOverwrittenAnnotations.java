@@ -1,6 +1,6 @@
 package de.cronn.reflection.util.testclasses;
 
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 public class EntityWithOverwrittenAnnotations extends BaseClass {
 
