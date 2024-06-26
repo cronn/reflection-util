@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import de.cronn.reflection.util.testclasses.Point;
+import de.cronn.reflection.util.testclasses.RecordWithSealedClasses;
 
 class PropertyUtilsRecordsTest {
 
@@ -302,6 +303,12 @@ class PropertyUtilsRecordsTest {
 
 		assertThat(PropertyUtils.isCollectionType(PropertyUtils.getPropertyDescriptor(TestRecord.class, TestRecord::a))).isFalse();
 		assertThat(PropertyUtils.isCollectionType(PropertyUtils.getPropertyDescriptor(TestRecord.class, TestRecord::b))).isTrue();
+	}
+
+	@Test
+	void testGetPropertyDescriptorOfRecordWithSealedInterface() throws Exception {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(RecordWithSealedClasses.class, RecordWithSealedClasses::sealedInterfaceWithTwoRecords);
+		assertThat(propertyDescriptor.getName()).isEqualTo("sealedInterfaceWithTwoRecords");
 	}
 
 	private static List<String> collectPropertyNames(Collection<PropertyDescriptor> propertyDescriptors) {

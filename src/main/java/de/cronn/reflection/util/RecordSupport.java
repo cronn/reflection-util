@@ -105,12 +105,21 @@ final class RecordSupport {
 				}
 			}
 
-			if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-				Class<?> dummyClass = dummySubclasses.get(type);
-				return ObjenesisHelper.newInstance(dummyClass);
-			}
-			return ObjenesisHelper.newInstance(type);
+			return getDummyObjectInstance(type);
 		};
+	}
+
+	private static Object getDummyObjectInstance(Class<?> type) {
+		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+			if (type.isSealed()) {
+				for (Class<?> permittedSubclass : type.getPermittedSubclasses()) {
+					return getDummyObjectInstance(permittedSubclass);
+				}
+			}
+			Class<?> dummyClass = dummySubclasses.get(type);
+			return ObjenesisHelper.newInstance(dummyClass);
+		}
+		return ObjenesisHelper.newInstance(type);
 	}
 
 	private static <T extends Number> T safeNumberCast(long currentIndex, T castedValue) {
