@@ -21,11 +21,6 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Gradle
       run: ./gradlew build
-    - name: Publish Test Report
-      uses: mikepenz/action-junit-report@v4
-      if: success() || failure()
-      with:
-        report_paths: '**/build/test-results/test/TEST-*.xml'
 
   publishCoverage:
     runs-on: ubuntu-latest
