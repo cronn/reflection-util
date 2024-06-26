@@ -8,7 +8,7 @@ public final class ClassValues {
 	}
 
 	public static <T> ClassValue<T> create(Function<Class<?>, T> mapper) {
-		return new ClassValue<T>() {
+		return new ClassValue<>() {
 			@Override
 			protected T computeValue(Class<?> type) {
 				return mapper.apply(type);
