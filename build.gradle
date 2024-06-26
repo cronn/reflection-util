@@ -144,10 +144,6 @@ test {
     useJUnitPlatform()
 
     maxHeapSize = "256m"
-
-    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_14)) {
-        jvmArgs += '-XX:+ShowCodeDetailsInExceptionMessages'
-    }
 }
 
 dependencies {
