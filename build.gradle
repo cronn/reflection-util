@@ -8,6 +8,8 @@ buildscript {
 }
 
 plugins {
+    id 'java-library'
+    id 'jacoco'
     id 'maven-publish'
     id 'signing'
     id 'jacoco-report-aggregation'
@@ -15,46 +17,41 @@ plugins {
     id 'org.sonarqube' version 'latest.release'
 }
 
-allprojects {
-    apply plugin: 'java-library'
-    apply plugin: 'jacoco'
+group = 'de.cronn'
+version = "2.16.0"
 
-    group = 'de.cronn'
-    version = "2.16.0"
+if (System.env.BUILD_NUMBER) {
+    version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
+}
 
-    if (System.env.BUILD_NUMBER) {
-        version = "${version}-SNAPSHOT-b${System.env.BUILD_NUMBER}"
-    }
+repositories {
+    mavenCentral()
+}
 
-    repositories {
-        mavenCentral()
-    }
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
+compileJava.options.encoding = 'UTF-8'
 
-    compileJava.options.encoding = 'UTF-8'
-
-    dependencies {
-        components.all { ComponentMetadataDetails details ->
-            if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|PR|M\d+).*/) {
-                details.status = 'milestone'
-            }
+dependencies {
+    components.all { ComponentMetadataDetails details ->
+        if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|PR|M\d+).*/) {
+            details.status = 'milestone'
         }
     }
+}
 
-    dependencyLocking {
-        lockAllConfigurations()
-    }
+dependencyLocking {
+    lockAllConfigurations()
+}
 
-    jacocoTestReport {
-        reports {
-            xml.required = true
-        }
-        dependsOn test
+jacocoTestReport {
+    reports {
+        xml.required = true
     }
+    dependsOn test
 }
 
 wrapper {
