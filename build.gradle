@@ -12,7 +12,6 @@ plugins {
     id 'jacoco'
     id 'maven-publish'
     id 'signing'
-    id 'jacoco-report-aggregation'
 
     id 'org.sonarqube' version 'latest.release'
 }
@@ -165,10 +164,4 @@ dependencies {
     // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
     compileOnly "org.jetbrains:annotations:latest.release"
     testCompileOnly "org.jetbrains:annotations:latest.release"
-
-    jacocoAggregation subprojects
-}
-
-tasks.named('check') {
-    dependsOn tasks.named('testCodeCoverageReport', JacocoReport)
 }
