@@ -21,6 +21,12 @@ jobs:
         java-version: ${{ matrix.java }}
     - name: Build with Gradle
       run: ./gradlew build
+    - name: Archive test reports
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+       name: Gradle Test Reports Java ${{ matrix.java }}
+       path: build/reports/tests/test
 
   publishCoverage:
     runs-on: ubuntu-latest
