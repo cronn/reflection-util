@@ -21,6 +21,7 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
 
 final class RecordSupport {
 
@@ -30,11 +31,13 @@ final class RecordSupport {
 	}
 
 	private static Class<?> createDummyProxyClass(Class<?> type) {
-		return new ByteBuddy()
+		try (DynamicType.Unloaded<?> unloadedType = new ByteBuddy()
 			.subclass(type)
-			.make()
-			.load(RecordSupport.class.getClassLoader())
-			.getLoaded();
+			.make()) {
+			return unloadedType
+				.load(RecordSupport.class.getClassLoader())
+				.getLoaded();
+		}
 	}
 
 	static <T> Method findMethod(Class<T> recordClass, TypedPropertyGetter<T, ?> componentAccessor) {

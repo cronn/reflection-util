@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import net.bytebuddy.dynamic.DynamicType;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.mockito.Mockito;
@@ -670,12 +672,16 @@ class PropertyUtilsTest {
 	@Test
 	void testWriteDirectly_ProxyClass() throws Exception {
 		TestEntity testEntity = new TestEntity();
-		Class<?> proxyClass = new ByteBuddy()
+
+		Class<?> proxyClass;
+		try (DynamicType.Unloaded<? extends TestEntity> unloadedType = new ByteBuddy()
 			.subclass(testEntity.getClass())
 			.defineField("$delegate", TestEntity.class)
-			.make()
-			.load(getClass().getClassLoader())
-			.getLoaded();
+			.make()) {
+			proxyClass = unloadedType
+				.load(getClass().getClassLoader())
+				.getLoaded();
+		}
 		Object proxy = ClassUtils.createNewInstance(proxyClass);
 
 		PropertyUtils.writeDirectly(proxy, "$delegate", testEntity);

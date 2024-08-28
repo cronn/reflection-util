@@ -34,6 +34,7 @@ import net.bytebuddy.description.method.MethodDescription;
 import net.bytebuddy.description.method.MethodDescription.SignatureToken;
 import net.bytebuddy.description.type.TypeDefinition;
 import net.bytebuddy.description.type.TypeDescription;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.implementation.ExceptionMethod;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.matcher.ElementMatcher;
@@ -176,7 +177,7 @@ public final class ImmutableProxy {
 
 	private static <T> Class<? extends T> createProxyClass(Class<T> clazz) {
 		assertPublicMethodsAreNotFinal(clazz);
-		return new ByteBuddy()
+		try (DynamicType.Unloaded<T> unloadedType = new ByteBuddy()
 			.subclass(clazz)
 			.implement(Immutable.class)
 			.defineField(DELEGATE_FIELD_NAME, clazz)
@@ -194,9 +195,11 @@ public final class ImmutableProxy {
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderBoolean.class))
 			.method(isReadOnlyMethod().and(returns(String.class)))
 			.intercept(MethodDelegation.to(ImmutableProxyForwarderString.class))
-			.make()
-			.load(ImmutableProxy.class.getClassLoader())
-			.getLoaded();
+			.make()) {
+			return unloadedType
+				.load(ImmutableProxy.class.getClassLoader())
+				.getLoaded();
+		}
 	}
 
 	private static <T> void assertPublicMethodsAreNotFinal(Class<T> clazz) {

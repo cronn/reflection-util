@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.description.modifier.Visibility;
+import net.bytebuddy.dynamic.DynamicType;
 import net.bytebuddy.dynamic.scaffold.subclass.ConstructorStrategy;
 import net.bytebuddy.implementation.MethodDelegation;
 import net.bytebuddy.implementation.bind.annotation.FieldValue;
@@ -38,15 +39,15 @@ public class MethodCaptor {
 	}
 
 	static <T> Class<? extends T> createProxyClass(Class<T> beanClass) {
-		try {
-			return new ByteBuddy()
-				.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
-				.defineField(MethodCaptor.FIELD_NAME, MethodCaptor.class, Visibility.PRIVATE)
-				.method(isMethod()
-					.and(takesArguments(0))
-					.and(not(isDeclaredBy(Object.class))))
-				.intercept(MethodDelegation.to(MethodCaptor.class))
-				.make()
+		try (DynamicType.Unloaded<T> unloadedType = new ByteBuddy()
+			.subclass(beanClass, ConstructorStrategy.Default.NO_CONSTRUCTORS)
+			.defineField(MethodCaptor.FIELD_NAME, MethodCaptor.class, Visibility.PRIVATE)
+			.method(isMethod()
+				.and(takesArguments(0))
+				.and(not(isDeclaredBy(Object.class))))
+			.intercept(MethodDelegation.to(MethodCaptor.class))
+			.make()) {
+			return unloadedType
 				.load(PropertyUtils.class.getClassLoader())
 				.getLoaded();
 		} catch (IllegalAccessError e) {

@@ -14,9 +14,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -35,8 +32,11 @@ import de.cronn.reflection.util.testclasses.SomeClass;
 import de.cronn.reflection.util.testclasses.SomeTestInterface;
 import de.cronn.reflection.util.testclasses.SubclassOfClassWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.TestEntity;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import javassist.util.proxy.ProxyFactory;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
 
 public class ClassUtilsTest {
 
@@ -419,12 +419,14 @@ public class ClassUtilsTest {
 	}
 
 	private static <T> T createByteBuddyProxy(T object) {
-		Class<? extends T> proxyClass = new ByteBuddy()
+		try (DynamicType.Unloaded<T> unloadedType = new ByteBuddy()
 			.subclass(ClassUtils.getRealClass(object))
-			.make()
-			.load(ClassUtilsTest.class.getClassLoader())
-			.getLoaded();
-		return ClassUtils.createNewInstance(proxyClass);
+			.make()) {
+			Class<? extends T> proxyClass = unloadedType
+				.load(ClassUtilsTest.class.getClassLoader())
+				.getLoaded();
+			return ClassUtils.createNewInstance(proxyClass);
+		}
 	}
 
 	private static Method findMethod(Class<?> aClass, String name, Class<?>... parameterTypes) throws Exception {
