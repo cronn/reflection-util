@@ -149,9 +149,9 @@ dependencies {
     implementation "net.bytebuddy:byte-buddy:latest.release"
     implementation "org.objenesis:objenesis:latest.release"
 
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: 'latest.release'
-    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-params', version: 'latest.release'
-    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: 'latest.release'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:latest.release'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:latest.release'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:latest.release'
     testImplementation "org.mockito:mockito-core:latest.release"
     testImplementation "org.assertj:assertj-core:latest.release"
     testImplementation "jakarta.validation:jakarta.validation-api:latest.release"
