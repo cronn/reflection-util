@@ -32,7 +32,10 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-compileJava.options.encoding = 'UTF-8'
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.compilerArgs.addAll(['-Xlint:all,-serial,-overloads,-classfile', '-Werror'])
+}
 
 dependencies {
     components.all { ComponentMetadataDetails details ->

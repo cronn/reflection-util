@@ -16,11 +16,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
-import net.bytebuddy.dynamic.DynamicType;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 import org.mockito.Mockito;
@@ -43,7 +38,10 @@ import de.cronn.reflection.util.testclasses.SubClassOfInterfaceWithDefaultMethod
 import de.cronn.reflection.util.testclasses.SubclassOfClassWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.TestAnnotation;
 import de.cronn.reflection.util.testclasses.TestEntity;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
 
 class PropertyUtilsTest {
 
@@ -624,17 +622,17 @@ class PropertyUtilsTest {
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
 
 		Field declaredField = getTestEntityField(property);
-		assertThat(declaredField.isAccessible()).isFalse();
+		assertThat(declaredField.canAccess(testEntity)).isFalse();
 
 		PropertyUtils.readDirectly(testEntity, declaredField);
 
-		assertThat(declaredField.isAccessible()).isFalse();
+		assertThat(declaredField.canAccess(testEntity)).isFalse();
 
 		declaredField.setAccessible(true);
-		assertThat(declaredField.isAccessible()).isTrue();
+		assertThat(declaredField.canAccess(testEntity)).isTrue();
 
 		PropertyUtils.readDirectly(testEntity, declaredField);
-		assertThat(declaredField.isAccessible()).isTrue();
+		assertThat(declaredField.canAccess(testEntity)).isTrue();
 	}
 
 	@Test

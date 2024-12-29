@@ -260,7 +260,7 @@ public final class ImmutableProxy {
 	}
 
 	private static boolean isAnnotatedWith(SignatureToken methodSignature, TypeDefinition type, Class<? extends Annotation> annotation) {
-		if (type == null || type.equals(TypeDescription.OBJECT)) {
+		if (type == null || type.equals(TypeDescription.ForLoadedType.of(Object.class))) {
 			return false;
 		}
 

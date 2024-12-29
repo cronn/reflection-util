@@ -11,7 +11,7 @@ final class TestUtils {
 
 	static void assertThatConstructorIsPrivate(Class<?> utilityClass) throws Exception {
 		Constructor<?> constructor = utilityClass.getDeclaredConstructor();
-		assertThat(constructor.isAccessible()).isFalse();
+		assertThat(constructor.canAccess(null)).isFalse();
 		constructor.setAccessible(true);
 		Object instance = constructor.newInstance();
 		assertThat(instance).isNotNull();

@@ -160,7 +160,7 @@ public final class PropertyUtils {
 			} else {
 				Object[] args = new Object[] { value };
 				Method writeMethod = propertyDescriptor.getWriteMethod();
-				withAccessibleObject(writeMethod, method -> method.invoke(destination, args), force);
+				withAccessibleObject(destination, writeMethod, (dest, method) -> method.invoke(dest, args), force);
 			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, propertyDescriptor), e);
@@ -183,7 +183,7 @@ public final class PropertyUtils {
 	public static void writeDirectly(Object destination, Field field, Object value) {
 		Assert.notNull(destination, () -> "Destination must not be null");
 		try {
-			withAccessibleObject(field, f -> f.set(destination, value));
+			withAccessibleObject(destination, field, (obj, f) -> f.set(obj, value));
 		} catch (ReflectiveOperationException e) {
 			throw new ReflectionRuntimeException("Failed to write " + getQualifiedPropertyName(destination, field), e);
 		}
@@ -216,9 +216,9 @@ public final class PropertyUtils {
 
 	public static <T> T readDirectly(Object object, Field field) {
 		try {
-			return withAccessibleObject(field, f -> {
+			return withAccessibleObject(object, field, (obj, f) -> {
 				@SuppressWarnings("unchecked")
-				T value = (T) field.get(object);
+				T value = (T) field.get(obj);
 				return value;
 			}, true);
 		} catch (ReflectiveOperationException e) {
@@ -241,7 +241,7 @@ public final class PropertyUtils {
 				}
 			} else {
 				Method readMethod = propertyDescriptor.getReadMethod();
-				result = withAccessibleObject(readMethod, method -> readMethod.invoke(source), force);
+				result = withAccessibleObject(source, readMethod, (src, method) -> method.invoke(src), force);
 			}
 		} catch (ReflectiveOperationException | RuntimeException e) {
 			throw new ReflectionRuntimeException("Failed to read " + getQualifiedPropertyName(source, propertyDescriptor), e);
@@ -449,28 +449,28 @@ public final class PropertyUtils {
 		return !isCollectionType(propertyDescriptor);
 	}
 
-	private interface AccessibleObjectFunction<T extends AccessibleObject, R> {
-		R access(T object) throws ReflectiveOperationException;
+	private interface AccessibleObjectFunction<E, T extends AccessibleObject, R> {
+		R access(E object, T accessibleObject) throws ReflectiveOperationException;
 	}
 
-	private interface AccessibleObjectConsumer<T extends AccessibleObject> {
-		void access(T object) throws ReflectiveOperationException;
+	private interface AccessibleObjectConsumer<E, T extends AccessibleObject> {
+		void access(E object, T accessibleObject) throws ReflectiveOperationException;
 	}
 
-	private static <T extends AccessibleObject> void withAccessibleObject(T accessibleObject, AccessibleObjectConsumer<T> accessibleObjectConsumer) throws ReflectiveOperationException {
-		withAccessibleObject(accessibleObject, obj -> {
-			accessibleObjectConsumer.access(obj);
+	private static <E, T extends AccessibleObject> void withAccessibleObject(E object, T accessibleObject, AccessibleObjectConsumer<E, T> accessibleObjectConsumer) throws ReflectiveOperationException {
+		withAccessibleObject(object, accessibleObject, (obj, accObj) -> {
+			accessibleObjectConsumer.access(obj, accObj);
 			return null;
 		}, true);
 	}
 
-	private static <T extends AccessibleObject, R> R withAccessibleObject(T accessibleObject, AccessibleObjectFunction<T, R> function, boolean force) throws ReflectiveOperationException {
-		boolean accessible = accessibleObject.isAccessible();
+	private static <E, T extends AccessibleObject, R> R withAccessibleObject(E object, T accessibleObject, AccessibleObjectFunction<E, T, R> function, boolean force) throws ReflectiveOperationException {
+		boolean accessible = accessibleObject.canAccess(object);
 		try {
 			if (force && !accessible) {
 				accessibleObject.setAccessible(true);
 			}
-			return function.access(accessibleObject);
+			return function.access(object, accessibleObject);
 		} finally {
 			if (force && !accessible) {
 				accessibleObject.setAccessible(false);

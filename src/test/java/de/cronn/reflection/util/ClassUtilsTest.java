@@ -351,18 +351,18 @@ public class ClassUtilsTest {
 
 	@Test
 	void testCreateInstance_AccessibleFlagIsRestored() throws Exception {
-		Constructor<TestEntity> constructor = TestEntity.class.getDeclaredConstructor();
-		assertThat(constructor.isAccessible()).isFalse();
+		Constructor<EntityProtectedConstructor> constructor = EntityProtectedConstructor.class.getDeclaredConstructor();
+		assertThat(constructor.canAccess(null)).isFalse();
 
 		assertThat(ClassUtils.createInstance(constructor)).isNotNull();
 
-		assertThat(constructor.isAccessible()).isFalse();
+		assertThat(constructor.canAccess(null)).isFalse();
 
 		constructor.setAccessible(true);
 
 		assertThat(ClassUtils.createInstance(constructor)).isNotNull();
 
-		assertThat(constructor.isAccessible()).isTrue();
+		assertThat(constructor.canAccess(null)).isTrue();
 	}
 
 	@Test
