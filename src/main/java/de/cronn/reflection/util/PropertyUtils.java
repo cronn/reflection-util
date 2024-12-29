@@ -4,6 +4,7 @@ import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
+import org.objenesis.ObjenesisException;
 import org.objenesis.ObjenesisHelper;
 
 public final class PropertyUtils {
@@ -333,6 +335,13 @@ public final class PropertyUtils {
 			T proxyInstance = ObjenesisHelper.newInstance(proxyClass);
 			writeDirectly(proxyInstance, MethodCaptor.FIELD_NAME, methodCaptor);
 			return proxyInstance;
+		} catch (ObjenesisException e) {
+			if (e.getCause() instanceof InvocationTargetException invocationTargetException) {
+				if (invocationTargetException.getTargetException() instanceof IllegalAccessError illegalAccessError) {
+					throw new ReflectionRuntimeException("Failed to create proxy on " + beanClass, illegalAccessError);
+				}
+			}
+			throw e;
 		} catch (IllegalAccessError e) {
 			throw new ReflectionRuntimeException("Failed to create proxy on " + beanClass, e);
 		}
