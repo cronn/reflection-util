@@ -45,10 +45,6 @@ dependencies {
     }
 }
 
-dependencyLocking {
-    lockAllConfigurations()
-}
-
 jacocoTestReport {
     reports {
         xml.required = true
@@ -159,6 +155,9 @@ dependencies {
     testImplementation "org.javassist:javassist:latest.release"
     testImplementation "nl.jqno.equalsverifier:equalsverifier:latest.release"
 
+    testImplementation 'org.hibernate.orm:hibernate-core:latest.release'
+    testRuntimeOnly 'com.h2database:h2:latest.release'
+
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     testImplementation "org.openjdk.jmh:jmh-core:latest.release"
@@ -167,4 +166,14 @@ dependencies {
     // no real transitive dependency but we use it to annotate method contracts to help the IDE understand the code
     compileOnly "org.jetbrains:annotations:latest.release"
     testCompileOnly "org.jetbrains:annotations:latest.release"
+
+    dependencyLocking {
+        lockAllConfigurations()
+    }
+
+    components.all { ComponentMetadataDetails details ->
+        if (details.id.version =~ /(?i).+(-|\.)(CANDIDATE|RC|BETA|ALPHA|PR|M\d+|CR\d+).*/) {
+            details.status = 'milestone'
+        }
+    }
 }

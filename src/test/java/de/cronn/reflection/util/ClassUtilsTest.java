@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.hibernate.proxy.HibernateProxy;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -254,6 +255,17 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.isProxyClass(testObject.getClass())).isFalse();
 		assertThat(ClassUtils.isProxyClass(String.class)).isFalse();
 		assertThat(ClassUtils.isProxyClass(null)).isFalse();
+	}
+
+	@Test
+	void testIsProxyClass_Hibernate() throws Exception {
+		HibernateProxyTestUtil.runWithHibernateProxy(personProxy -> {
+			assertThat(personProxy).isInstanceOf(HibernateProxy.class);
+			assertThat(personProxy.getClass().getSimpleName()).endsWith("$Person$HibernateProxy");
+
+			assertThat(ClassUtils.isProxy(personProxy)).isTrue();
+			assertThat(ClassUtils.isProxyClass(personProxy.getClass())).isTrue();
+		});
 	}
 
 	@Test
