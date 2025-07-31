@@ -476,7 +476,7 @@ public class ImmutableProxyTest {
 
 		MutableLong immutableProxy = ImmutableProxy.create(mutableLong);
 
-		assertThat(immutableProxy.getValue()).isEqualTo(25);
+		assertThat(immutableProxy.get()).isEqualTo(25L);
 
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableProxy.add(5))
