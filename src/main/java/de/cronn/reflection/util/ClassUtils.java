@@ -19,7 +19,8 @@ public final class ClassUtils {
 
 	private static final String JAVASSIST_CLASS_SEPARATOR = "$$";
 	private static final String BYTE_BUDDY_CLASS_SEPARATOR = "$ByteBuddy$";
-	private static final String HIBERNATE_PROXY_CLASS_SEPARATOR = "$HibernateProxy$";
+	private static final String HIBERNATE_OLD_PROXY_CLASS_SEPARATOR = "$HibernateProxy$";
+	private static final String HIBERNATE_NEW_PROXY_CLASS_SUFFIX = "$HibernateProxy";
 
 	private static final ClassValue<Set<MethodSignature>> methodsSignaturesCache = ClassValues.create(ClassUtils::getAllDeclaredMethodSignatures);
 
@@ -167,7 +168,8 @@ public final class ClassUtils {
 	static boolean matchesWellKnownProxyClassNamePattern(String className) {
 		return className.contains(BYTE_BUDDY_CLASS_SEPARATOR)
 			   || className.contains(JAVASSIST_CLASS_SEPARATOR)
-			   || className.contains(HIBERNATE_PROXY_CLASS_SEPARATOR);
+			   || className.contains(HIBERNATE_OLD_PROXY_CLASS_SEPARATOR)
+			   || className.endsWith(HIBERNATE_NEW_PROXY_CLASS_SUFFIX);
 	}
 
 	public static boolean haveSameSignature(Method oneMethod, Method otherMethod) {
