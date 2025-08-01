@@ -59,6 +59,10 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.getRealClass(createByteBuddyProxy(createJavassistProxy(new TestEntity())))).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(Long.valueOf(16))).isSameAs(Long.class);
 
+		HibernateProxyTestUtil.runWithHibernateProxy(personProxy -> {
+			assertThat(ClassUtils.getRealClass(personProxy)).isSameAs(HibernateProxyTestUtil.Person.class);
+		});
+
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class, BaseInterface.class)))
 			.withMessage("Unexpected number of interfaces: 2");
@@ -80,7 +84,8 @@ public class ClassUtilsTest {
 
 			Arguments.of("my.package.SomeClass$$proxy", true),
 			Arguments.of("my.package.SomeClass$ByteBuddy$abcdef", true),
-			Arguments.of("my.package.SomeClass$HibernateProxy$abcdef", true)
+			Arguments.of("my.package.SomeClass$HibernateProxy$abcdef", true),
+			Arguments.of("my.package.SomeClass$HibernateProxy", true)
 		);
 	}
 
@@ -254,6 +259,7 @@ public class ClassUtilsTest {
 		assertThat(ClassUtils.isProxyClass(PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy())).isTrue();
 		assertThat(ClassUtils.isProxyClass(testObject.getClass())).isFalse();
 		assertThat(ClassUtils.isProxyClass(String.class)).isFalse();
+		assertThat(ClassUtils.isProxyClass(HibernateProxy.class)).isFalse();
 		assertThat(ClassUtils.isProxyClass(null)).isFalse();
 	}
 
