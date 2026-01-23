@@ -19,7 +19,7 @@ class MethodCaptorTest {
 	}
 
 	@Test
-	void testCapture_NothingCaptured() throws Exception {
+	void testCapture_NothingCaptured() {
 		MethodCaptor methodCaptor = new MethodCaptor();
 
 		assertThatExceptionOfType(IllegalArgumentException.class)

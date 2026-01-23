@@ -17,21 +17,21 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableListTest {
 
 	@Test
-	void testConstruction() throws Exception {
+	void testConstruction() {
 		assertThat(DeepImmutableList.of(1)).hasSize(1);
 		assertThat(DeepImmutableList.of(1, 2)).hasSize(2);
 		assertThat(DeepImmutableList.of(1, 2, 3)).hasSize(3);
 	}
 
 	@Test
-	void testCreateImmutableProxy() throws Exception {
+	void testCreateImmutableProxy() {
 		List<TestEntity> immutableProxy = ImmutableProxy.create(Collections.singletonList(new TestEntity(123)));
 		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy));
 		assertThat(immutableProxy.get(0).getNumber()).isEqualTo(123);
 	}
 
 	@Test
-	void testWriteMethodsAreRejected() throws Exception {
+	void testWriteMethodsAreRejected() {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),
@@ -101,7 +101,7 @@ public class DeepImmutableListTest {
 	}
 
 	@Test
-	void testReadOnlyMethods() throws Exception {
+	void testReadOnlyMethods() {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),

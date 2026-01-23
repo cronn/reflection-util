@@ -49,7 +49,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetRealClass() throws Exception {
+	void testGetRealClass() {
 		assertThat(ClassUtils.getRealClass(new TestEntity())).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(TestEntity.class)).isSameAs(TestEntity.class);
 		assertThat(ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class))).isSameAs(SomeTestInterface.class);
@@ -91,12 +91,12 @@ public class ClassUtilsTest {
 
 	@ParameterizedTest
 	@MethodSource("testMatchesWellKnownProxyClassPatternParams")
-	void testMatchesWellKnownProxyClassPattern(String given, boolean expected) throws Exception {
+	void testMatchesWellKnownProxyClassPattern(String given, boolean expected) {
 		assertThat(ClassUtils.matchesWellKnownProxyClassNamePattern(given)).isEqualTo(expected);
 	}
 
 	@Test
-	void testCreateNewInstanceLikeOfProxy() throws Exception {
+	void testCreateNewInstanceLikeOfProxy() {
 		Object sourceEntity = new TestEntity();
 		Object proxy = createJavassistProxy(sourceEntity);
 
@@ -105,20 +105,20 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testCreateNewInstanceLike_Null() throws Exception {
+	void testCreateNewInstanceLike_Null() {
 		Object instance = ClassUtils.createNewInstanceLike(null);
 		assertThat(instance).isNull();
 	}
 
 	@Test
-	void testCreateNewInstanceLikeProtectedNoArgConstructor() throws Exception {
+	void testCreateNewInstanceLikeProtectedNoArgConstructor() {
 		Object sourceEntity = EntityProtectedConstructor.newEntity();
 		Object actual = ClassUtils.createNewInstanceLike(sourceEntity);
 		assertThat(actual).isInstanceOf(EntityProtectedConstructor.class);
 	}
 
 	@Test
-	void testCreateNewInstanceLikeProtectedConstructor() throws Exception {
+	void testCreateNewInstanceLikeProtectedConstructor() {
 		Object sourceEntity = EntityProtectedNoDefaultConstructor.newEntity();
 
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
@@ -128,13 +128,13 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testGetVoidMethod() throws Exception {
+	public void testGetVoidMethod() {
 		Method voidMethod = ClassUtils.getVoidMethod(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
 		assertThat(voidMethod.getName()).isEqualTo("testGetVoidMethod");
 	}
 
 	@Test
-	void testGetVoidMethod_CallSiteSpecificLambda() throws Exception {
+	void testGetVoidMethod_CallSiteSpecificLambda() {
 		VoidMethod<ClassUtilsTest> lambda = ClassUtilsTest::testGetVoidMethod;
 		VoidMethod<ClassUtilsTest> callSiteSpecificLambda = lambda::invoke;
 
@@ -144,7 +144,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetVoidMethod_lambdaWithException() throws Exception {
+	void testGetVoidMethod_lambdaWithException() {
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
 			.isThrownBy(() -> ClassUtils.getVoidMethod(ClassUtilsTest.class, bean -> {
 				throw new IllegalStateException("some exception");
@@ -154,7 +154,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetVoidMethod_lambdaThatIsNoRealMethod() throws Exception {
+	void testGetVoidMethod_lambdaThatIsNoRealMethod() {
 		VoidMethod<TestEntity> lambda = bean -> {
 		};
 		assertThatExceptionOfType(IllegalArgumentException.class)
@@ -163,7 +163,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	public void testGetVoidMethodName() throws Exception {
+	public void testGetVoidMethodName() {
 		String voidMethodName = ClassUtils.getVoidMethodName(ClassUtilsTest.class, ClassUtilsTest::testGetVoidMethod);
 		assertThat(voidMethodName).isEqualTo("testGetVoidMethod");
 
@@ -174,7 +174,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetVoidMethodName_AnonymousClass() throws Exception {
+	void testGetVoidMethodName_AnonymousClass() {
 		SomeClass bean = new SomeClass() {
 		};
 
@@ -186,7 +186,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetMethodName() throws Exception {
+	void testGetMethodName() {
 		assertThat(ClassUtils.getMethodName(TestEntity.class, TestEntity::getNumber)).isEqualTo("getNumber");
 		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::getNumber)).isEqualTo("getNumber");
 		assertThat(ClassUtils.getMethodName(new TestEntity(), TestEntity::getSomePath)).isEqualTo("getSomePath");
@@ -200,7 +200,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetMethod() throws Exception {
+	void testGetMethod() {
 		assertThat(ClassUtils.getMethod(TestEntity.class, TestEntity::getNumber).getName()).isEqualTo("getNumber");
 		assertThat(ClassUtils.getMethod(new TestEntity(), TestEntity::getNumber).getName()).isEqualTo("getNumber");
 		assertThat(ClassUtils.getMethod(new TestEntity(), TestEntity::getSomePath).getName()).isEqualTo("getSomePath");
@@ -210,7 +210,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetMethod_lambdaWithException() throws Exception {
+	void testGetMethod_lambdaWithException() {
 		PropertyGetter<TestEntity> getter = bean -> {
 			throw new IllegalStateException("some exception");
 		};
@@ -220,7 +220,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetMethod_lambdaThatIsNoRealGetter() throws Exception {
+	void testGetMethod_lambdaThatIsNoRealGetter() {
 		PropertyGetter<TestEntity> getter = bean -> {
 			return null;
 		};
@@ -230,7 +230,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetMethod_CallSiteSpecificLambda() throws Exception {
+	void testGetMethod_CallSiteSpecificLambda() {
 		PropertyGetter<TestEntity> lambda = TestEntity::getNumber;
 		PropertyGetter<TestEntity> callSiteSpecificLambda = lambda::get;
 
@@ -240,7 +240,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testIsProxy() throws Exception {
+	void testIsProxy() {
 		Object testObject = new TestEntity();
 		assertThat(ClassUtils.isProxy(createJdkProxy(BaseInterface.class))).isTrue();
 		assertThat(ClassUtils.isProxy(createByteBuddyProxy(testObject))).isTrue();
@@ -251,7 +251,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testIsProxyClass() throws Exception {
+	void testIsProxyClass() {
 		Object testObject = new TestEntity();
 		assertThat(ClassUtils.isProxyClass(createJdkProxy(BaseInterface.class).getClass())).isTrue();
 		assertThat(ClassUtils.isProxyClass(createByteBuddyProxy(testObject).getClass())).isTrue();
@@ -264,7 +264,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testIsProxyClass_Hibernate() throws Exception {
+	void testIsProxyClass_Hibernate() {
 		HibernateProxyTestUtil.runWithHibernateProxy(personProxy -> {
 			assertThat(personProxy).isInstanceOf(HibernateProxy.class);
 			assertThat(personProxy.getClass().getSimpleName()).endsWith("$Person$HibernateProxy");
@@ -303,7 +303,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testIsFromPackage() throws Exception {
+	void testIsFromPackage() {
 		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection.util")).isTrue();
 		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn.reflection")).isFalse();
 		assertThat(ClassUtils.isFromPackage(ClassUtilsTest.class, "de.cronn")).isFalse();
@@ -312,7 +312,7 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testFindDeclaredMethodsByArgumentTypes() throws Exception {
+	void testFindDeclaredMethodsByArgumentTypes() {
 		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseClass.class, String.class, Integer.class)).hasSize(2);
 		assertThat(ClassUtils.findMethodsByArgumentTypes(FindMethodByArgumentTypesTestCaseSubclass.class, String.class, Integer.class)).hasSize(3);
 	}
@@ -336,13 +336,13 @@ public class ClassUtilsTest {
 	}
 
 	@Test
-	void testGetAllDeclaredMethods() throws Exception {
+	void testGetAllDeclaredMethods() {
 		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(BaseInterface.class))).hasSize(1);
 		assertThat(withoutJacocoMethods(ClassUtils.getAllDeclaredMethods(SomeClass.class))).hasSize(6);
 	}
 
 	@Test
-	void testGetAllDeclaredMethodSignatures() throws Exception {
+	void testGetAllDeclaredMethodSignatures() {
 		Set<MethodSignature> methodsOfSomeClass = withoutJacocoMethodSignatures(ClassUtils.getAllDeclaredMethodSignatures(SomeClass.class));
 		withoutJacocoMethodSignatures(methodsOfSomeClass);
 		assertThat(mapToString(methodsOfSomeClass)).containsExactly(

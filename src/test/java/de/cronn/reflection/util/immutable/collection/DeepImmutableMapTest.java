@@ -17,7 +17,7 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableMapTest {
 
 	@Test
-	void testImmutableMap() throws Exception {
+	void testImmutableMap() {
 		TestEntity original = new TestEntity();
 		original.setSomeMap(new LinkedHashMap<>());
 		original.getSomeMap().put("a", new OtherTestEntity("a"));
@@ -69,7 +69,7 @@ public class DeepImmutableMapTest {
 	}
 
 	@Test
-	void testImmutableMap_ImmutableKey() throws Exception {
+	void testImmutableMap_ImmutableKey() {
 		Map<Date, Object> immutableMap = ImmutableProxy.create(Collections.singletonMap(new Date(123L), null));
 		Date immutableValue = immutableMap.keySet().iterator().next();
 

@@ -13,7 +13,7 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableSetTest {
 
 	@Test
-	void testConstruction() throws Exception {
+	void testConstruction() {
 		assertThat(DeepImmutableSet.of(1)).hasSize(1);
 		assertThat(DeepImmutableSet.of(1, 2)).hasSize(2);
 		assertThat(DeepImmutableSet.of(1, 2, 3)).hasSize(3);
@@ -21,7 +21,7 @@ public class DeepImmutableSetTest {
 	}
 
 	@Test
-	void testCreateImmutableProxy() throws Exception {
+	void testCreateImmutableProxy() {
 		Set<TestEntity> immutableProxy = ImmutableProxy.create(Collections.singleton(new TestEntity(123)));
 		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy));
 		assertThat(immutableProxy.iterator().next().getNumber()).isEqualTo(123);

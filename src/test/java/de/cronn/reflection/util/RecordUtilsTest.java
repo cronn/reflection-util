@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 class RecordUtilsTest {
 
 	@Test
-	void testCloneRecord() throws Exception {
+	void testCloneRecord() {
 		record TestRecord(int a, int b) {
 		}
 
@@ -20,7 +20,7 @@ class RecordUtilsTest {
 	}
 
 	@Test
-	void testCloneRecord_notARecord() throws Exception {
+	void testCloneRecord_notARecord() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> RecordUtils.cloneRecord("not a record", value -> value))
 			.withMessage("class java.lang.String is not a record");

@@ -20,7 +20,7 @@ import de.cronn.reflection.util.testclasses.TestBeanWithRecordHavingList;
 class ImmutableProxyRecordTest {
 
 	@Test
-	void testCreateImmutableProxyOfRecordWithPrimitives() throws Exception {
+	void testCreateImmutableProxyOfRecordWithPrimitives() {
 		record TestRecord(int a, int b, String string, boolean flag) {
 		}
 
@@ -30,7 +30,7 @@ class ImmutableProxyRecordTest {
 	}
 
 	@Test
-	void testCreateImmutableProxyOfClassWithRecord() throws Exception {
+	void testCreateImmutableProxyOfClassWithRecord() {
 		TestBeanWithRecordField bean = new TestBeanWithRecordField();
 		bean.setData("some value");
 
@@ -47,7 +47,7 @@ class ImmutableProxyRecordTest {
 	}
 
 	@Test
-	void testCreateImmutableProxyOfClassWithRecordHavingList() throws Exception {
+	void testCreateImmutableProxyOfClassWithRecordHavingList() {
 		TestBeanWithRecordHavingList bean = new TestBeanWithRecordHavingList();
 		bean.setRecordWithList(new RecordWithList(new ArrayList<>()));
 
@@ -62,7 +62,7 @@ class ImmutableProxyRecordTest {
 	}
 
 	@Test
-	void testCreateImmutableProxyOfClassWithRecordHavingList_allowCloningOfRecords() throws Exception {
+	void testCreateImmutableProxyOfClassWithRecordHavingList_allowCloningOfRecords() {
 		TestBeanWithRecordHavingList bean = new TestBeanWithRecordHavingList();
 		bean.setData("some value");
 		bean.setRecordWithList(new RecordWithList(new ArrayList<>()));
@@ -81,7 +81,7 @@ class ImmutableProxyRecordTest {
 	}
 
 	@Test
-	void testCreateImmutableProxyOfClassWithRecordHavingAtomicLong() throws Exception {
+	void testCreateImmutableProxyOfClassWithRecordHavingAtomicLong() {
 		TestBeanWithRecordHavingAtomicLong bean = new TestBeanWithRecordHavingAtomicLong();
 		bean.setRecordWithAtomicLong(new RecordWithAtomicLong(new AtomicLong(1L)));
 

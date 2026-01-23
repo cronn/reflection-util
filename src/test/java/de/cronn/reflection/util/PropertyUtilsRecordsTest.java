@@ -18,7 +18,7 @@ import de.cronn.reflection.util.testclasses.RecordWithSealedClasses;
 class PropertyUtilsRecordsTest {
 
 	@Test
-	void testGetPropertyDescriptorsOfRecord() throws Exception {
+	void testGetPropertyDescriptorsOfRecord() {
 		record TestRecord(int a, int b) {
 		}
 
@@ -31,7 +31,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorsOfRecordImplementingAnInterface() throws Exception {
+	void testGetPropertyDescriptorsOfRecordImplementingAnInterface() {
 		interface HavingId {
 			int getId();
 		}
@@ -52,7 +52,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_multipleBooleanPrimitives() throws Exception {
+	void testGetPropertyName_multipleBooleanPrimitives() {
 		record TestRecord(boolean bool1, boolean bool2, boolean bool3, boolean bool4, boolean bool5) {
 		}
 
@@ -64,7 +64,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_primitives() throws Exception {
+	void testGetPropertyName_primitives() {
 		record PrimitivesRecord(byte byte1, byte byte2,
 								short short1, short short2,
 								int int1, int int2,
@@ -105,13 +105,13 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_recordInOtherPackage() throws Exception {
+	void testGetPropertyName_recordInOtherPackage() {
 		assertThat(Point.class.getPackage()).isNotEqualTo(getClass().getPackage());
 		assertThat(PropertyUtils.getPropertyName(Point.class, Point::x)).isEqualTo("x");
 	}
 
 	@Test
-	void testGetPropertyName_recordWithObjects() throws Exception {
+	void testGetPropertyName_recordWithObjects() {
 		record TestRecord(Set<String> set1, Set<String> set2,
 						  Number number1, Number number2,
 						  AbstractList<?> abstractList1, AbstractList<?> abstractList2,
@@ -129,7 +129,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_recordWithBoxedPrimitives() throws Exception {
+	void testGetPropertyName_recordWithBoxedPrimitives() {
 		record TestRecord(Boolean boxedBoolean1, Boolean boxedBoolean2,
 						  Byte boxedByte1, Byte boxedByte2,
 						  Short boxedShort1, Short boxedShort2,
@@ -159,7 +159,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_recordWithNestedRecords() throws Exception {
+	void testGetPropertyName_recordWithNestedRecords() {
 		record NestedRecord(int a, int b) {
 		}
 
@@ -171,7 +171,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_noComponentAccessor() throws Exception {
+	void testGetPropertyName_noComponentAccessor() {
 		record TestRecord(int a) {
 		}
 
@@ -181,7 +181,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_nonComponentMethodAccessingComponentValue() throws Exception {
+	void testGetPropertyName_nonComponentMethodAccessingComponentValue() {
 		record TestRecord(int a, int b) {
 			int c() {
 				return a;
@@ -192,7 +192,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_exceptionInMethod() throws Exception {
+	void testGetPropertyName_exceptionInMethod() {
 		record TestRecord(int a) {
 			String throwException() {
 				throw new RuntimeException("some exception");
@@ -205,7 +205,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_recordWithSecondConstructor() throws Exception {
+	void testGetPropertyName_recordWithSecondConstructor() {
 		record TestRecord(int a, int b) {
 			public TestRecord(int value) {
 				this(value, 0);
@@ -217,7 +217,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_isCached() throws Exception {
+	void testGetPropertyName_isCached() {
 		record TestRecord(int a) {
 			static boolean shouldThrow;
 
@@ -246,7 +246,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyName_CallSiteSpecificLambda() throws Exception {
+	void testGetPropertyName_CallSiteSpecificLambda() {
 		record TestRecord(int a) {
 		}
 
@@ -259,7 +259,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptor() throws Exception {
+	void testGetPropertyDescriptor() {
 		record TestRecord(int a, int b) {
 		}
 
@@ -276,7 +276,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByName() throws Exception {
+	void testGetPropertyDescriptorByName() {
 		record TestRecord(int a, int b) {
 		}
 
@@ -288,7 +288,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetQualifiedPropertyName() throws Exception {
+	void testGetQualifiedPropertyName() {
 		record TestRecord(int a, int b) {
 		}
 
@@ -297,7 +297,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testIsCollectionType() throws Exception {
+	void testIsCollectionType() {
 		record TestRecord(int a, List<?> b) {
 		}
 
@@ -306,7 +306,7 @@ class PropertyUtilsRecordsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorOfRecordWithSealedInterface() throws Exception {
+	void testGetPropertyDescriptorOfRecordWithSealedInterface() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(RecordWithSealedClasses.class, RecordWithSealedClasses::sealedInterfaceWithTwoRecords);
 		assertThat(propertyDescriptor.getName()).isEqualTo("sealedInterfaceWithTwoRecords");
 	}

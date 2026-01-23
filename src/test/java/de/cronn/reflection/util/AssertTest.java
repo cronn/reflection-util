@@ -13,7 +13,7 @@ class AssertTest {
 	}
 
 	@Test
-	void testIsNull() throws Exception {
+	void testIsNull() {
 		Assert.isNull(null, null);
 		Assert.isNull(null, () -> "some message");
 
@@ -27,7 +27,7 @@ class AssertTest {
 	}
 
 	@Test
-	void testNotNull() throws Exception {
+	void testNotNull() {
 		Assert.notNull("", null);
 		Assert.notNull(new Object(), () -> "some message");
 		Assert.notNull(123, () -> "some message");
@@ -38,7 +38,7 @@ class AssertTest {
 	}
 
 	@Test
-	void testIsTrue() throws Exception {
+	void testIsTrue() {
 		Assert.isTrue(true, null);
 
 		assertThatExceptionOfType(IllegalArgumentException.class)

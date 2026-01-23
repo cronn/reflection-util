@@ -15,7 +15,7 @@ import de.cronn.reflection.util.testclasses.TestEntity;
 public class DeepImmutableCollectionTest {
 
 	@Test
-	void testWriteMethodsAreRejected() throws Exception {
+	void testWriteMethodsAreRejected() {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),
@@ -45,7 +45,7 @@ public class DeepImmutableCollectionTest {
 	}
 
 	@Test
-	void testReadOnlyMethods() throws Exception {
+	void testReadOnlyMethods() {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setSomeList(Arrays.asList(
 			new OtherTestEntity("a"),
@@ -60,7 +60,7 @@ public class DeepImmutableCollectionTest {
 	}
 
 	@Test
-	void testCreateImmutableProxy() throws Exception {
+	void testCreateImmutableProxy() {
 		Collection<TestEntity> original = Collections.singleton(new TestEntity(123));
 		Collection<TestEntity> immutableProxy = ImmutableProxy.create(original);
 		assertThat(ImmutableProxy.isImmutableProxy(immutableProxy)).isTrue();

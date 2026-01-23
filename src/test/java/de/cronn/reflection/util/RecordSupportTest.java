@@ -9,7 +9,7 @@ import de.cronn.reflection.util.RecordSupport.ArrayUtils;
 class RecordSupportTest {
 
 	@Test
-	void testArrayUtils_indexOf() throws Exception {
+	void testArrayUtils_indexOf() {
 		assertThat(ArrayUtils.indexOf(new Integer[0], 1)).isEqualTo(-1);
 		assertThat(ArrayUtils.indexOf(new Integer[] { 3, 2, 1 }, 1)).isEqualTo(2);
 		assertThat(ArrayUtils.indexOf(new Integer[] { 3, 2, 2, 1, 1 }, 1)).isEqualTo(3);
@@ -18,7 +18,7 @@ class RecordSupportTest {
 	}
 
 	@Test
-	void testArrayUtils_lastIndexOf() throws Exception {
+	void testArrayUtils_lastIndexOf() {
 		assertThat(ArrayUtils.lastIndexOf(new Integer[0], 1)).isEqualTo(-1);
 		assertThat(ArrayUtils.lastIndexOf(new Integer[] { 3, 2, 1 }, 1)).isEqualTo(2);
 		assertThat(ArrayUtils.lastIndexOf(new Integer[] { 3, 2, 2, 1, 1 }, 1)).isEqualTo(4);

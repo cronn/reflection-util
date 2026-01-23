@@ -51,7 +51,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorsOfTestEntityClass() throws Exception {
+	void testGetPropertyDescriptorsOfTestEntityClass() {
 		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(TestEntity.class));
 		assertThat(propertyNames).containsExactly(
 			"class",
@@ -79,7 +79,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorsOfFinalClass() throws Exception {
+	void testGetPropertyDescriptorsOfFinalClass() {
 		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(FinalClass.class));
 		assertThat(propertyNames).containsExactly(
 			"class",
@@ -88,7 +88,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorsOfDerivedClassInstance() throws Exception {
+	void testGetPropertyDescriptorsOfDerivedClassInstance() {
 		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(new DerivedClass()));
 		assertThat(propertyNames).containsExactly(
 			"baseClassStringProperty",
@@ -101,7 +101,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorsOfClassExtendingNonPublicBaseClass() throws Exception {
+	void testGetPropertyDescriptorsOfClassExtendingNonPublicBaseClass() {
 		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(ClassExtendingNonPublicBaseClass.class));
 		assertThat(propertyNames).containsExactly(
 			"baseClassProperty",
@@ -110,7 +110,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorsOfClassWithDefaultMethods() throws Exception {
+	void testGetPropertyDescriptorsOfClassWithDefaultMethods() {
 		List<String> propertyNames = collectPropertyNames(PropertyUtils.getPropertyDescriptors(ClassWithDefaultMethods.class));
 		assertThat(propertyNames).containsExactly(
 			"class",
@@ -120,7 +120,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testRead_FieldWithoutGetter() throws Exception {
+	void testRead_FieldWithoutGetter() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter");
 
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
@@ -131,7 +131,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testIsReadable() throws Exception {
+	void testIsReadable() {
 		OtherTestEntity entity = new OtherTestEntity();
 		assertThat(PropertyUtils.isReadable(PropertyUtils.getPropertyDescriptor(entity, OtherTestEntity::getImmutableValue))).isTrue();
 		assertThat(PropertyUtils.isReadable(PropertyUtils.getPropertyDescriptor(entity, OtherTestEntity::getChildren))).isTrue();
@@ -139,7 +139,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testIsWritable() throws Exception {
+	void testIsWritable() {
 		OtherTestEntity entity = new OtherTestEntity();
 		assertThat(PropertyUtils.isWritable(PropertyUtils.getPropertyDescriptor(entity, OtherTestEntity::getImmutableValue))).isFalse();
 		assertThat(PropertyUtils.isWritable(PropertyUtils.getPropertyDescriptor(entity, OtherTestEntity::getName))).isTrue();
@@ -147,21 +147,21 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testIsFullyAccessible() throws Exception {
+	void testIsFullyAccessible() {
 		OtherTestEntity entity = new OtherTestEntity();
 		assertThat(PropertyUtils.isFullyAccessible(PropertyUtils.getPropertyDescriptor(entity, OtherTestEntity::getImmutableValue))).isFalse();
 		assertThat(PropertyUtils.isFullyAccessible(PropertyUtils.getPropertyDescriptor(entity, OtherTestEntity::getName))).isTrue();
 	}
 
 	@Test
-	void testIsDeclaredInClass() throws Exception {
+	void testIsDeclaredInClass() {
 		assertThat(PropertyUtils.isDeclaredInClass(PropertyUtils.getPropertyDescriptor(BaseClass.class, BaseClass::getBaseClassStringProperty), BaseClass.class)).isTrue();
 		assertThat(PropertyUtils.isDeclaredInClass(PropertyUtils.getPropertyDescriptor(DerivedClass.class, DerivedClass::getStringProperty), DerivedClass.class)).isTrue();
 		assertThat(PropertyUtils.isDeclaredInClass(PropertyUtils.getPropertyDescriptor(DerivedClass.class, DerivedClass::getBaseClassStringProperty), DerivedClass.class)).isFalse();
 	}
 
 	@Test
-	void testPropertyHasDefaultValue() throws Exception {
+	void testPropertyHasDefaultValue() {
 		PropertyDescriptor numberProperty = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
 		PropertyDescriptor stringProperty = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getString);
 		PropertyDescriptor someObjectProperty = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject);
@@ -180,7 +180,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testIsDefaultValue() throws Exception {
+	void testIsDefaultValue() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(BaseClass.class, BaseClass::getBaseClassStringProperty);
 
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
@@ -222,7 +222,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testPropertyDescriptorByNameOrThrow() throws Exception {
+	void testPropertyDescriptorByNameOrThrow() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "number");
 		assertThat(propertyDescriptor).isEqualTo(PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber));
 
@@ -235,46 +235,46 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testPropertyDescriptor() throws Exception {
+	void testPropertyDescriptor() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
 		assertThat(propertyDescriptor.getName()).isEqualTo("number");
 	}
 
 	@Test
-	void testPropertyDescriptorWithAbstractClass() throws Exception {
+	void testPropertyDescriptorWithAbstractClass() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(BaseClass.class, BaseClass::getBaseClassStringProperty);
 		assertThat(propertyDescriptor.getName()).isEqualTo("baseClassStringProperty");
 	}
 
 	@Test
-	void testPropertyDescriptor_WithoutField() throws Exception {
+	void testPropertyDescriptor_WithoutField() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
 		assertThat(propertyDescriptor.getName()).isEqualTo("propertyWithoutField");
 	}
 
 	@Test
-	void testPropertyDescriptor_ClassWithMethodCaptorField() throws Exception {
+	void testPropertyDescriptor_ClassWithMethodCaptorField() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(ClassWithMethodCaptorField.class, ClassWithMethodCaptorField::get$methodCaptor);
 		assertThat(propertyDescriptor.getName()).isEqualTo("$methodCaptor");
 		assertThat(propertyDescriptor.getName()).isEqualTo(MethodCaptor.FIELD_NAME);
 	}
 
 	@Test
-	void testGetMethod_getParent() throws Exception {
+	void testGetMethod_getParent() {
 		Method method = PropertyUtils.getMethod(DerivedClass.class, BaseClass::getBaseClassStringProperty);
 		assertThat(method.getName()).isEqualTo("getBaseClassStringProperty");
 		assertThat(method.getDeclaringClass()).isEqualTo(BaseClass.class);
 	}
 
 	@Test
-	void testGetMethod_getNumber() throws Exception {
+	void testGetMethod_getNumber() {
 		Method method = PropertyUtils.getMethod(TestEntity.class, TestEntity::getNumber);
 		assertThat(method.getName()).isEqualTo("getNumber");
 		assertThat(method.getDeclaringClass()).isEqualTo(TestEntity.class);
 	}
 
 	@Test
-	void testGetMethod_getMethodWithoutProperty() throws Exception {
+	void testGetMethod_getMethodWithoutProperty() {
 		Method method = PropertyUtils.getMethod(TestEntity.class, TestEntity::getPropertyWithoutField);
 		assertThat(method.getName()).isEqualTo("getPropertyWithoutField");
 		assertThat(method.getDeclaringClass()).isEqualTo(TestEntity.class);
@@ -299,7 +299,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testWrite_FieldWithoutSetter() throws Exception {
+	void testWrite_FieldWithoutSetter() {
 		OtherTestEntity testEntity = new OtherTestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
 
@@ -335,7 +335,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testWritePropertyIfExists() throws Exception {
+	void testWritePropertyIfExists() {
 		TestEntity destination = new TestEntity();
 		PropertyUtils.writeIfPropertyExists(destination, PropertyUtils.getPropertyName(TestEntity.class, TestEntity::getString), () -> "some value");
 		assertThat(destination.getString()).isEqualTo("some value");
@@ -346,7 +346,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_HappyCase() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_HappyCase() {
 		for (int i = 0; i < 100; i++) {
 			PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
 			PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject);
@@ -354,21 +354,21 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByTypedPropertyGetter() throws Exception {
+	void testGetPropertyDescriptorByTypedPropertyGetter() {
 		TypedPropertyGetter<TestEntity, Integer> getter = TestEntity::getNumber;
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, getter);
 		assertThat(propertyDescriptor.getName()).isEqualTo("number");
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter() {
 		PropertyGetter<TestEntity> getter = TestEntity::getNumber;
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, getter);
 		assertThat(propertyDescriptor.getName()).isEqualTo("number");
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_CallSiteSpecificLambda() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_CallSiteSpecificLambda() {
 		TypedPropertyGetter<TestEntity, Integer> someGetter = TestEntity::getNumber;
 		PropertyGetter<TestEntity> callSiteSpecificLambda = someGetter::get;
 
@@ -378,21 +378,21 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_FinalMethodCannotBeCaptured() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_FinalMethodCannotBeCaptured() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getClass))
 			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_NonPublicMethodCannotBeCaptured() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_NonPublicMethodCannotBeCaptured() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(TestClassWithDefaultVisibility.class, TestClassWithDefaultVisibility::getPropertyWithDefaultVisibilityGetter))
 			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_NonGetterMethod() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_NonGetterMethod() {
 		Object className = TestEntity.class.getName();
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
@@ -401,7 +401,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_NoMethodInvocation() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_NoMethodInvocation() {
 		PropertyGetter<TestEntity> propertyGetter = e -> null;
 
 		assertThatExceptionOfType(IllegalArgumentException.class)
@@ -410,13 +410,13 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_NoVisibleDefaultConstructor() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_NoVisibleDefaultConstructor() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityProtectedNoDefaultConstructor.class, EntityProtectedNoDefaultConstructor::getSomeProperty);
 		assertThat(propertyDescriptor.getName()).isEqualTo("someProperty");
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod() {
 		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(ClassWithDefaultMethods.class, ClassWithDefaultMethods::getId);
 		assertThat(idProperty.getName()).isEqualTo("id");
 
@@ -425,7 +425,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_Subclass() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_Subclass() {
 		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(SubclassOfClassWithDefaultMethods.class, InterfaceWithDefaultMethods::getId);
 		assertThat(idProperty.getName()).isEqualTo("id");
 
@@ -434,7 +434,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_SubInterface() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_SubInterface() {
 		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(SubClassOfInterfaceWithDefaultMethods.class, InterfaceWithDefaultMethods::getId);
 		assertThat(idProperty.getName()).isEqualTo("id");
 
@@ -443,7 +443,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_ClassWithInheritedDefaultMethods() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_DefaultMethod_ClassWithInheritedDefaultMethods() {
 		PropertyDescriptor idProperty = PropertyUtils.getPropertyDescriptor(ClassWithInheritedDefaultMethods.class, ClassWithInheritedDefaultMethods::getId);
 		assertThat(idProperty.getName()).isEqualTo("id");
 
@@ -452,20 +452,20 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_FinalClass() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_FinalClass() {
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> PropertyUtils.getPropertyDescriptor(FinalClass.class, FinalClass::getSomeProperty))
 			.withMessage("Cannot subclass primitive, array or final types: " + FinalClass.class);
 	}
 
 	@Test
-	void testGetPropertyDescriptorByName_FinalClass() throws Exception {
+	void testGetPropertyDescriptorByName_FinalClass() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptorByNameOrThrow(FinalClass.class, "someProperty");
 		assertThat(propertyDescriptor.getName()).isEqualTo("someProperty");
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_ClassExtendingNonPublicBaseClass() {
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
 			.isThrownBy(ClassExtendingNonPublicBaseClass::getPropertyDescriptor)
 			.withMessageMatching("Failed to create proxy on class .+?")
@@ -475,7 +475,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() throws Exception {
+	void testGetPropertyDescriptorByPropertyGetter_ClassExtendingClassThatExtendsNonPublicBaseClass() {
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
 			.isThrownBy(ClassExtendingClassThatExtendsNonPublicBaseClass::getPropertyDescriptor)
 			.withMessageMatching("Failed to create proxy on class .+?")
@@ -528,32 +528,32 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetAnnotationOfProperty_AnnotationOnSetter() throws Exception {
+	void testGetAnnotationOfProperty_AnnotationOnSetter() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getFieldWithAnnotationOnSetter);
 		assertThat(PropertyUtils.getAnnotationOfProperty(new TestEntity(), propertyDescriptor, Size.class)).isNotNull();
 	}
 
 	@Test
-	void testGetAnnotationOfProperty_AnnotationOnDefaultMethod() throws Exception {
+	void testGetAnnotationOfProperty_AnnotationOnDefaultMethod() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(ClassWithDefaultMethods.class, ClassWithDefaultMethods::getName);
 		assertThat(PropertyUtils.getAnnotationOfProperty(ClassWithDefaultMethods.class, propertyDescriptor, Size.class)).isNotNull();
 	}
 
 	@Test
-	void testGetAnnotationOfProperty_AnnotationOverwrittenOnGetter() throws Exception {
+	void testGetAnnotationOfProperty_AnnotationOverwrittenOnGetter() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(EntityWithOverwrittenAnnotations.class, EntityWithOverwrittenAnnotations::getBaseClassStringProperty);
 		assertThat(PropertyUtils.getAnnotationOfProperty(EntityWithOverwrittenAnnotations.class, propertyDescriptor, Size.class).max()).isEqualTo(20);
 	}
 
 	@Test
-	void testHasAnnotationOfProperty() throws Exception {
+	void testHasAnnotationOfProperty() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getSomeObject);
 		assertThat(PropertyUtils.hasAnnotationOfProperty(TestEntity.class, propertyDescriptor, NotNull.class)).isTrue();
 		assertThat(PropertyUtils.hasAnnotationOfProperty(TestEntity.class, propertyDescriptor, Size.class)).isFalse();
 	}
 
 	@Test
-	void testGetPropertyName() throws Exception {
+	void testGetPropertyName() {
 		assertThat(PropertyUtils.getPropertyName(TestEntity.class, TestEntity::getSomeObject)).isEqualTo("someObject");
 		assertThat(PropertyUtils.getPropertyName(TestEntity.class, TestEntity::getPropertyWithoutField)).isEqualTo("propertyWithoutField");
 		assertThat(PropertyUtils.getPropertyName(new TestEntity(), TestEntity::getSomeObject)).isEqualTo("someObject");
@@ -576,7 +576,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadDirectly() throws Exception {
+	void testReadDirectly() {
 		TestEntity entity = new TestEntity();
 		entity.setNumber(23);
 		TestEntity entityMock = Mockito.spy(entity);
@@ -589,7 +589,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadDirectly_FieldWithoutGetter() throws Exception {
+	void testReadDirectly_FieldWithoutGetter() {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setFieldWithoutGetter("some value");
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter");
@@ -598,7 +598,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadDirectly_Name() throws Exception {
+	void testReadDirectly_Name() {
 		TestEntity testEntity = new TestEntity();
 
 		PropertyUtils.writeDirectly(testEntity, "fieldWithoutGetter", "new value");
@@ -607,7 +607,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadDirectly_PropertyWithoutField() throws Exception {
+	void testReadDirectly_PropertyWithoutField() {
 		TestEntity testEntity = new TestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
 
@@ -636,7 +636,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testWriteDirectly_PropertyWithoutField() throws Exception {
+	void testWriteDirectly_PropertyWithoutField() {
 		TestEntity testEntity = new TestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithoutField);
 
@@ -646,7 +646,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testWriteDirectly_FieldWithoutSetter() throws Exception {
+	void testWriteDirectly_FieldWithoutSetter() {
 		OtherTestEntity testEntity = new OtherTestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
 		PropertyUtils.writeDirectly(testEntity, property, "changed value");
@@ -657,7 +657,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testWriteDirectly_WrongType() throws Exception {
+	void testWriteDirectly_WrongType() {
 		OtherTestEntity testEntity = new OtherTestEntity();
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getImmutableValue);
 		String fieldName = OtherTestEntity.class.getName() + "." + property.getName();
@@ -668,7 +668,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testWriteDirectly_ProxyClass() throws Exception {
+	void testWriteDirectly_ProxyClass() {
 		TestEntity testEntity = new TestEntity();
 
 		Class<?> proxyClass;
@@ -695,7 +695,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadIfPropertyExists() throws Exception {
+	void testReadIfPropertyExists() {
 		// given
 		TestEntity entity = new TestEntity();
 		entity.setNumber(123);
@@ -710,7 +710,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadProperty() throws Exception {
+	void testReadProperty() {
 		TestEntity entity = new TestEntity();
 		entity.setString("some-value");
 
@@ -724,7 +724,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testHasProperty() throws Exception {
+	void testHasProperty() {
 		assertThat(PropertyUtils.hasProperty(TestEntity.class, "number")).isTrue();
 		assertThat(PropertyUtils.hasProperty(TestEntity.class, "nonExistentProperty")).isFalse();
 
@@ -733,7 +733,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testIsCollectionType() throws Exception {
+	void testIsCollectionType() {
 		assertThat(PropertyUtils.isCollectionType(PropertyUtils.getPropertyDescriptor(OtherTestEntity.class, OtherTestEntity::getChildren))).isTrue();
 		assertThat(PropertyUtils.isCollectionType(PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber))).isFalse();
 
@@ -742,7 +742,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testCopyNonDefaultValues() throws Exception {
+	void testCopyNonDefaultValues() {
 		TestEntity source = new TestEntity();
 		source.setNumber(12);
 
@@ -753,7 +753,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testCopyNonDefaultValuesWithExclusion() throws Exception {
+	void testCopyNonDefaultValuesWithExclusion() {
 		TestEntity source = new TestEntity();
 		source.setNumber(12);
 		source.setString("some string");
@@ -770,7 +770,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testCopyNonDefaultValues_NoNonDefaults() throws Exception {
+	void testCopyNonDefaultValues_NoNonDefaults() {
 		TestEntity mock = Mockito.mock(TestEntity.class);
 
 		PropertyUtils.copyNonDefaultValues(new TestEntity(), mock);
@@ -779,7 +779,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testCopyValue() throws Exception {
+	void testCopyValue() {
 		TestEntity source = new TestEntity();
 		source.setNumber(25);
 
@@ -795,7 +795,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testHasSameValue() throws Exception {
+	void testHasSameValue() {
 		TestEntity one = new TestEntity();
 		one.setNumber(25);
 
@@ -818,7 +818,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testHasDifferentValue() throws Exception {
+	void testHasDifferentValue() {
 		TestEntity one = new TestEntity();
 		one.setString("foo");
 
@@ -835,7 +835,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testRead_ExceptionInGetter() throws Exception {
+	void testRead_ExceptionInGetter() {
 		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getPropertyWithExceptionInGetter);
 
 		assertThatExceptionOfType(ReflectionRuntimeException.class)
@@ -845,7 +845,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testReadForced_FieldWithoutGetter() throws Exception {
+	void testReadForced_FieldWithoutGetter() {
 		TestEntity testEntity = new TestEntity();
 		testEntity.setFieldWithoutGetter("some value");
 		PropertyDescriptor property = PropertyUtils.getPropertyDescriptorByNameOrThrow(TestEntity.class, "fieldWithoutGetter");
@@ -854,7 +854,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testFindMethodByGetter_Annotation() throws Exception {
+	void testFindMethodByGetter_Annotation() {
 		TypedPropertyGetter<TestAnnotation, ?> propertyGetter = TestAnnotation::someProperty;
 		Method method = PropertyUtils.findMethodByGetter(TestAnnotation.class, propertyGetter);
 		assertThat(method).isNotNull();
@@ -885,7 +885,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testGetDefaultValueObject() throws Exception {
+	void testGetDefaultValueObject() {
 		assertThat(PropertyUtils.getDefaultValueObject(Object.class)).isNull();
 		assertThat(PropertyUtils.getDefaultValueObject(String.class)).isNull();
 		assertThat(PropertyUtils.getDefaultValueObject(Boolean.class)).isNull();
@@ -905,7 +905,7 @@ class PropertyUtilsTest {
 	}
 
 	@Test
-	void testProxyIsCached() throws Exception {
+	void testProxyIsCached() {
 		Class<? extends TestEntity> proxy1 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
 		Class<? extends TestEntity> proxy2 = PropertyUtils.getCache(TestEntity.class).getMethodCapturingProxy();
 		assertThat(proxy1).isSameAs(proxy2);

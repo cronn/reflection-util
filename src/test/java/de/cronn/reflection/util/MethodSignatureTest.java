@@ -7,7 +7,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class MethodSignatureTest {
 
 	@Test
-	void testEquals() throws Exception {
+	void testEquals() {
 		EqualsVerifier.forClass(MethodSignature.class).verify();
 	}
 
