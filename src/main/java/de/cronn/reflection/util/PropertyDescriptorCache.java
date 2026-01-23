@@ -44,6 +44,12 @@ class PropertyDescriptorCache<T> {
 			if (readMethod != null) {
 				propertyDescriptorsByMethod.put(readMethod, propertyDescriptor);
 				putAnnotations(propertyDescriptor, readMethod.getAnnotations());
+
+				// Also cache the concrete implementation if the readMethod is from an interface
+				Method concreteMethod = findConcreteImplementation(readMethod);
+				if (concreteMethod != null && concreteMethod != readMethod) {
+					propertyDescriptorsByMethod.put(concreteMethod, propertyDescriptor);
+				}
 			}
 
 			Method writeMethod = propertyDescriptor.getWriteMethod();
@@ -88,6 +94,18 @@ class PropertyDescriptorCache<T> {
 			if (superclass != null) {
 				collectFields(superclass, collectedFields);
 			}
+		}
+	}
+
+	private Method findConcreteImplementation(Method method) {
+		if (!method.getDeclaringClass().isInterface()) {
+			return null;
+		}
+
+		try {
+			return originalClass.getDeclaredMethod(method.getName(), method.getParameterTypes());
+		} catch (NoSuchMethodException e) {
+			return null;
 		}
 	}
 

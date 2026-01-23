@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 
 import de.cronn.reflection.util.testclasses.BaseClass;
 import de.cronn.reflection.util.testclasses.BaseInterface;
+import de.cronn.reflection.util.testclasses.BaseUserEntity;
 import de.cronn.reflection.util.testclasses.ClassExtendingClassThatExtendsNonPublicBaseClass;
 import de.cronn.reflection.util.testclasses.ClassExtendingNonPublicBaseClass;
 import de.cronn.reflection.util.testclasses.ClassWithDefaultMethods;
@@ -31,6 +32,7 @@ import de.cronn.reflection.util.testclasses.ClassWithPrimitives;
 import de.cronn.reflection.util.testclasses.DerivedClass;
 import de.cronn.reflection.util.testclasses.EntityProtectedNoDefaultConstructor;
 import de.cronn.reflection.util.testclasses.EntityWithOverwrittenAnnotations;
+import de.cronn.reflection.util.testclasses.ExtendedUserEntity;
 import de.cronn.reflection.util.testclasses.FinalClass;
 import de.cronn.reflection.util.testclasses.InterfaceWithDefaultMethods;
 import de.cronn.reflection.util.testclasses.OtherTestEntity;
@@ -482,6 +484,19 @@ class PropertyUtilsTest {
 			.withCauseExactlyInstanceOf(IllegalAccessError.class)
 			.withStackTraceContaining("to access class de.cronn.reflection.util.testclasses.NonPublicBaseClass" +
 									  " from " + ClassExtendingClassThatExtendsNonPublicBaseClass.class);
+	}
+
+	// https://github.com/cronn/reflection-util/issues/29
+	@Test
+	void testGetPropertyDescriptorByPropertyGetter_ClassImplementingInterfaceWithDefaultMethod_baseClass() {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(BaseUserEntity.class, BaseUserEntity::isEnabled);
+		assertThat(propertyDescriptor.getName()).isEqualTo("enabled");
+	}
+
+	@Test
+	void testGetPropertyDescriptorByPropertyGetter_ClassImplementingInterfaceWithDefaultMethod_extendedClass() {
+		PropertyDescriptor propertyDescriptor = PropertyUtils.getPropertyDescriptor(ExtendedUserEntity.class, ExtendedUserEntity::isEnabled);
+		assertThat(propertyDescriptor.getName()).isEqualTo("enabled");
 	}
 
 	@Test
