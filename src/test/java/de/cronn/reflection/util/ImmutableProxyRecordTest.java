@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -156,6 +157,58 @@ class ImmutableProxyRecordTest {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableProxy.put("c", new RecordWithList(List.of())))
 			.withMessage("This map is immutable");
+	}
+
+	@Test
+	void testCreateImmutableProxyOfClassWithRecordHavingList_allowCloningOfRecords_object() {
+		Map<String, RecordWithList> recordWithLists = Map.of(
+			"a", new RecordWithList(new ArrayList<>(List.of("one", "two", "three"))),
+			"b", new RecordWithList(new ArrayList<>(List.of("five", "six", "seven"))));
+
+		@SuppressWarnings("unchecked")
+		Map<String, RecordWithList> immutableProxy = (Map<String, RecordWithList>) ImmutableProxy.create((Object) recordWithLists, ImmutableProxyOption.ALLOW_CLONING_RECORDS);
+
+		assertThat(immutableProxy.values())
+			.extracting(RecordWithList::values)
+			.containsExactlyInAnyOrder(
+				List.of("one", "two", "three"),
+				List.of("five", "six", "seven")
+			);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.get("a").values().add("two"))
+			.withMessage("This list is immutable");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.put("c", new RecordWithList(List.of())))
+			.withMessage("This map is immutable");
+	}
+
+	@Test
+	void testCreateImmutableProxyOfClassWithRecordHavingList_allowCloningOfRecords_listOfListsOfRecords() {
+		List<List<RecordWithList>> recordWithLists = List.of(
+			List.of(
+				new RecordWithList(new ArrayList<>(List.of("one", "two", "three"))),
+				new RecordWithList(new ArrayList<>(List.of("five", "six", "seven"))))
+		);
+
+		List<List<RecordWithList>> immutableProxy = ImmutableProxy.create(recordWithLists, ImmutableProxyOption.ALLOW_CLONING_RECORDS);
+
+		assertThat(immutableProxy)
+			.flatMap(Function.identity())
+			.extracting(RecordWithList::values)
+			.containsExactly(
+				List.of("one", "two", "three"),
+				List.of("five", "six", "seven")
+			);
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.get(0).get(1).values().add("two"))
+			.withMessage("This list is immutable");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.get(0).add(new RecordWithList(List.of())))
+			.withMessage("This list is immutable");
 	}
 
 	@Test
