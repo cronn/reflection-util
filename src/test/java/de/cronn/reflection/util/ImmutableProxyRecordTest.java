@@ -212,6 +212,34 @@ class ImmutableProxyRecordTest {
 	}
 
 	@Test
+	void testCreateImmutableProxyOfClassWithRecordHavingList_allowCloningOfRecords_listOfRecordsInRecord() {
+		record HavingListOfRecordsWithList(List<RecordWithList> recordWithLists) {
+		}
+
+		HavingListOfRecordsWithList objectWithRecordsWithLists = new HavingListOfRecordsWithList(
+			List.of(
+				new RecordWithList(new ArrayList<>(List.of("one", "two", "three"))),
+				new RecordWithList(new ArrayList<>(List.of("five", "six", "seven"))))
+		);
+
+		HavingListOfRecordsWithList immutableProxy = ImmutableProxy.create(objectWithRecordsWithLists, ImmutableProxyOption.ALLOW_CLONING_RECORDS);
+
+		assertThat(immutableProxy)
+			.extracting(HavingListOfRecordsWithList::recordWithLists)
+			.isEqualTo(List.of(
+				new RecordWithList(List.of("one", "two", "three")),
+				new RecordWithList(List.of("five", "six", "seven"))));
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.recordWithLists().get(0).values().add("two"))
+			.withMessage("This list is immutable");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.recordWithLists().add(new RecordWithList(List.of())))
+			.withMessage("This list is immutable");
+	}
+
+	@Test
 	void testCreateImmutableProxyOfClassWithRecordHavingAtomicLong() {
 		TestBeanWithRecordHavingAtomicLong bean = new TestBeanWithRecordHavingAtomicLong();
 		bean.setRecordWithAtomicLong(new RecordWithAtomicLong(new AtomicLong(1L)));

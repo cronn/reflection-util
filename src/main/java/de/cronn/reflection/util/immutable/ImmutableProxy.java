@@ -68,7 +68,7 @@ public final class ImmutableProxy {
 			return immutableMap;
 		} else if (instance instanceof Record) {
 			if (isOptionEnabled(options, ImmutableProxyOption.ALLOW_CLONING_RECORDS)) {
-				return RecordUtils.cloneRecord(instance, ImmutableProxy::create);
+				return RecordUtils.cloneRecord(instance, value -> create(value, options));
 			} else {
 				throw new IllegalArgumentException(
 					instance.getClass() + " is a record that potentially contains mutable components."
