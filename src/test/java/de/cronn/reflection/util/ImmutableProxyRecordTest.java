@@ -18,6 +18,7 @@ import de.cronn.reflection.util.immutable.ImmutableProxyOption;
 import de.cronn.reflection.util.testclasses.Point;
 import de.cronn.reflection.util.testclasses.RecordWithAtomicLong;
 import de.cronn.reflection.util.testclasses.RecordWithList;
+import de.cronn.reflection.util.testclasses.TestBeanWithListOfRecordHavingList;
 import de.cronn.reflection.util.testclasses.TestBeanWithRecordField;
 import de.cronn.reflection.util.testclasses.TestBeanWithRecordHavingAtomicLong;
 import de.cronn.reflection.util.testclasses.TestBeanWithRecordHavingList;
@@ -236,6 +237,32 @@ class ImmutableProxyRecordTest {
 
 		assertThatExceptionOfType(UnsupportedOperationException.class)
 			.isThrownBy(() -> immutableProxy.recordWithLists().add(new RecordWithList(List.of())))
+			.withMessage("This list is immutable");
+	}
+
+	@Test
+	void testCreateImmutableProxyOfClassWithRecordHavingList_allowCloningOfRecords_listOfRecordsInBean() {
+		TestBeanWithListOfRecordHavingList testBean = new TestBeanWithListOfRecordHavingList();
+		testBean.setRecordsWithList(
+			List.of(
+				new RecordWithList(new ArrayList<>(List.of("one", "two", "three"))),
+				new RecordWithList(new ArrayList<>(List.of("five", "six", "seven"))))
+		);
+
+		TestBeanWithListOfRecordHavingList immutableProxy = ImmutableProxy.create(testBean, ImmutableProxyOption.ALLOW_CLONING_RECORDS);
+
+		assertThat(immutableProxy)
+			.extracting(TestBeanWithListOfRecordHavingList::getRecordsWithList)
+			.isEqualTo(List.of(
+				new RecordWithList(List.of("one", "two", "three")),
+				new RecordWithList(List.of("five", "six", "seven"))));
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.getRecordsWithList().get(0).values().add("two"))
+			.withMessage("This list is immutable");
+
+		assertThatExceptionOfType(UnsupportedOperationException.class)
+			.isThrownBy(() -> immutableProxy.getRecordsWithList().add(new RecordWithList(List.of())))
 			.withMessage("This list is immutable");
 	}
 
