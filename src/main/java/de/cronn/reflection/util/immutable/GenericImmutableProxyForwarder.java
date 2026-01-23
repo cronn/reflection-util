@@ -36,9 +36,9 @@ public final class GenericImmutableProxyForwarder {
 			return value;
 		}
 		if (value instanceof Collection) {
-			return createImmutableCollection(value, method);
+			return createImmutableCollection(value, method, options);
 		} else if (value instanceof Map) {
-			return createImmutableMap(value, method);
+			return createImmutableMap(value, method, options);
 		} else {
 			return ImmutableProxy.create(value, options);
 		}
@@ -60,17 +60,17 @@ public final class GenericImmutableProxyForwarder {
 		return ElementMatchers.isClone().matches(new MethodDescription.ForLoadedMethod(method));
 	}
 
-	private static Object createImmutableCollection(Object value, Method method) {
+	private static Object createImmutableCollection(Object value, Method method, ImmutableProxyOption[] options) {
 		Class<?> returnType = method.getReturnType();
 		if (returnType.equals(Set.class)) {
 			Set<?> collection = (Set<?>) value;
-			return ImmutableProxy.create(collection);
+			return ImmutableProxy.create(collection, options);
 		} else if (returnType.equals(List.class)) {
 			List<?> collection = (List<?>) value;
-			return ImmutableProxy.create(collection);
+			return ImmutableProxy.create(collection, options);
 		} else if (returnType.equals(Collection.class) || returnType.equals(Iterable.class)) {
 			Collection<?> collection = (Collection<?>) value;
-			return ImmutableProxy.create(collection);
+			return ImmutableProxy.create(collection, options);
 		} else {
 			throw new UnsupportedOperationException("Cannot create immutable collection for " + describeMethod(method) + "."
 													+ " The return type is unknown or too specific: " + returnType + "."
@@ -78,11 +78,11 @@ public final class GenericImmutableProxyForwarder {
 		}
 	}
 
-	private static Object createImmutableMap(Object value, Method method) {
+	private static Object createImmutableMap(Object value, Method method, ImmutableProxyOption[] options) {
 		Class<?> returnType = method.getReturnType();
 		if (returnType.equals(Map.class)) {
 			Map<?, ?> map = (Map<?, ?>) value;
-			return ImmutableProxy.create(map);
+			return ImmutableProxy.create(map, options);
 		} else {
 			throw new UnsupportedOperationException("Cannot create immutable map for " + describeMethod(method) + "."
 													+ " The return type is unknown or too specific: " + returnType + "."
