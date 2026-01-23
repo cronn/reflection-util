@@ -10,6 +10,17 @@ Utility classes that simplify common use cases of Java Reflection.
 
 We ship the utility classes `PropertyUtils`, `ClassUtils`, and `ImmutableProxy` that are described in the following sections.
 
+## Usage ##
+Add the following Maven dependency to your project:
+
+```xml
+<dependency>
+    <groupId>de.cronn</groupId>
+    <artifactId>reflection-util</artifactId>
+    <version>2.19.0</version>
+</dependency>
+```
+
 ## PropertyUtils ##
 
 Replacement for `org.apache.commons.beanutils.PropertyUtils` with deterministic behaviour
@@ -232,17 +243,6 @@ ImmutableProxyBenchmark.proxiedEquals    thrpt    3  11537,742 ±  4097,233  ops
 It shows that the invocation of the `equals()` method is about 4-5 times slower when routed through the `ImmutableProxy`.
 However, please note that the benchmark itself runs an inner loop with 10000 cycles.
 This actually gives us 10000 * 11537,742 ≈ 115 million invocations per second!
-
-## Usage ##
-Add the following Maven dependency to your project:
-
-```xml
-<dependency>
-    <groupId>de.cronn</groupId>
-    <artifactId>reflection-util</artifactId>
-    <version>2.18.0</version>
-</dependency>
-```
 
 ## Requirements ##
 
