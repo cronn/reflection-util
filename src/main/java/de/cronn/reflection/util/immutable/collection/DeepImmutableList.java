@@ -10,6 +10,8 @@ import java.util.ListIterator;
 
 import org.jetbrains.annotations.NotNull;
 
+import de.cronn.reflection.util.immutable.ImmutableProxyOption;
+
 public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements List<E> {
 
 	@Serial
@@ -19,21 +21,21 @@ public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements 
 
 	private final List<E> listDelegate;
 
-	public DeepImmutableList(List<E> list) {
-		super(list, IMMUTABLE_MESSAGE);
+	public DeepImmutableList(List<E> list, ImmutableProxyOption[] options) {
+		super(list, options, IMMUTABLE_MESSAGE);
 		this.listDelegate = list;
 	}
 
-	public static <T> DeepImmutableList<T> of(T elements) {
-		return new DeepImmutableList<>(Collections.singletonList(elements));
+	public static <T> DeepImmutableList<T> of(T elements, ImmutableProxyOption... options) {
+		return new DeepImmutableList<>(Collections.singletonList(elements), options);
 	}
 
-	public static <T> DeepImmutableList<T> of(T e1, T e2) {
-		return new DeepImmutableList<>(Arrays.asList(e1, e2));
+	public static <T> DeepImmutableList<T> of(T e1, T e2, ImmutableProxyOption... options) {
+		return new DeepImmutableList<>(Arrays.asList(e1, e2), options);
 	}
 
-	public static <T> DeepImmutableList<T> of(T e1, T e2, T e3) {
-		return new DeepImmutableList<>(Arrays.asList(e1, e2, e3));
+	public static <T> DeepImmutableList<T> of(T e1, T e2, T e3, ImmutableProxyOption... options) {
+		return new DeepImmutableList<>(Arrays.asList(e1, e2, e3), options);
 	}
 
 	@Override
@@ -67,7 +69,7 @@ public class DeepImmutableList<E> extends DeepImmutableCollection<E> implements 
 	@NotNull
 	@Override
 	public List<E> subList(int fromIndex, int toIndex) {
-		return new DeepImmutableList<>(listDelegate.subList(fromIndex, toIndex));
+		return new DeepImmutableList<>(listDelegate.subList(fromIndex, toIndex), options);
 	}
 
 	@Override

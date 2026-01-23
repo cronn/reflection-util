@@ -9,6 +9,7 @@ import java.util.Set;
 
 import de.cronn.reflection.util.immutable.Immutable;
 import de.cronn.reflection.util.immutable.ImmutableProxy;
+import de.cronn.reflection.util.immutable.ImmutableProxyOption;
 
 public class DeepImmutableMap<K, V> extends AbstractMap<K, V> implements Immutable, Serializable {
 
@@ -18,20 +19,26 @@ public class DeepImmutableMap<K, V> extends AbstractMap<K, V> implements Immutab
 	static final String IMMUTABLE_MESSAGE = "This map is immutable";
 
 	private final Map<K, V> delegate;
+	final ImmutableProxyOption[] options;
 
 	private final Map<K, K> immutableKeyCache = new IdentityHashMap<>();
 	private final Map<V, V> immutableValueCache = new IdentityHashMap<>();
 
-	public DeepImmutableMap(Map<K, V> delegate) {
+	public DeepImmutableMap(Map<K, V> delegate, ImmutableProxyOption[] options) {
 		this.delegate = delegate;
+		this.options = options;
 	}
 
 	K getImmutableKey(K key) {
-		return immutableKeyCache.computeIfAbsent(key, ImmutableProxy::create);
+		return immutableKeyCache.computeIfAbsent(key, this::createImmutableProxy);
+	}
+
+	private <T> T createImmutableProxy(T object) {
+		return ImmutableProxy.create(object, options);
 	}
 
 	V getImmutableValue(V value) {
-		return immutableValueCache.computeIfAbsent(value, ImmutableProxy::create);
+		return immutableValueCache.computeIfAbsent(value, this::createImmutableProxy);
 	}
 
 	@Override

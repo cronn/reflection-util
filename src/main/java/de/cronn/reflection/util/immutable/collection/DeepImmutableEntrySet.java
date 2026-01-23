@@ -12,7 +12,7 @@ class DeepImmutableEntrySet<K, V> extends DeepImmutableCollection<Entry<K, V>> i
 	private final DeepImmutableMap<K, V> immutableMap;
 
 	DeepImmutableEntrySet(Set<Entry<K, V>> entrySet, DeepImmutableMap<K, V> immutableMap) {
-		super(entrySet, DeepImmutableMap.IMMUTABLE_MESSAGE);
+		super(entrySet, immutableMap.options, DeepImmutableMap.IMMUTABLE_MESSAGE);
 		this.immutableMap = immutableMap;
 	}
 

@@ -56,15 +56,15 @@ public final class ImmutableProxy {
 			return instance;
 		} else if (instance instanceof List) {
 			@SuppressWarnings("unchecked")
-			T immutableList = (T) create((List<?>) instance);
+			T immutableList = (T) create((List<?>) instance, options);
 			return immutableList;
 		} else if (instance instanceof Set) {
 			@SuppressWarnings("unchecked")
-			T immutableSet = (T) create((Set<?>) instance);
+			T immutableSet = (T) create((Set<?>) instance, options);
 			return immutableSet;
 		} else if (instance instanceof Map) {
 			@SuppressWarnings("unchecked")
-			T immutableMap = (T) create((Map<?, ?>) instance);
+			T immutableMap = (T) create((Map<?, ?>) instance, options);
 			return immutableMap;
 		} else if (instance instanceof Record) {
 			if (isOptionEnabled(options, ImmutableProxyOption.ALLOW_CLONING_RECORDS)) {
@@ -87,23 +87,23 @@ public final class ImmutableProxy {
 	}
 
 	@UnmodifiableView
-	public static <T> Collection<T> create(Collection<T> collection) {
-		return new DeepImmutableCollection<>(collection);
+	public static <T> Collection<T> create(Collection<T> collection, ImmutableProxyOption... options) {
+		return new DeepImmutableCollection<>(collection, options);
 	}
 
 	@UnmodifiableView
-	public static <T> List<T> create(List<T> list) {
-		return new DeepImmutableList<>(list);
+	public static <T> List<T> create(List<T> list, ImmutableProxyOption... options) {
+		return new DeepImmutableList<>(list, options);
 	}
 
 	@UnmodifiableView
-	public static <T> Set<T> create(Set<T> set) {
-		return new DeepImmutableSet<>(set);
+	public static <T> Set<T> create(Set<T> set, ImmutableProxyOption... options) {
+		return new DeepImmutableSet<>(set, options);
 	}
 
 	@UnmodifiableView
-	public static <K, V> Map<K, V> create(Map<K, V> map) {
-		return new DeepImmutableMap<>(map);
+	public static <K, V> Map<K, V> create(Map<K, V> map, ImmutableProxyOption... options) {
+		return new DeepImmutableMap<>(map, options);
 	}
 
 	public static <T> T unwrap(T immutableProxy) {

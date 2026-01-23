@@ -13,24 +13,26 @@ import org.jetbrains.annotations.NotNull;
 
 import de.cronn.reflection.util.immutable.Immutable;
 import de.cronn.reflection.util.immutable.ImmutableProxy;
+import de.cronn.reflection.util.immutable.ImmutableProxyOption;
 
 public class DeepImmutableCollection<E> extends AbstractCollection<E> implements Collection<E>, Immutable, Serializable {
 
 	@Serial
 	private static final long serialVersionUID = 1L;
 
-	private final String immutableMessage;
-
 	private final Collection<E> delegate;
+	protected final ImmutableProxyOption[] options;
+	private final String immutableMessage;
 
 	private final Map<E, E> immutableProxyCache = new IdentityHashMap<>();
 
-	public DeepImmutableCollection(Collection<E> delegate) {
-		this(delegate, "This collection is immutable");
+	public DeepImmutableCollection(Collection<E> delegate, ImmutableProxyOption[] options) {
+		this(delegate, options, "This collection is immutable");
 	}
 
-	DeepImmutableCollection(Collection<E> delegate, String immutableMessage) {
+	DeepImmutableCollection(Collection<E> delegate, ImmutableProxyOption[] options, String immutableMessage) {
 		this.delegate = Objects.requireNonNull(delegate);
+		this.options = options;
 		this.immutableMessage = immutableMessage;
 	}
 
@@ -39,7 +41,7 @@ public class DeepImmutableCollection<E> extends AbstractCollection<E> implements
 	}
 
 	E createImmutableElement(E value) {
-		return ImmutableProxy.create(value);
+		return ImmutableProxy.create(value, options);
 	}
 
 	@Override
