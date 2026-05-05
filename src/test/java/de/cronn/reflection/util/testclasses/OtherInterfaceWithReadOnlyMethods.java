@@ -4,19 +4,18 @@ import de.cronn.reflection.util.immutable.ReadOnly;
 
 public interface OtherInterfaceWithReadOnlyMethods {
 
-	@ReadOnly
-	default int countNothing() {
-		return 0;
-	}
+  @ReadOnly
+  default int countNothing() {
+    return 0;
+  }
 
-	OtherInterfaceWithReadOnlyMethods asMyself();
+  OtherInterfaceWithReadOnlyMethods asMyself();
 
-	@ReadOnly(proxyReturnValue = false)
-	OtherInterfaceWithReadOnlyMethods asReference();
+  @ReadOnly(proxyReturnValue = false)
+  OtherInterfaceWithReadOnlyMethods asReference();
 
-	@ReadOnly(proxyReturnValue = true)
-	default OtherInterfaceWithReadOnlyMethods asReferenceImmutableProxy() {
-		return asReference();
-	}
-
+  @ReadOnly(proxyReturnValue = true)
+  default OtherInterfaceWithReadOnlyMethods asReferenceImmutableProxy() {
+    return asReference();
+  }
 }

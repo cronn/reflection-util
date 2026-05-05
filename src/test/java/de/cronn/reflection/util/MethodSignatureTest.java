@@ -1,14 +1,12 @@
 package de.cronn.reflection.util;
 
-import org.junit.jupiter.api.Test;
-
 import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Test;
 
 class MethodSignatureTest {
 
-	@Test
-	void testEquals() {
-		EqualsVerifier.forClass(MethodSignature.class).verify();
-	}
-
+  @Test
+  void testEquals() {
+    EqualsVerifier.forClass(MethodSignature.class).verify();
+  }
 }

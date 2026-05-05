@@ -2,9 +2,9 @@ package de.cronn.reflection.util.testclasses;
 
 public class ClassWithMethodCaptorField {
 
-	private String $methodCaptor;
+  private String $methodCaptor;
 
-	public String get$methodCaptor() {
-		return $methodCaptor;
-	}
+  public String get$methodCaptor() {
+    return $methodCaptor;
+  }
 }

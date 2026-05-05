@@ -13,6 +13,7 @@ plugins {
     `maven-publish`
     id("org.jreleaser") version "latest.release"
     id("org.sonarqube") version "latest.release"
+    id("com.diffplug.spotless") version "latest.release"
 }
 
 group = "de.cronn"
@@ -146,6 +147,20 @@ jreleaser {
 tasks.test {
     useJUnitPlatform()
     maxHeapSize = "256m"
+}
+
+spotless {
+    java {
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    kotlinGradle {
+        ktlint()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 dependencyLocking {
