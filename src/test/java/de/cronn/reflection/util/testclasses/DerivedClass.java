@@ -3,28 +3,27 @@ package de.cronn.reflection.util.testclasses;
 @SuppressWarnings("unused")
 public class DerivedClass extends BaseClass {
 
-	private Long longPropertyWithPackageAccessSetter;
+  private Long longPropertyWithPackageAccessSetter;
 
-	private String stringProperty;
+  private String stringProperty;
 
-	public Long getLongPropertyWithPackageAccessSetter() {
-		return longPropertyWithPackageAccessSetter;
-	}
+  public Long getLongPropertyWithPackageAccessSetter() {
+    return longPropertyWithPackageAccessSetter;
+  }
 
-	void setLongPropertyWithPackageAccessSetter(Long longPropertyWithPackageAccessSetter) {
-		this.longPropertyWithPackageAccessSetter = longPropertyWithPackageAccessSetter;
-	}
+  void setLongPropertyWithPackageAccessSetter(Long longPropertyWithPackageAccessSetter) {
+    this.longPropertyWithPackageAccessSetter = longPropertyWithPackageAccessSetter;
+  }
 
-	public String getStringProperty() {
-		return stringProperty;
-	}
+  public String getStringProperty() {
+    return stringProperty;
+  }
 
-	public void setStringProperty(String stringProperty) {
-		this.stringProperty = stringProperty;
-	}
+  public void setStringProperty(String stringProperty) {
+    this.stringProperty = stringProperty;
+  }
 
-	public String getOtherStringProperty() {
-		return otherStringProperty;
-	}
-
+  public String getOtherStringProperty() {
+    return otherStringProperty;
+  }
 }

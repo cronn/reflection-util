@@ -2,8 +2,7 @@ package de.cronn.reflection.util.testclasses;
 
 public interface SomeTestInterface {
 
-	void doWork(int a);
+  void doWork(int a);
 
-	void doOtherWork();
-
+  void doOtherWork();
 }

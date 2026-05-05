@@ -3,40 +3,39 @@ package de.cronn.reflection.util;
 import static org.assertj.core.api.Assertions.*;
 
 import java.lang.reflect.Method;
-
 import org.junit.jupiter.api.Test;
 
 class MethodCaptorTest {
 
-	@Test
-	void testCapture_HappyCase() throws Exception {
-		MethodCaptor methodCaptor = new MethodCaptor();
-		Method method = MethodCaptorTest.class.getDeclaredMethod("testCapture_HappyCase");
+  @Test
+  void testCapture_HappyCase() throws Exception {
+    MethodCaptor methodCaptor = new MethodCaptor();
+    Method method = MethodCaptorTest.class.getDeclaredMethod("testCapture_HappyCase");
 
-		methodCaptor.capture(method);
+    methodCaptor.capture(method);
 
-		assertThat(methodCaptor.getCapturedMethod()).isSameAs(method);
-	}
+    assertThat(methodCaptor.getCapturedMethod()).isSameAs(method);
+  }
 
-	@Test
-	void testCapture_NothingCaptured() {
-		MethodCaptor methodCaptor = new MethodCaptor();
+  @Test
+  void testCapture_NothingCaptured() {
+    MethodCaptor methodCaptor = new MethodCaptor();
 
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(methodCaptor::getCapturedMethod)
-			.withMessage("Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
-	}
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(methodCaptor::getCapturedMethod)
+        .withMessage(
+            "Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
+  }
 
-	@Test
-	void testCapture_Twice() throws Exception {
-		MethodCaptor methodCaptor = new MethodCaptor();
-		Method method = MethodCaptorTest.class.getDeclaredMethod("testCapture_HappyCase");
+  @Test
+  void testCapture_Twice() throws Exception {
+    MethodCaptor methodCaptor = new MethodCaptor();
+    Method method = MethodCaptorTest.class.getDeclaredMethod("testCapture_HappyCase");
 
-		methodCaptor.capture(method);
+    methodCaptor.capture(method);
 
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> methodCaptor.capture(method))
-			.withMessage("Method already captured: " + method + " called twice?");
-	}
-
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> methodCaptor.capture(method))
+        .withMessage("Method already captured: " + method + " called twice?");
+  }
 }

@@ -16,231 +16,249 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
-import net.bytebuddy.ByteBuddy;
-import net.bytebuddy.dynamic.DynamicType;
-
 final class RecordSupport {
 
-	private static final ClassValue<Class<?>> dummySubclasses = ClassValues.create(RecordSupport::createDummyProxyClass);
+  private static final ClassValue<Class<?>> dummySubclasses =
+      ClassValues.create(RecordSupport::createDummyProxyClass);
 
-	private RecordSupport() {
-	}
+  private RecordSupport() {}
 
-	private static Class<?> createDummyProxyClass(Class<?> type) {
-		try (DynamicType.Unloaded<?> unloadedType = new ByteBuddy()
-			.subclass(type)
-			.make()) {
-			return unloadedType
-				.load(RecordSupport.class.getClassLoader())
-				.getLoaded();
-		}
-	}
+  private static Class<?> createDummyProxyClass(Class<?> type) {
+    try (DynamicType.Unloaded<?> unloadedType = new ByteBuddy().subclass(type).make()) {
+      return unloadedType.load(RecordSupport.class.getClassLoader()).getLoaded();
+    }
+  }
 
-	static <T> Method findMethod(Class<T> recordClass, TypedPropertyGetter<T, ?> componentAccessor) {
-		Object[] uniqueValues = buildUniqueValues(recordClass);
-		try {
-			Constructor<T> recordConstructor = getRecordConstructor(recordClass);
-			T record = ClassUtils.createInstance(recordConstructor, uniqueValues);
+  static <T> Method findMethod(Class<T> recordClass, TypedPropertyGetter<T, ?> componentAccessor) {
+    Object[] uniqueValues = buildUniqueValues(recordClass);
+    try {
+      Constructor<T> recordConstructor = getRecordConstructor(recordClass);
+      T record = ClassUtils.createInstance(recordConstructor, uniqueValues);
 
-			Object value = componentAccessor.get(record);
+      Object value = componentAccessor.get(record);
 
-			if (needsFallbackToComponentSearch(uniqueValues, value)) {
-				return exhaustiveComponentSearch(value, recordClass, componentAccessor, uniqueValues, recordConstructor);
-			}
+      if (needsFallbackToComponentSearch(uniqueValues, value)) {
+        return exhaustiveComponentSearch(
+            value, recordClass, componentAccessor, uniqueValues, recordConstructor);
+      }
 
-			int componentIndex = ArrayUtils.indexOf(uniqueValues, value);
-			Assert.isTrue(componentIndex >= 0,
-				() -> "Failed to find a component in " + recordClass.getName() + " for the given component accessor.");
-			return getRecordComponentAccessor(recordClass, componentIndex);
-		} catch (ReflectiveOperationException e) {
-			throw new ReflectionRuntimeException(e);
-		}
-	}
+      int componentIndex = ArrayUtils.indexOf(uniqueValues, value);
+      Assert.isTrue(
+          componentIndex >= 0,
+          () ->
+              "Failed to find a component in "
+                  + recordClass.getName()
+                  + " for the given component accessor.");
+      return getRecordComponentAccessor(recordClass, componentIndex);
+    } catch (ReflectiveOperationException e) {
+      throw new ReflectionRuntimeException(e);
+    }
+  }
 
-	static Stream<RecordComponent> getRecordComponents(Class<?> recordClass) {
-		Assert.isTrue(recordClass.isRecord(), () -> recordClass + " is not a record");
-		return Arrays.stream(recordClass.getRecordComponents());
-	}
+  static Stream<RecordComponent> getRecordComponents(Class<?> recordClass) {
+    Assert.isTrue(recordClass.isRecord(), () -> recordClass + " is not a record");
+    return Arrays.stream(recordClass.getRecordComponents());
+  }
 
-	static <T> Constructor<T> getRecordConstructor(Class<T> recordClass) throws NoSuchMethodException {
-		Class<?>[] constructorTypes = getRecordComponents(recordClass)
-			.map(RecordComponent::getType)
-			.toArray(Class[]::new);
-		return recordClass.getDeclaredConstructor(constructorTypes);
-	}
+  static <T> Constructor<T> getRecordConstructor(Class<T> recordClass)
+      throws NoSuchMethodException {
+    Class<?>[] constructorTypes =
+        getRecordComponents(recordClass).map(RecordComponent::getType).toArray(Class[]::new);
+    return recordClass.getDeclaredConstructor(constructorTypes);
+  }
 
-	private static Object[] buildUniqueValues(Class<?> recordClass) {
-		return getRecordComponents(recordClass)
-			.map(RecordComponent::getType)
-			.map(uniqueValueBuilder())
-			.toArray(Object[]::new);
-	}
+  private static Object[] buildUniqueValues(Class<?> recordClass) {
+    return getRecordComponents(recordClass)
+        .map(RecordComponent::getType)
+        .map(uniqueValueBuilder())
+        .toArray(Object[]::new);
+  }
 
-	private static Function<Class<?>, Object> uniqueValueBuilder() {
-		Map<Class<?>, Long> index = new IdentityHashMap<>();
-		return type -> {
-			if (type.isAssignableFrom(boolean.class)) {
-				// Note: When the record has more than one primitive boolean component,
-				//       we need to fall back to an exhaustive component search via exhaustiveComponentSearch(…)
-				return true;
-			} else if (type.isPrimitive() || type.isAssignableFrom(String.class) || Number.class.isAssignableFrom(type)) {
-				long currentIndex = index.compute(type, (k, value) -> value == null ? 1L : value + 1L);
-				if (type.isAssignableFrom(String.class)) {
-					return String.valueOf(currentIndex);
-				} else if (type.equals(byte.class) || type.equals(Byte.class)) {
-					return safeNumberCast(currentIndex, (byte) currentIndex);
-				} else if (type.equals(short.class) || type.equals(Short.class)) {
-					return safeNumberCast(currentIndex, (short) currentIndex);
-				} else if (type.equals(int.class) || type.equals(Integer.class)) {
-					return safeNumberCast(currentIndex, (int) currentIndex);
-				} else if (type.equals(long.class) || type.equals(Long.class)) {
-					return currentIndex;
-				} else if (type.equals(float.class) || type.equals(Float.class)) {
-					return safeNumberCast(currentIndex, (float) currentIndex);
-				} else if (type.equals(double.class) || type.equals(Double.class)) {
-					return safeNumberCast(currentIndex, (double) currentIndex);
-				} else if (type.equals(char.class)) {
-					return safeNumberCast(currentIndex, (char) currentIndex);
-				}
-			}
+  private static Function<Class<?>, Object> uniqueValueBuilder() {
+    Map<Class<?>, Long> index = new IdentityHashMap<>();
+    return type -> {
+      if (type.isAssignableFrom(boolean.class)) {
+        // Note: When the record has more than one primitive boolean component,
+        //       we need to fall back to an exhaustive component search via
+        // exhaustiveComponentSearch(…)
+        return true;
+      } else if (type.isPrimitive()
+          || type.isAssignableFrom(String.class)
+          || Number.class.isAssignableFrom(type)) {
+        long currentIndex = index.compute(type, (k, value) -> value == null ? 1L : value + 1L);
+        if (type.isAssignableFrom(String.class)) {
+          return String.valueOf(currentIndex);
+        } else if (type.equals(byte.class) || type.equals(Byte.class)) {
+          return safeNumberCast(currentIndex, (byte) currentIndex);
+        } else if (type.equals(short.class) || type.equals(Short.class)) {
+          return safeNumberCast(currentIndex, (short) currentIndex);
+        } else if (type.equals(int.class) || type.equals(Integer.class)) {
+          return safeNumberCast(currentIndex, (int) currentIndex);
+        } else if (type.equals(long.class) || type.equals(Long.class)) {
+          return currentIndex;
+        } else if (type.equals(float.class) || type.equals(Float.class)) {
+          return safeNumberCast(currentIndex, (float) currentIndex);
+        } else if (type.equals(double.class) || type.equals(Double.class)) {
+          return safeNumberCast(currentIndex, (double) currentIndex);
+        } else if (type.equals(char.class)) {
+          return safeNumberCast(currentIndex, (char) currentIndex);
+        }
+      }
 
-			return getDummyObjectInstance(type);
-		};
-	}
+      return getDummyObjectInstance(type);
+    };
+  }
 
-	private static Object getDummyObjectInstance(Class<?> type) {
-		if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
-			if (type.isSealed()) {
-				for (Class<?> permittedSubclass : type.getPermittedSubclasses()) {
-					return getDummyObjectInstance(permittedSubclass);
-				}
-			}
-			Class<?> dummyClass = dummySubclasses.get(type);
-			return ObjenesisHelper.newInstance(dummyClass);
-		}
-		return ObjenesisHelper.newInstance(type);
-	}
+  private static Object getDummyObjectInstance(Class<?> type) {
+    if (type.isInterface() || Modifier.isAbstract(type.getModifiers())) {
+      if (type.isSealed()) {
+        for (Class<?> permittedSubclass : type.getPermittedSubclasses()) {
+          return getDummyObjectInstance(permittedSubclass);
+        }
+      }
+      Class<?> dummyClass = dummySubclasses.get(type);
+      return ObjenesisHelper.newInstance(dummyClass);
+    }
+    return ObjenesisHelper.newInstance(type);
+  }
 
-	private static <T extends Number> T safeNumberCast(long currentIndex, T castedValue) {
-		return safeNumberCast(currentIndex, castedValue, castedValue.longValue(), castedValue.getClass());
-	}
+  private static <T extends Number> T safeNumberCast(long currentIndex, T castedValue) {
+    return safeNumberCast(
+        currentIndex, castedValue, castedValue.longValue(), castedValue.getClass());
+  }
 
-	private static char safeNumberCast(long currentIndex, char castedValue) {
-		return safeNumberCast(currentIndex, castedValue, castedValue, char.class);
-	}
+  private static char safeNumberCast(long currentIndex, char castedValue) {
+    return safeNumberCast(currentIndex, castedValue, castedValue, char.class);
+  }
 
-	private static <T> T safeNumberCast(long currentIndex, T castedValue, long castedValueAsLong, Class<?> valueType) {
-		// This is currently not possible to test since a record must not have more than 255 components
-		Assert.isTrue(castedValueAsLong == currentIndex,
-			() -> "Having more than " + (currentIndex - 1) + " record components of type "
-				  + valueType.getName() + " is currently not supported");
-		return castedValue;
-	}
+  private static <T> T safeNumberCast(
+      long currentIndex, T castedValue, long castedValueAsLong, Class<?> valueType) {
+    // This is currently not possible to test since a record must not have more than 255 components
+    Assert.isTrue(
+        castedValueAsLong == currentIndex,
+        () ->
+            "Having more than "
+                + (currentIndex - 1)
+                + " record components of type "
+                + valueType.getName()
+                + " is currently not supported");
+    return castedValue;
+  }
 
-	private static <T> Method exhaustiveComponentSearch(Object currentValue, Class<T> recordClass,
-														TypedPropertyGetter<T, ?> componentAccessor,
-														Object[] uniqueValues,
-														Constructor<T> recordConstructor) throws ReflectiveOperationException {
-		Object[] values = Arrays.copyOf(uniqueValues, uniqueValues.length);
+  private static <T> Method exhaustiveComponentSearch(
+      Object currentValue,
+      Class<T> recordClass,
+      TypedPropertyGetter<T, ?> componentAccessor,
+      Object[] uniqueValues,
+      Constructor<T> recordConstructor)
+      throws ReflectiveOperationException {
+    Object[] values = Arrays.copyOf(uniqueValues, uniqueValues.length);
 
-		int nextIndex;
-		while ((nextIndex = ArrayUtils.indexOf(values, currentValue)) >= 0) {
-			values[nextIndex] = getDefaultValue(currentValue);
-			T record = ClassUtils.createInstance(recordConstructor, values);
-			Object value = componentAccessor.get(record);
-			if (value == values[nextIndex]) {
-				return getRecordComponentAccessor(recordClass, nextIndex);
-			}
-		}
-		throw new IllegalArgumentException("Failed to find the component of type " + currentValue.getClass().getName()
-										   + " in the record " + recordClass.getName()
-										   + " using the provided component accessor.");
-	}
+    int nextIndex;
+    while ((nextIndex = ArrayUtils.indexOf(values, currentValue)) >= 0) {
+      values[nextIndex] = getDefaultValue(currentValue);
+      T record = ClassUtils.createInstance(recordConstructor, values);
+      Object value = componentAccessor.get(record);
+      if (value == values[nextIndex]) {
+        return getRecordComponentAccessor(recordClass, nextIndex);
+      }
+    }
+    throw new IllegalArgumentException(
+        "Failed to find the component of type "
+            + currentValue.getClass().getName()
+            + " in the record "
+            + recordClass.getName()
+            + " using the provided component accessor.");
+  }
 
-	private static Method getRecordComponentAccessor(Class<?> recordClass, int componentIndex) {
-		return getRecordComponents(recordClass)
-			.skip(componentIndex)
-			.findFirst()
-			.map(RecordComponent::getAccessor)
-			.orElseThrow(IllegalStateException::new);
-	}
+  private static Method getRecordComponentAccessor(Class<?> recordClass, int componentIndex) {
+    return getRecordComponents(recordClass)
+        .skip(componentIndex)
+        .findFirst()
+        .map(RecordComponent::getAccessor)
+        .orElseThrow(IllegalStateException::new);
+  }
 
-	private static Object getDefaultValue(Object value) {
-		Assert.isTrue(value instanceof Boolean, () -> "This is currently only expected to happen for boolean types");
-		return false;
-	}
+  private static Object getDefaultValue(Object value) {
+    Assert.isTrue(
+        value instanceof Boolean,
+        () -> "This is currently only expected to happen for boolean types");
+    return false;
+  }
 
-	private static boolean needsFallbackToComponentSearch(Object[] uniqueValues, Object value) {
-		if (!(value instanceof Boolean)) {
-			return false;
-		}
-		int firstIndex = ArrayUtils.indexOf(uniqueValues, value);
-		int lastIndex = ArrayUtils.lastIndexOf(uniqueValues, value);
-		return firstIndex != lastIndex;
-	}
+  private static boolean needsFallbackToComponentSearch(Object[] uniqueValues, Object value) {
+    if (!(value instanceof Boolean)) {
+      return false;
+    }
+    int firstIndex = ArrayUtils.indexOf(uniqueValues, value);
+    int lastIndex = ArrayUtils.lastIndexOf(uniqueValues, value);
+    return firstIndex != lastIndex;
+  }
 
-	static Collection<PropertyDescriptor> collectPropertyDescriptorsOfRecord(Class<?> type) {
-		return Stream.concat(
-				Stream.of(getPropertyDescriptorsOfObject()),
-				getRecordComponents(type)
-					.map(recordComponent -> toPropertyDescriptor(type, recordComponent)))
-			.collect(Collectors.toList());
-	}
+  static Collection<PropertyDescriptor> collectPropertyDescriptorsOfRecord(Class<?> type) {
+    return Stream.concat(
+            Stream.of(getPropertyDescriptorsOfObject()),
+            getRecordComponents(type)
+                .map(recordComponent -> toPropertyDescriptor(type, recordComponent)))
+        .collect(Collectors.toList());
+  }
 
-	private static PropertyDescriptor getPropertyDescriptorsOfObject() {
-		try {
-			BeanInfo beanInfo = Introspector.getBeanInfo(Object.class);
-			PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-			Assert.isTrue(propertyDescriptors.length == 1,
-				() -> "Expected one property descriptor but got " + propertyDescriptors.length);
-			return propertyDescriptors[0];
-		} catch (IntrospectionException e) {
-			throw new ReflectionRuntimeException(e);
-		}
-	}
+  private static PropertyDescriptor getPropertyDescriptorsOfObject() {
+    try {
+      BeanInfo beanInfo = Introspector.getBeanInfo(Object.class);
+      PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+      Assert.isTrue(
+          propertyDescriptors.length == 1,
+          () -> "Expected one property descriptor but got " + propertyDescriptors.length);
+      return propertyDescriptors[0];
+    } catch (IntrospectionException e) {
+      throw new ReflectionRuntimeException(e);
+    }
+  }
 
-	private static PropertyDescriptor toPropertyDescriptor(Class<?> type, RecordComponent recordComponent) {
-		try {
-			return new PropertyDescriptor(recordComponent.getName(), type, recordComponent.getAccessor().getName(), null);
-		} catch (IntrospectionException e) {
-			throw new ReflectionRuntimeException(e);
-		}
-	}
+  private static PropertyDescriptor toPropertyDescriptor(
+      Class<?> type, RecordComponent recordComponent) {
+    try {
+      return new PropertyDescriptor(
+          recordComponent.getName(), type, recordComponent.getAccessor().getName(), null);
+    } catch (IntrospectionException e) {
+      throw new ReflectionRuntimeException(e);
+    }
+  }
 
-	@VisibleForTesting
-	static final class ArrayUtils {
+  @VisibleForTesting
+  static final class ArrayUtils {
 
-		private ArrayUtils() {
-		}
+    private ArrayUtils() {}
 
-		static int indexOf(Object[] values, Object valueToFind) {
-			for (int i = 0; i < values.length; i++) {
-				if (areTheSame(values[i], valueToFind)) {
-					return i;
-				}
-			}
-			return -1;
-		}
+    static int indexOf(Object[] values, Object valueToFind) {
+      for (int i = 0; i < values.length; i++) {
+        if (areTheSame(values[i], valueToFind)) {
+          return i;
+        }
+      }
+      return -1;
+    }
 
-		static int lastIndexOf(Object[] values, Object valueToFind) {
-			for (int i = values.length - 1; i >= 0; i--) {
-				if (areTheSame(values[i], valueToFind)) {
-					return i;
-				}
-			}
-			return -1;
-		}
+    static int lastIndexOf(Object[] values, Object valueToFind) {
+      for (int i = values.length - 1; i >= 0; i--) {
+        if (areTheSame(values[i], valueToFind)) {
+          return i;
+        }
+      }
+      return -1;
+    }
 
-		private static boolean areTheSame(Object one, Object other) {
-			if (one instanceof Float || one instanceof Double) {
-				return Objects.equals(one, other);
-			}
-			return one == other;
-		}
-	}
-
+    private static boolean areTheSame(Object one, Object other) {
+      if (one instanceof Float || one instanceof Double) {
+        return Objects.equals(one, other);
+      }
+      return one == other;
+    }
+  }
 }

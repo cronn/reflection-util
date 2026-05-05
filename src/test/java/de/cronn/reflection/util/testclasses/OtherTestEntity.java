@@ -7,35 +7,33 @@ import java.util.List;
 
 public class OtherTestEntity implements Serializable {
 
-	@Serial
-	private static final long serialVersionUID = 1L;
+  @Serial private static final long serialVersionUID = 1L;
 
-	private String name;
-	private final String immutableValue;
-	private final List<String> children = new ArrayList<>();
+  private String name;
+  private final String immutableValue;
+  private final List<String> children = new ArrayList<>();
 
-	public OtherTestEntity() {
-		this(null);
-	}
+  public OtherTestEntity() {
+    this(null);
+  }
 
-	public OtherTestEntity(String immutableValue) {
-		this.immutableValue = immutableValue;
-	}
+  public OtherTestEntity(String immutableValue) {
+    this.immutableValue = immutableValue;
+  }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public String getName() {
-		return name;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public String getImmutableValue() {
-		return immutableValue;
-	}
+  public String getImmutableValue() {
+    return immutableValue;
+  }
 
-	public List<String> getChildren() {
-		return children;
-	}
-
+  public List<String> getChildren() {
+    return children;
+  }
 }

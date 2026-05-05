@@ -7,43 +7,42 @@ import org.junit.jupiter.api.Test;
 
 class AssertTest {
 
-	@Test
-	void testConstructor() throws Exception {
-		assertThatConstructorIsPrivate(Assert.class);
-	}
+  @Test
+  void testConstructor() throws Exception {
+    assertThatConstructorIsPrivate(Assert.class);
+  }
 
-	@Test
-	void testIsNull() {
-		Assert.isNull(null, null);
-		Assert.isNull(null, () -> "some message");
+  @Test
+  void testIsNull() {
+    Assert.isNull(null, null);
+    Assert.isNull(null, () -> "some message");
 
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Assert.isNull("", () -> "some message"))
-			.withMessage("some message");
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> Assert.isNull("", () -> "some message"))
+        .withMessage("some message");
 
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Assert.isNull("", () -> "some message: " + 12))
-			.withMessage("some message: 12");
-	}
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> Assert.isNull("", () -> "some message: " + 12))
+        .withMessage("some message: 12");
+  }
 
-	@Test
-	void testNotNull() {
-		Assert.notNull("", null);
-		Assert.notNull(new Object(), () -> "some message");
-		Assert.notNull(123, () -> "some message");
+  @Test
+  void testNotNull() {
+    Assert.notNull("", null);
+    Assert.notNull(new Object(), () -> "some message");
+    Assert.notNull(123, () -> "some message");
 
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Assert.notNull(null, () -> "some message"))
-			.withMessage("some message");
-	}
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> Assert.notNull(null, () -> "some message"))
+        .withMessage("some message");
+  }
 
-	@Test
-	void testIsTrue() {
-		Assert.isTrue(true, null);
+  @Test
+  void testIsTrue() {
+    Assert.isTrue(true, null);
 
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> Assert.isTrue(false, () -> "some message"))
-			.withMessage("some message");
-	}
-
+    assertThatExceptionOfType(IllegalArgumentException.class)
+        .isThrownBy(() -> Assert.isTrue(false, () -> "some message"))
+        .withMessage("some message");
+  }
 }
