@@ -1,3 +1,5 @@
+import org.jreleaser.model.Active
+
 buildscript {
     repositories {
         mavenCentral()
@@ -11,6 +13,7 @@ plugins {
     `java-library`
     jacoco
     `maven-publish`
+    signing
     id("org.jreleaser") version "latest.release"
     id("org.sonarqube") version "latest.release"
     id("com.diffplug.spotless") version "latest.release"
@@ -121,21 +124,23 @@ publishing {
     }
 }
 
+signing {
+    useGpgCmd()
+    sign(publishing.publications["mavenJava"])
+}
+
 jreleaser {
     signing {
-        setActive("RELEASE")
-        armored = true
-        setMode("COMMAND")
-        command {
-            executable = "gpg"
-            keyName = System.getenv("JRELEASER_GPG_KEYNAME")
+        signing {
+            active = Active.NEVER
         }
     }
     deploy {
         maven {
             mavenCentral {
                 create("sonatype") {
-                    setActive("RELEASE")
+                    active = Active.RELEASE
+                    sign = false
                     url = "https://central.sonatype.com/api/v1/publisher"
                     stagingRepository("build/staging-deploy")
                 }
