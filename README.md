@@ -44,6 +44,44 @@ Long number = PropertyUtils.read(pojo, numberProperty);
 assertEquals(12345L, number);
 ```
 
+### Example: Selective property updates ###
+
+A common use case is applying selective updates to an entity while logging what changed.
+Without `PropertyUtils`, this typically leads to repetitive boilerplate for each property.
+With `PropertyUtils`, you can define the relevant properties once and handle them uniformly:
+
+```java
+class Person
+{
+    private String firstName;
+    private String lastName;
+    private LocalDate dateOfBirth;
+    private String email;
+    private String phoneNumber;
+    // getters and setters
+}
+```
+
+```java
+List<PropertyDescriptor> propertiesToSync = List.of(
+    PropertyUtils.getPropertyDescriptor(current, Person::getFirstName),
+    PropertyUtils.getPropertyDescriptor(current, Person::getLastName),
+    PropertyUtils.getPropertyDescriptor(current, Person::getDateOfBirth),
+    PropertyUtils.getPropertyDescriptor(current, Person::getEmail),
+    PropertyUtils.getPropertyDescriptor(current, Person::getPhoneNumber));
+
+for (PropertyDescriptor property : propertiesToSync) {
+    Object currentValue = PropertyUtils.read(current, property);
+    Object newValue = PropertyUtils.read(updated, property);
+    if (!Objects.equals(currentValue, newValue)) {
+        log.info("Updating {}: {} → {}", property.getName(), currentValue, newValue);
+        PropertyUtils.write(current, property, newValue);
+    }
+}
+```
+
+All property references are type-safe: a typo or a wrong type is caught at compile time, not at runtime.
+
 ### Support for records ###
 
 Records of Java 14 and newer are also supported by `PropertyUtils`.
