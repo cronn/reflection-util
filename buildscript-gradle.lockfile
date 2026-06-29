@@ -1,6 +1,7 @@
 # This is a Gradle generated file for dependency locking.
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
+# To regenerate this file, run: ./gradlew dependencies --write-locks
 com.diffplug.durian:durian-collect:1.2.0=classpath
 com.diffplug.durian:durian-core:1.2.0=classpath
 com.diffplug.durian:durian-io:1.2.0=classpath
@@ -75,10 +76,10 @@ org.commonmark:commonmark:0.21.0=classpath
 org.eclipse.jgit:org.eclipse.jgit:7.7.0.202606012155-r=classpath
 org.eclipse.platform:org.eclipse.osgi:3.24.200=classpath
 org.eclipse.sisu:org.eclipse.sisu.inject:0.3.4=classpath
-org.jetbrains.kotlin:kotlin-stdlib-common:2.3.20=classpath
+org.jetbrains.kotlin:kotlin-stdlib-common:2.3.21=classpath
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10=classpath
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10=classpath
-org.jetbrains.kotlin:kotlin-stdlib:2.3.20=classpath
+org.jetbrains.kotlin:kotlin-stdlib:2.3.21=classpath
 org.jetbrains:annotations:13.0=classpath
 org.jreleaser:jreleaser-artifactory-java-sdk:1.25.0=classpath
 org.jreleaser:jreleaser-azure-java-sdk:1.25.0=classpath
