@@ -48,21 +48,23 @@ tasks.jacocoTestReport {
 }
 
 tasks.wrapper {
-    gradleVersion = "9.6.1"
+    gradleVersion = "9.8.0"
     distributionType = Wrapper.DistributionType.ALL
 }
 
-val sourcesJar by tasks.registering(Jar::class) {
-    archiveClassifier = "sources"
-    from(sourceSets.main.get().allSource)
-    dependsOn(tasks.classes)
-}
+val sourcesJar =
+    tasks.register<Jar>("sourcesJar") {
+        archiveClassifier = "sources"
+        from(sourceSets.main.get().allSource)
+        dependsOn(tasks.classes)
+    }
 
-val javadocJar by tasks.registering(Jar::class) {
-    archiveClassifier = "javadoc"
-    from(tasks.javadoc.get().destinationDir)
-    dependsOn(tasks.javadoc)
-}
+val javadocJar =
+    tasks.register<Jar>("javadocJar") {
+        archiveClassifier = "javadoc"
+        from(tasks.javadoc.get().destinationDir)
+        dependsOn(tasks.javadoc)
+    }
 
 publishing {
     publications {
