@@ -81,14 +81,13 @@ class PropertyDescriptorCache<T> {
   }
 
   Class<? extends T> getMethodCapturingProxy() {
-    return methodCapturingProxy.updateAndGet(
-        proxyClass -> {
-          if (proxyClass == null) {
-            return MethodCaptor.createProxyClass(originalClass);
-          } else {
-            return proxyClass;
-          }
-        });
+    return methodCapturingProxy.updateAndGet(proxyClass -> {
+      if (proxyClass == null) {
+        return MethodCaptor.createProxyClass(originalClass);
+      } else {
+        return proxyClass;
+      }
+    });
   }
 
   private Set<Field> getFields() {

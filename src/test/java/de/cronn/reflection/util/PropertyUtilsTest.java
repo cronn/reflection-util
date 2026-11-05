@@ -321,10 +321,9 @@ class PropertyUtilsTest {
         .isEqualTo(PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber));
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(
-            () ->
-                PropertyUtils.getPropertyDescriptorByNameOrThrow(
-                    TestEntity.class, "propertyThatDoesNotExist"))
+        .isThrownBy(() ->
+            PropertyUtils.getPropertyDescriptorByNameOrThrow(
+                TestEntity.class, "propertyThatDoesNotExist"))
         .withMessage("Property 'propertyThatDoesNotExist' not found for 'TestEntity'");
   }
 
@@ -503,11 +502,10 @@ class PropertyUtilsTest {
   @Test
   void testGetPropertyDescriptorByPropertyGetter_NonPublicMethodCannotBeCaptured() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(
-            () ->
-                PropertyUtils.getPropertyDescriptor(
-                    TestClassWithDefaultVisibility.class,
-                    TestClassWithDefaultVisibility::getPropertyWithDefaultVisibilityGetter))
+        .isThrownBy(() ->
+            PropertyUtils.getPropertyDescriptor(
+                TestClassWithDefaultVisibility.class,
+                TestClassWithDefaultVisibility::getPropertyWithDefaultVisibilityGetter))
         .withMessage(
             "Method could not be captured. This can happen when no method was invoked or the method is final or non-public.");
   }
@@ -600,9 +598,8 @@ class PropertyUtilsTest {
   @Test
   void testGetPropertyDescriptorByPropertyGetter_FinalClass() {
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(
-            () ->
-                PropertyUtils.getPropertyDescriptor(FinalClass.class, FinalClass::getSomeProperty))
+        .isThrownBy(() ->
+            PropertyUtils.getPropertyDescriptor(FinalClass.class, FinalClass::getSomeProperty))
         .withMessage("Cannot subclass primitive, array or final types: " + FinalClass.class);
   }
 
@@ -1141,14 +1138,13 @@ class PropertyUtilsTest {
     try {
       CompletionService<Void> completionService = new ExecutorCompletionService<>(executorService);
       for (int i = 0; i < 4; i++) {
-        completionService.submit(
-            () -> {
-              for (int r = 0; r < 100; r++) {
-                PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
-                PropertyUtils.removeClassFromCache(TestEntity.class);
-              }
-              return null;
-            });
+        completionService.submit(() -> {
+          for (int r = 0; r < 100; r++) {
+            PropertyUtils.getPropertyDescriptor(TestEntity.class, TestEntity::getNumber);
+            PropertyUtils.removeClassFromCache(TestEntity.class);
+          }
+          return null;
+        });
       }
       for (int i = 0; i < 4; i++) {
         completionService.take().get();
