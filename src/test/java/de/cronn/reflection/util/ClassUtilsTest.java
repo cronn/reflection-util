@@ -63,25 +63,21 @@ public class ClassUtilsTest {
         .isSameAs(TestEntity.class);
     assertThat(ClassUtils.getRealClass(Long.valueOf(16))).isSameAs(Long.class);
 
-    HibernateProxyTestUtil.runWithHibernateProxy(
-        personProxy -> {
-          assertThat(ClassUtils.getRealClass(personProxy))
-              .isSameAs(HibernateProxyTestUtil.Person.class);
-        });
+    HibernateProxyTestUtil.runWithHibernateProxy(personProxy -> {
+      assertThat(ClassUtils.getRealClass(personProxy))
+          .isSameAs(HibernateProxyTestUtil.Person.class);
+    });
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(
-            () ->
-                ClassUtils.getRealClass(
-                    createJdkProxy(SomeTestInterface.class, BaseInterface.class)))
+        .isThrownBy(() ->
+            ClassUtils.getRealClass(createJdkProxy(SomeTestInterface.class, BaseInterface.class)))
         .withMessage("Unexpected number of interfaces: 2");
 
     assertThatExceptionOfType(IllegalArgumentException.class)
-        .isThrownBy(
-            () -> {
-              Object entity = TestEntity.class;
-              ClassUtils.getRealClass(entity);
-            })
+        .isThrownBy(() -> {
+          Object entity = TestEntity.class;
+          ClassUtils.getRealClass(entity);
+        })
         .withMessage(
             "The provided object is already a class: class de.cronn.reflection.util.testclasses.TestEntity."
                 + " You probably want to call ClassUtils.getRealClass(Class) instead.");
@@ -157,13 +153,12 @@ public class ClassUtilsTest {
   @Test
   void testGetVoidMethod_lambdaWithException() {
     assertThatExceptionOfType(ReflectionRuntimeException.class)
-        .isThrownBy(
-            () ->
-                ClassUtils.getVoidMethod(
-                    ClassUtilsTest.class,
-                    bean -> {
-                      throw new IllegalStateException("some exception");
-                    }))
+        .isThrownBy(() ->
+            ClassUtils.getVoidMethod(
+                ClassUtilsTest.class,
+                bean -> {
+                  throw new IllegalStateException("some exception");
+                }))
         .withRootCauseExactlyInstanceOf(IllegalStateException.class)
         .withMessage("java.lang.IllegalStateException: some exception");
   }
@@ -304,14 +299,13 @@ public class ClassUtilsTest {
 
   @Test
   void testIsProxyClass_Hibernate() {
-    HibernateProxyTestUtil.runWithHibernateProxy(
-        personProxy -> {
-          assertThat(personProxy).isInstanceOf(HibernateProxy.class);
-          assertThat(personProxy.getClass().getSimpleName()).endsWith("$Person$HibernateProxy");
+    HibernateProxyTestUtil.runWithHibernateProxy(personProxy -> {
+      assertThat(personProxy).isInstanceOf(HibernateProxy.class);
+      assertThat(personProxy.getClass().getSimpleName()).endsWith("$Person$HibernateProxy");
 
-          assertThat(ClassUtils.isProxy(personProxy)).isTrue();
-          assertThat(ClassUtils.isProxyClass(personProxy.getClass())).isTrue();
-        });
+      assertThat(ClassUtils.isProxy(personProxy)).isTrue();
+      assertThat(ClassUtils.isProxyClass(personProxy.getClass())).isTrue();
+    });
   }
 
   @Test
