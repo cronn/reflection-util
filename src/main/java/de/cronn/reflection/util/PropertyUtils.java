@@ -136,10 +136,11 @@ public final class PropertyUtils {
   public static <T> boolean isDefaultValue(
       Class<T> objectClass, PropertyDescriptor propertyDescriptor, Object value) {
     Object defaultValue = getDefaultValue(objectClass, propertyDescriptor);
-    if (defaultValue instanceof Float && value instanceof Float) {
-      return (float) defaultValue == (float) value;
-    } else if (defaultValue instanceof Double && value instanceof Double) {
-      return (double) defaultValue == (double) value;
+    if (defaultValue instanceof Float defaultFloat && value instanceof Float floatValue) {
+      return defaultFloat.floatValue() == floatValue.floatValue();
+    } else if (defaultValue instanceof Double defaultDouble
+        && value instanceof Double doubleValue) {
+      return defaultDouble.doubleValue() == doubleValue.doubleValue();
     } else {
       return Objects.equals(value, defaultValue);
     }

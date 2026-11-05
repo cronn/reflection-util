@@ -52,32 +52,36 @@ public final class ImmutableProxy {
   public static <T> T create(T instance, ImmutableProxyOption... options) {
     if (isImmutable(instance)) {
       return instance;
-    } else if (instance instanceof List) {
-      @SuppressWarnings("unchecked")
-      T immutableList = (T) create((List<?>) instance, options);
-      return immutableList;
-    } else if (instance instanceof Set) {
-      @SuppressWarnings("unchecked")
-      T immutableSet = (T) create((Set<?>) instance, options);
-      return immutableSet;
-    } else if (instance instanceof Map) {
-      @SuppressWarnings("unchecked")
-      T immutableMap = (T) create((Map<?, ?>) instance, options);
-      return immutableMap;
-    } else if (instance instanceof Record) {
-      if (isOptionEnabled(options, ImmutableProxyOption.ALLOW_CLONING_RECORDS)) {
-        return RecordUtils.cloneRecord(instance, value -> create(value, options));
-      } else {
-        throw new IllegalArgumentException(
-            instance.getClass()
-                + " is a record that potentially contains mutable components."
-                + " Consider using ImmutableProxy.create(bean, "
-                + ImmutableProxyOption.class.getSimpleName()
-                + "."
-                + ImmutableProxyOption.ALLOW_CLONING_RECORDS
-                + ") to enable cloning of such records.");
-      }
     }
+    return switch (instance) {
+      case List<?> list -> uncheckedCast(create(list, options));
+      case Set<?> set -> uncheckedCast(create(set, options));
+      case Map<?, ?> map -> uncheckedCast(create(map, options));
+      case Record ignored -> createImmutableRecord(instance, options);
+      default -> createProxy(instance, options);
+    };
+  }
+
+  @SuppressWarnings("unchecked")
+  private static <T> T uncheckedCast(Object value) {
+    return (T) value;
+  }
+
+  private static <T> T createImmutableRecord(T record, ImmutableProxyOption[] options) {
+    if (isOptionEnabled(options, ImmutableProxyOption.ALLOW_CLONING_RECORDS)) {
+      return RecordUtils.cloneRecord(record, value -> create(value, options));
+    }
+    throw new IllegalArgumentException(
+        record.getClass()
+            + " is a record that potentially contains mutable components."
+            + " Consider using ImmutableProxy.create(bean, "
+            + ImmutableProxyOption.class.getSimpleName()
+            + "."
+            + ImmutableProxyOption.ALLOW_CLONING_RECORDS
+            + ") to enable cloning of such records.");
+  }
+
+  private static <T> T createProxy(T instance, ImmutableProxyOption[] options) {
     Class<? extends T> proxyClass = getOrCreateProxyClass(instance);
     T proxy = ObjenesisHelper.newInstance(proxyClass);
     PropertyUtils.writeDirectly(proxy, DELEGATE_FIELD_NAME, instance);

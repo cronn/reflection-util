@@ -292,6 +292,38 @@ public class ImmutableProxyTest {
   }
 
   @Test
+  void testImmutableProxy_List_SequencedCollectionMethods() {
+    List<TestEntity> immutableList =
+        ImmutableProxy.create(new ArrayList<>(List.of(new TestEntity(1), new TestEntity(2))));
+
+    assertThat(immutableList.getFirst().getNumber()).isEqualTo(1);
+    assertThat(immutableList.getLast().getNumber()).isEqualTo(2);
+    assertThat(immutableList.reversed().getFirst().getNumber()).isEqualTo(2);
+
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> immutableList.getFirst().setNumber(123))
+        .withMessage(IMMUTABLE_EXCEPTION_MESSAGE);
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> immutableList.reversed().getFirst().setNumber(123))
+        .withMessage(IMMUTABLE_EXCEPTION_MESSAGE);
+
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> immutableList.addFirst(new TestEntity(3)))
+        .withMessage("This list is immutable");
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> immutableList.addLast(new TestEntity(3)))
+        .withMessage("This list is immutable");
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(immutableList::removeFirst)
+        .withMessage("This list is immutable");
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(immutableList::removeLast)
+        .withMessage("This list is immutable");
+    assertThatExceptionOfType(UnsupportedOperationException.class)
+        .isThrownBy(() -> immutableList.reversed().add(new TestEntity(3)));
+  }
+
+  @Test
   void testImmutableProxy_Collection_Iterator() {
     Collection<TestEntity> entities = Arrays.asList(new TestEntity(1), new TestEntity(2));
 
