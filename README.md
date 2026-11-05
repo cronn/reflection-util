@@ -284,7 +284,7 @@ This actually gives us 10000 * 11537,742 ≈ 115 million invocations per second!
 
 ## Requirements ##
 
-- Java 17+
+- Java 21+
 
 ## Related Work ##
 
