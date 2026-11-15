@@ -21,28 +21,16 @@ jobs:
         distribution: temurin
         java-version: ${{ matrix.java }}
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build jacocoTestReport
+    - name: Upload coverage reports to Codecov
+      if: matrix.java == '21'
+      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ./build/reports/jacoco/test/jacocoTestReport.xml
     - name: Archive test reports
       if: failure()
       uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
       with:
        name: Gradle Test Reports Java ${{ matrix.java }}
        path: build/reports/tests/test
-
-  publishCoverage:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - name: Setup Java
-      uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
-      with:
-        distribution: temurin
-        java-version: 21
-    - name: Build with Gradle
-      run: ./gradlew jacocoTestReport
-    - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./build/reports/jacoco/test/jacocoTestReport.xml
