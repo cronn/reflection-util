@@ -20,6 +20,8 @@ jobs:
       with:
         distribution: temurin
         java-version: ${{ matrix.java }}
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
     - name: Build with Gradle
       run: ./gradlew build jacocoTestReport
     - name: Upload coverage reports to Codecov
