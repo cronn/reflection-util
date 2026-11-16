@@ -70,8 +70,6 @@ public final class ClassUtils {
     return aPackage != null && aPackage.getName().equals(packageName);
   }
 
-  @SuppressWarnings(
-      /* this unchecked cast is OK, since this is the contract of newInstance() */ "unchecked")
   public static <T> T createNewInstance(Class<T> sourceClass) {
     try {
       Constructor<T> constructor = sourceClass.getDeclaredConstructor();
