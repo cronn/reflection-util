@@ -14,6 +14,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Utilities for classes and methods.
+ *
+ * <p>{@code getMethod} and {@code getMethodName} determine the method behind a method reference
+ * such as {@code MyPojo::doSomething}. Any method without parameters is supported, not only
+ * getters. The lambda must not capture variables. Except for records, it is invoked on a proxy
+ * subclass, so neither the class nor the method may be final, and the method must not be private.
+ */
 public final class ClassUtils {
 
   private static final String JAVASSIST_CLASS_SEPARATOR = "$$";
@@ -39,6 +47,10 @@ public final class ClassUtils {
     return getRealClass(entityClass);
   }
 
+  /**
+   * Returns the proxied class or interface if the given class is a proxy (see {@link
+   * #isProxyClass(Class)}), or the class itself otherwise.
+   */
   public static <T> Class<T> getRealClass(Class<T> clazz) {
     if (isProxyClass(clazz)) {
       if (Proxy.isProxyClass(clazz)) {
@@ -65,11 +77,13 @@ public final class ClassUtils {
     return createNewInstance(sourceClass);
   }
 
+  /** Subpackages do not match. */
   public static boolean isFromPackage(Class<?> clazz, String packageName) {
     Package aPackage = clazz.getPackage();
     return aPackage != null && aPackage.getName().equals(packageName);
   }
 
+  /** Invokes the no-arg constructor, which may be private. */
   public static <T> T createNewInstance(Class<T> sourceClass) {
     try {
       Constructor<T> constructor = sourceClass.getDeclaredConstructor();
@@ -155,6 +169,10 @@ public final class ClassUtils {
     return object != null && isProxyClass(object.getClass());
   }
 
+  /**
+   * Detects JDK proxies and, by their class name, proxies created by Byte Buddy, Hibernate, cglib
+   * and javassist.
+   */
   public static boolean isProxyClass(Class<?> clazz) {
     if (clazz == null) {
       return false;
@@ -190,6 +208,11 @@ public final class ClassUtils {
     return methods.contains(new MethodSignature(method));
   }
 
+  /**
+   * Unlike {@link Class#getDeclaredMethods()}, also includes the methods declared in superclasses
+   * and interfaces, except {@link Object}. Unlike {@link Class#getMethods()}, also includes
+   * non-public methods.
+   */
   public static Set<Method> getAllDeclaredMethods(Class<?> clazz) {
     Set<Method> methods = new LinkedHashSet<>(Arrays.asList(clazz.getDeclaredMethods()));
     if (clazz.getSuperclass() != null && !clazz.getSuperclass().equals(Object.class)) {
@@ -207,6 +230,10 @@ public final class ClassUtils {
         .collect(Collectors.toCollection(TreeSet::new));
   }
 
+  /**
+   * Unlike {@link Method#getAnnotation(Class)}, also finds the annotation on overridden methods in
+   * superclasses and interfaces.
+   */
   public static <A extends Annotation> A findAnnotation(Method method, Class<A> annotationType) {
     A annotation = method.getAnnotation(annotationType);
     if (annotation != null) {
