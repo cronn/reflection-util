@@ -19,6 +19,32 @@ import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisException;
 import org.objenesis.ObjenesisHelper;
 
+/**
+ * Reads, writes and inspects bean properties.
+ *
+ * <p>Properties are determined via {@link java.beans.Introspector}, including properties declared
+ * in interfaces. For records, each component is a read-only property. Like with the Introspector,
+ * the {@code class} property from {@link Object#getClass()} is included. The property descriptors
+ * of a class are cached and ordered by name.
+ *
+ * <p>Methods that take a bean instance instead of a class resolve the class via {@link
+ * ClassUtils#getRealClass(Object)}, so proxies (e.g. from Hibernate) are handled transparently.
+ *
+ * <p>The <em>default value</em> of a property (see {@link #getDefaultValue}, {@link
+ * #hasDefaultValue}, {@link #copyNonDefaultValues}) is the value it has in an instance created via
+ * the no-arg constructor, so a field initializer counts as default. This requires a no-arg
+ * constructor, which may be private. In contrast, {@link #getDefaultValueObject(Class)} returns the
+ * Java default value of a type.
+ *
+ * <p>An annotation of a property is looked up on its getter, its setter and the field with the same
+ * name, in this order.
+ *
+ * <p>A property can be retrieved via a method reference such as {@code MyPojo::getNumber}. The
+ * lambda must not capture variables. Except for records, it is invoked on a proxy subclass, so
+ * neither the class nor the getter may be final, and the getter must not be private.
+ *
+ * <p>Reflective failures are wrapped in {@link ReflectionRuntimeException}.
+ */
 public final class PropertyUtils {
 
   private static final ClassValue<PropertyDescriptorCache<?>> cache =
@@ -171,6 +197,10 @@ public final class PropertyUtils {
     write(destination, propertyDescriptor, value, false);
   }
 
+  /**
+   * With {@code force}, a property without setter is written directly to its field instead of
+   * failing, and a setter that is not accessible is invoked anyway.
+   */
   public static void write(
       Object destination, PropertyDescriptor propertyDescriptor, Object value, boolean force) {
     try {
@@ -265,6 +295,10 @@ public final class PropertyUtils {
     return read(source, propertyDescriptor, false);
   }
 
+  /**
+   * With {@code force}, a property without getter is read directly from its field instead of
+   * failing, and a getter that is not accessible is invoked anyway.
+   */
   public static <T> T read(Object source, PropertyDescriptor propertyDescriptor, boolean force) {
     final Object result;
     try {

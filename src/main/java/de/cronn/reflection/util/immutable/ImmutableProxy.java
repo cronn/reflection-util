@@ -39,6 +39,27 @@ import org.jetbrains.annotations.UnmodifiableView;
 import org.jetbrains.annotations.VisibleForTesting;
 import org.objenesis.ObjenesisHelper;
 
+/**
+ * Creates deep read-only views of mutable objects without copying them.
+ *
+ * <p>The view is a proxy subclass that delegates read-only methods to the original object: getters,
+ * {@code equals}, {@code hashCode}, {@code toString}, {@code clone} and methods annotated with
+ * {@link ReadOnly}. All other methods, including setters, throw {@link
+ * UnsupportedOperationException}. Changes to the original object remain visible through the view.
+ *
+ * <p>Return values are wrapped as well, so the protection extends to nested objects. Values of an
+ * immutable type (see {@link #isImmutable(Class)}) are returned as they are. Collections and maps
+ * are wrapped only if the declared return type is exactly {@code List}, {@code Set}, {@code
+ * Collection}, {@code Iterable} or {@code Map}. Other types, such as {@code ArrayList}, cause an
+ * {@link UnsupportedOperationException}.
+ *
+ * <p>Records are never proxied. A deeply immutable record is returned as it is. Otherwise, it is
+ * copied with its components wrapped, which requires {@link
+ * ImmutableProxyOption#ALLOW_CLONING_RECORDS}.
+ *
+ * <p>Apart from records and immutable types, final classes are rejected, as are classes with public
+ * final methods, unless such a method is annotated with {@link ReadOnly}.
+ */
 public final class ImmutableProxy {
 
   static final String DELEGATE_FIELD_NAME = "$delegate";
