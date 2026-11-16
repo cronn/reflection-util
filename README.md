@@ -24,7 +24,8 @@ Add the following Maven dependency to your project:
 ## PropertyUtils ##
 
 Replacement for `org.apache.commons.beanutils.PropertyUtils` with deterministic behaviour
-and support to retrieve [PropertyDescriptors][property-descriptor] via Java 8 method references.
+and support to retrieve [PropertyDescriptors][property-descriptor] via method references.
+Besides JavaBeans, records are supported as well: their components are treated as read-only properties.
 
 Example:
 
@@ -84,7 +85,7 @@ All property references are type-safe: a typo or a wrong type is caught at compi
 
 ### Support for records ###
 
-Records of Java 14 and newer are also supported by `PropertyUtils`.
+Records are also supported by `PropertyUtils`.
 
 Example:
 
@@ -210,7 +211,7 @@ For example, it cannot detect that a getter actually modifies the state as a sid
 
 ### Support for records ###
 
-Records of Java 14 and newer are also supported by `ImmutableProxy`.
+Records are also supported by `ImmutableProxy`.
 
 Example:
 
