@@ -2,6 +2,7 @@ package de.cronn.reflection.util;
 
 import java.util.function.Function;
 
+/** Internal: only public for use across packages. Not part of the API. */
 public final class ClassValues {
 
   private ClassValues() {}

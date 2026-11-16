@@ -15,6 +15,7 @@ import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 import net.bytebuddy.matcher.ElementMatchers;
 
+/** Internal: only public because generated proxy classes call it. Not part of the API. */
 public final class GenericImmutableProxyForwarder {
 
   private static final Map<Method, Boolean> shouldProxyReturnValueCache = new ConcurrentHashMap<>();

@@ -13,6 +13,7 @@ import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 import net.bytebuddy.implementation.bind.annotation.RuntimeType;
 
+/** Internal: only public because generated proxy classes call it. Not part of the API. */
 public class MethodCaptor {
 
   static final String FIELD_NAME = "$methodCaptor";

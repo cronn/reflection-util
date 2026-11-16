@@ -6,6 +6,7 @@ import net.bytebuddy.implementation.bind.annotation.AllArguments;
 import net.bytebuddy.implementation.bind.annotation.FieldValue;
 import net.bytebuddy.implementation.bind.annotation.Origin;
 
+/** Internal: only public because generated proxy classes call it. Not part of the API. */
 public final class ImmutableProxyForwarderBoolean {
 
   private ImmutableProxyForwarderBoolean() {}
